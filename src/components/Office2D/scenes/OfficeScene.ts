@@ -38,7 +38,6 @@ import { DoorManager } from "./systems/DoorManager";
 import { initSceneEventBridge } from "./systems/SceneEventBridge";
 import type { EventBridge } from "../EventBridge";
 import type { AgentRow, AgentStatus, NodeRow } from "@/types/supabase";
-import { assignTask, completeTask, failTask } from "./entities/worker/task";
 
 const log = createLogger("OfficeScene");
 
@@ -338,33 +337,31 @@ export class OfficeScene extends Phaser.Scene {
       }),
     );
 
-    // Subscribe to task-assigned: find the worker by agentId, call assignTask()
+    // Subscribe to task-assigned: forward to gameEvents bus so SceneEventBridge handles
+    // routing, runWorkerMap tracking, and worker animations
     unsubs.push(
       bridge.on("task-assigned", ({ taskId, agentId, title }) => {
+        // Find the worker's seatId for gameEvents compatibility
         const worker = this.findWorkerByAgentId(agentId);
-        if (worker) {
-          assignTask(worker, taskId, title);
-        }
+        const seatId = worker?.seatId;
+        // Forward to gameEvents — SceneEventBridge handles routing, runWorkerMap, and animations
+        gameEvents.emit("task-assigned", taskId, title, seatId);
       }),
     );
 
-    // Subscribe to task-completed: find the worker by agentId, call completeTask()
+    // Subscribe to task-completed: forward to gameEvents bus so SceneEventBridge
+    // finds worker via runWorkerMap and calls completeTask
     unsubs.push(
-      bridge.on("task-completed", ({ agentId }) => {
-        const worker = this.findWorkerByAgentId(agentId);
-        if (worker) {
-          completeTask(worker);
-        }
+      bridge.on("task-completed", ({ taskId, agentId }) => {
+        gameEvents.emit("task-completed", taskId);
       }),
     );
 
-    // Subscribe to task-failed: find the worker by agentId, call failTask()
+    // Subscribe to task-failed: forward to gameEvents bus so SceneEventBridge
+    // finds worker via runWorkerMap and calls failTask
     unsubs.push(
-      bridge.on("task-failed", ({ agentId }) => {
-        const worker = this.findWorkerByAgentId(agentId);
-        if (worker) {
-          failTask(worker);
-        }
+      bridge.on("task-failed", ({ taskId, agentId }) => {
+        gameEvents.emit("task-failed", taskId);
       }),
     );
 
