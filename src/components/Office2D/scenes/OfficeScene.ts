@@ -37,7 +37,7 @@ import { InteractionManager } from "./systems/InteractionManager";
 import { DoorManager } from "./systems/DoorManager";
 import { initSceneEventBridge } from "./systems/SceneEventBridge";
 import type { EventBridge } from "../EventBridge";
-import type { AgentRow, AgentStatus } from "@/types/supabase";
+import type { AgentRow, AgentStatus, NodeRow } from "@/types/supabase";
 import { assignTask, completeTask, failTask } from "./entities/worker/task";
 
 const log = createLogger("OfficeScene");
@@ -66,6 +66,7 @@ export class OfficeScene extends Phaser.Scene {
   private bridge: EventBridge | null = null;
   private cleanupBridge: (() => void) | null = null;
   private agentMap = new Map<string, AgentRow>();
+  private nodeMap = new Map<string, NodeRow>();
 
   constructor() {
     super({ key: "OfficeScene" });
@@ -245,6 +246,16 @@ export class OfficeScene extends Phaser.Scene {
   ): () => void {
     const unsubs: Array<() => void> = [];
 
+    // Subscribe to nodes-updated: cache node statuses for node-aware agent graying
+    unsubs.push(
+      bridge.on("nodes-updated", (nodes: NodeRow[]) => {
+        this.nodeMap.clear();
+        for (const node of nodes) {
+          this.nodeMap.set(node.node_id, node);
+        }
+      }),
+    );
+
     // Map AgentStatus to WorkerManager-compatible SeatState status
     const mapAgentStatus = (s: AgentStatus): SeatState["status"] => {
       switch (s) {
@@ -299,9 +310,14 @@ export class OfficeScene extends Phaser.Scene {
             const worker = this.workerManager.findBySeatId(seat.seatId);
             if (worker) {
               worker.agentId = seat.agentId;
-              if (seat.agentStatus) {
-                worker.applyAgentStatus(seat.agentStatus);
-              }
+              // Node-aware graying: if agent's node is offline, override visual to 'offline'
+              // regardless of the agent's own status field (handles edge case where heartbeat
+              // stops before agent-state-bridge marks agents offline)
+              const agentData = this.agentMap.get(seat.agentId);
+              const agentNode = agentData ? this.nodeMap.get(agentData.node_id) : null;
+              const effectiveStatus: AgentStatus =
+                agentNode?.status === "offline" ? "offline" : (seat.agentStatus ?? "idle");
+              worker.applyAgentStatus(effectiveStatus);
               // Make sprite interactive for click-to-select
               if (!worker.sprite.input) {
                 worker.sprite.setInteractive({ useHandCursor: true });

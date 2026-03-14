@@ -1,7 +1,19 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import { useRealtimeStatus } from '@/components/RealtimeProvider'
 import type { NodeRow, NodeStatus } from '@/types/supabase'
+
+// ---------- Notification types ----------
+
+interface NodeNotification {
+  id: number
+  nodeId: string
+  message: string
+  type: 'offline' | 'online'
+}
+
+let notifCounter = 0
 
 function getRamPercent(node: NodeRow): number {
   if (!node.ram_total_mb || node.ram_total_mb === 0) return 0
@@ -180,6 +192,52 @@ function SkeletonCard() {
 export default function NodeStatusStrip() {
   const { connectionStatus, nodes, nodesLoading } = useRealtimeStatus()
   const isDisconnected = connectionStatus === 'disconnected'
+  const [notifications, setNotifications] = useState<NodeNotification[]>([])
+  const prevStatusRef = useRef<Map<string, NodeStatus>>(new Map())
+
+  // Detect node status transitions and fire notifications
+  useEffect(() => {
+    const prev = prevStatusRef.current
+    const next = new Map<string, NodeStatus>()
+
+    for (const node of nodes) {
+      next.set(node.node_id, node.status)
+      const prevStatus = prev.get(node.node_id)
+      if (prevStatus !== undefined && prevStatus !== node.status) {
+        if (node.status === 'offline') {
+          const id = ++notifCounter
+          const notif: NodeNotification = {
+            id,
+            nodeId: node.node_id,
+            message: `${node.node_id.slice(0, 12)} went offline`,
+            type: 'offline',
+          }
+          setNotifications((prev) => [...prev, notif])
+          setTimeout(() => {
+            setNotifications((prev) => prev.filter((n) => n.id !== id))
+          }, 8000)
+        } else if (prevStatus === 'offline' && (node.status === 'online' || node.status === 'degraded')) {
+          const id = ++notifCounter
+          const notif: NodeNotification = {
+            id,
+            nodeId: node.node_id,
+            message: `${node.node_id.slice(0, 12)} is back online`,
+            type: 'online',
+          }
+          setNotifications((prev) => [...prev, notif])
+          setTimeout(() => {
+            setNotifications((prev) => prev.filter((n) => n.id !== id))
+          }, 8000)
+        }
+      }
+    }
+
+    prevStatusRef.current = next
+  }, [nodes])
+
+  const dismissNotification = (id: number) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id))
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -228,6 +286,54 @@ export default function NodeStatusStrip() {
           nodes.map((node) => <NodeCard key={node.node_id} node={node} />)
         )}
       </div>
+
+      {/* Node transition notifications */}
+      {notifications.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
+          {notifications.map((notif) => (
+            <div
+              key={notif.id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '8px',
+                padding: '5px 10px',
+                borderRadius: '4px',
+                fontSize: '11px',
+                fontWeight: 500,
+                background: notif.type === 'offline'
+                  ? 'rgba(255, 69, 58, 0.12)'
+                  : 'rgba(50, 215, 75, 0.12)',
+                border: `1px solid ${notif.type === 'offline' ? 'var(--error, #FF453A)' : 'var(--success, #32D74B)'}`,
+                color: notif.type === 'offline'
+                  ? 'var(--error, #FF453A)'
+                  : 'var(--success, #32D74B)',
+                animation: 'fadeIn 0.2s ease',
+              }}
+            >
+              <span>{notif.message}</span>
+              <button
+                onClick={() => dismissNotification(notif.id)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'inherit',
+                  fontSize: '12px',
+                  lineHeight: 1,
+                  padding: '0 2px',
+                  opacity: 0.7,
+                  flexShrink: 0,
+                }}
+                aria-label="Dismiss"
+              >
+                &#x2715;
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -15,7 +15,7 @@
  *   'agent-approached': { agentId }       (Player walked near agent + pressed E)
  */
 
-import type { AgentRow, TaskRow } from '@/types/supabase'
+import type { AgentRow, NodeRow, TaskRow } from '@/types/supabase'
 import type { ConnectionStatus } from '@/components/RealtimeProvider'
 
 // ---------- Event map ----------
@@ -23,6 +23,7 @@ import type { ConnectionStatus } from '@/components/RealtimeProvider'
 export interface EventBridgeMap {
   // React -> Phaser
   'agents-updated': AgentRow[]
+  'nodes-updated': NodeRow[]
   'connection-status': ConnectionStatus
   'tasks-updated': TaskRow[]
   'task-assigned': { taskId: string; agentId: string; title: string }
