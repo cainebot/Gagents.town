@@ -7,14 +7,17 @@ interface AgentPanelProps {
   agent: AgentConfig;
   state: AgentState;
   onClose: () => void;
+  nodeId?: string;
 }
 
-export default function AgentPanel({ agent, state, onClose }: AgentPanelProps) {
+export default function AgentPanel({ agent, state, onClose, nodeId }: AgentPanelProps) {
   const getStatusColor = () => {
     switch (state.status) {
       case 'working': return 'text-green-500';
       case 'thinking': return 'text-blue-500 animate-pulse';
       case 'error': return 'text-red-500';
+      case 'queued': return 'text-yellow-500';
+      case 'offline': return 'text-gray-600';
       case 'idle':
       default: return 'text-gray-500';
     }
@@ -25,13 +28,15 @@ export default function AgentPanel({ agent, state, onClose }: AgentPanelProps) {
       case 'working': return 'bg-green-500/20';
       case 'thinking': return 'bg-blue-500/20';
       case 'error': return 'bg-red-500/20';
+      case 'queued': return 'bg-yellow-500/20';
+      case 'offline': return 'bg-gray-600/20';
       case 'idle':
       default: return 'bg-gray-500/20';
     }
   };
 
   return (
-    <div className="absolute right-0 top-0 h-full w-96 bg-black/90 backdrop-blur-md text-white p-6 shadow-2xl border-l border-white/10">
+    <div className="absolute right-0 top-0 h-full w-96 bg-black/90 backdrop-blur-md text-white p-6 shadow-2xl border-l border-white/10 overflow-y-auto">
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
@@ -40,6 +45,9 @@ export default function AgentPanel({ agent, state, onClose }: AgentPanelProps) {
             {agent.name}
           </h2>
           <p className="text-sm text-gray-400 mt-1">{agent.role}</p>
+          {nodeId && (
+            <p className="text-xs text-gray-500 mt-0.5">Node: {nodeId}</p>
+          )}
         </div>
         <button
           onClick={onClose}
@@ -65,10 +73,17 @@ export default function AgentPanel({ agent, state, onClose }: AgentPanelProps) {
         </div>
       )}
 
+      {/* Offline note */}
+      {state.status === 'offline' && (
+        <div className="mb-6 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+          <p className="text-sm text-gray-400">This agent is currently offline. No live data available.</p>
+        </div>
+      )}
+
       {/* Stats */}
       <div className="space-y-4 mb-6">
         <h3 className="text-sm font-semibold text-gray-400">Stats</h3>
-        
+
         <div className="grid grid-cols-2 gap-4">
           {/* Model */}
           <div className="bg-white/5 p-3 rounded-lg">

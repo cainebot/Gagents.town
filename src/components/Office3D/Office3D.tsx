@@ -2,10 +2,11 @@
 
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Sky, Environment } from '@react-three/drei';
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useMemo } from 'react';
 import { Vector3 } from 'three';
-import { AGENTS } from './agentsConfig';
-import type { AgentState } from './agentsConfig';
+import { AGENTS, agentRowToConfig, agentRowToState } from './agentsConfig';
+import type { AgentConfig, AgentState } from './agentsConfig';
+import { useRealtimeStatus } from '@/components/RealtimeProvider';
 import AgentDesk from './AgentDesk';
 import Floor from './Floor';
 import Walls from './Walls';
@@ -23,17 +24,45 @@ export default function Office3D() {
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [interactionModal, setInteractionModal] = useState<string | null>(null);
   const [controlMode, setControlMode] = useState<'orbit' | 'fps'>('orbit');
-  const [avatarPositions, setAvatarPositions] = useState<Map<string, any>>(new Map());
-  
-  // Mock data - TODO: Replace with real API data
-  const [agentStates] = useState<Record<string, AgentState>>({
-    main: { id: 'main', status: 'working', currentTask: 'Procesando emails', model: 'opus', tokensPerHour: 15000, tasksInQueue: 3, uptime: 12 },
-    academic: { id: 'academic', status: 'idle', model: 'sonnet', tokensPerHour: 0, tasksInQueue: 0, uptime: 8 },
-    studio: { id: 'studio', status: 'thinking', currentTask: 'Generando guión YouTube', model: 'opus', tokensPerHour: 8000, tasksInQueue: 1, uptime: 5 },
-    linkedin: { id: 'linkedin', status: 'working', currentTask: 'Redactando post', model: 'sonnet', tokensPerHour: 5000, tasksInQueue: 2, uptime: 10 },
-    social: { id: 'social', status: 'idle', model: 'sonnet', tokensPerHour: 0, tasksInQueue: 0, uptime: 7 },
-    infra: { id: 'infra', status: 'error', currentTask: 'Failed deployment', model: 'haiku', tokensPerHour: 1000, tasksInQueue: 0, uptime: 15 },
-  });
+  const [avatarPositions, setAvatarPositions] = useState<Map<string, Vector3>>(new Map());
+
+  // Realtime data
+  const { connectionStatus, agents: realtimeAgents, agentsLoading } = useRealtimeStatus();
+  const isDisconnected = connectionStatus === 'disconnected';
+
+  // Build agent configs + states from Realtime data, or fall back to hardcoded AGENTS
+  const { displayAgents, agentStatesMap, agentNodeMap } = useMemo(() => {
+    // If loading or no real agents yet, use hardcoded fallback
+    if (agentsLoading || realtimeAgents.length === 0) {
+      const fallbackStates: Record<string, AgentState> = {
+        main: { id: 'main', status: 'working', currentTask: 'Procesando emails', model: 'opus', tokensPerHour: 15000, tasksInQueue: 3, uptime: 12 },
+        'agent-2': { id: 'agent-2', status: 'idle', model: 'sonnet', tokensPerHour: 0, tasksInQueue: 0, uptime: 8 },
+        'agent-3': { id: 'agent-3', status: 'thinking', currentTask: 'Generando guión YouTube', model: 'opus', tokensPerHour: 8000, tasksInQueue: 1, uptime: 5 },
+        'agent-4': { id: 'agent-4', status: 'working', currentTask: 'Redactando post', model: 'sonnet', tokensPerHour: 5000, tasksInQueue: 2, uptime: 10 },
+        'agent-5': { id: 'agent-5', status: 'idle', model: 'sonnet', tokensPerHour: 0, tasksInQueue: 0, uptime: 7 },
+        'agent-6': { id: 'agent-6', status: 'error', currentTask: 'Failed deployment', model: 'haiku', tokensPerHour: 1000, tasksInQueue: 0, uptime: 15 },
+      };
+      return {
+        displayAgents: AGENTS,
+        agentStatesMap: fallbackStates,
+        agentNodeMap: {} as Record<string, string>,
+      };
+    }
+
+    // Build from Supabase Realtime data
+    const configs: AgentConfig[] = realtimeAgents.map((row, i) => agentRowToConfig(row, i));
+    const statesMap: Record<string, AgentState> = {};
+    const nodeMap: Record<string, string> = {};
+    for (const row of realtimeAgents) {
+      statesMap[row.agent_id] = agentRowToState(row);
+      nodeMap[row.agent_id] = row.node_id;
+    }
+    return {
+      displayAgents: configs,
+      agentStatesMap: statesMap,
+      agentNodeMap: nodeMap,
+    };
+  }, [realtimeAgents, agentsLoading]);
 
   const handleDeskClick = (agentId: string) => {
     setSelectedAgent(agentId);
@@ -59,14 +88,14 @@ export default function Office3D() {
     setInteractionModal(null);
   };
 
-  const handleAvatarPositionUpdate = (id: string, position: any) => {
+  const handleAvatarPositionUpdate = (id: string, position: Vector3) => {
     setAvatarPositions(prev => new Map(prev).set(id, position));
   };
 
   // Definir obstáculos (muebles)
   const obstacles = [
-    // Escritorios (6)
-    ...AGENTS.map(agent => ({
+    // Escritorios
+    ...displayAgents.map(agent => ({
       position: new Vector3(agent.position[0], 0, agent.position[2]),
       radius: 1.5
     })),
@@ -82,6 +111,16 @@ export default function Office3D() {
     { position: new Vector3(-9, 0, 0), radius: 0.4 },
     { position: new Vector3(9, 0, 0), radius: 0.4 },
   ];
+
+  const selectedAgentConfig = selectedAgent
+    ? displayAgents.find(a => a.id === selectedAgent)
+    : undefined;
+
+  const connectionDot = (() => {
+    if (connectionStatus === 'connected') return { color: '#32D74B', label: null };
+    if (connectionStatus === 'connecting') return { color: '#FFD60A', label: null };
+    return { color: '#FF453A', label: 'Connection Lost' };
+  })();
 
   return (
     <div className="fixed inset-0 bg-gray-900" style={{ height: '100vh', width: '100vw' }}>
@@ -111,28 +150,31 @@ export default function Office3D() {
           <Walls />
 
           {/* Escritorios de agentes (sin avatares) */}
-          {AGENTS.map((agent) => (
+          {displayAgents.map((agent) => (
             <AgentDesk
               key={agent.id}
               agent={agent}
-              state={agentStates[agent.id]}
+              state={agentStatesMap[agent.id] ?? { id: agent.id, status: 'offline' }}
               onClick={() => handleDeskClick(agent.id)}
               isSelected={selectedAgent === agent.id}
             />
           ))}
 
           {/* Avatares móviles */}
-          {AGENTS.map((agent) => (
-            <MovingAvatar
-              key={`avatar-${agent.id}`}
-              agent={agent}
-              state={agentStates[agent.id]}
-              officeBounds={{ minX: -8, maxX: 8, minZ: -7, maxZ: 7 }}
-              obstacles={obstacles}
-              otherAvatarPositions={avatarPositions}
-              onPositionUpdate={handleAvatarPositionUpdate}
-            />
-          ))}
+          {displayAgents.map((agent) => {
+            const state = agentStatesMap[agent.id] ?? { id: agent.id, status: 'offline' as const };
+            return (
+              <MovingAvatar
+                key={`avatar-${agent.id}`}
+                agent={agent}
+                state={state}
+                officeBounds={{ minX: -8, maxX: 8, minZ: -7, maxZ: 7 }}
+                obstacles={obstacles}
+                otherAvatarPositions={avatarPositions}
+                onPositionUpdate={handleAvatarPositionUpdate}
+              />
+            );
+          })}
 
           {/* Mobiliario interactivo */}
           <FileCabinet
@@ -175,11 +217,12 @@ export default function Office3D() {
       </Canvas>
 
       {/* Panel lateral cuando se selecciona un agente */}
-      {selectedAgent && (
+      {selectedAgent && selectedAgentConfig && (
         <AgentPanel
-          agent={AGENTS.find(a => a.id === selectedAgent)!}
-          state={agentStates[selectedAgent]}
+          agent={selectedAgentConfig}
+          state={agentStatesMap[selectedAgent] ?? { id: selectedAgent, status: 'offline' }}
           onClose={handleClosePanel}
+          nodeId={agentNodeMap[selectedAgent]}
         />
       )}
 
@@ -254,7 +297,9 @@ export default function Office3D() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-400">Active agents:</p>
-                      <p className="text-2xl font-bold text-green-400">3 / 6</p>
+                      <p className="text-2xl font-bold text-green-400">
+                        {realtimeAgents.filter(a => a.status === 'working').length} / {realtimeAgents.length || displayAgents.length}
+                      </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-400">System uptime:</p>
@@ -280,7 +325,23 @@ export default function Office3D() {
 
       {/* Controles UI overlay */}
       <div className="absolute top-4 left-4 bg-black/70 text-white p-4 rounded-lg backdrop-blur-sm">
-        <h2 className="text-lg font-bold mb-2">🏢 The Office</h2>
+        <div className="flex items-center gap-2 mb-2">
+          <h2 className="text-lg font-bold">🏢 The Office</h2>
+          {/* Connection status dot */}
+          <span
+            style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: connectionDot.color,
+              display: 'inline-block',
+              flexShrink: 0,
+            }}
+          />
+        </div>
+        {isDisconnected && (
+          <p className="text-xs text-yellow-400 mb-2">Connection Lost</p>
+        )}
         <div className="text-sm space-y-1 mb-3">
           <p><strong>Mode: {controlMode === 'orbit' ? '🖱️ Orbit' : '🎮 FPS'}</strong></p>
           {controlMode === 'orbit' ? (
@@ -325,6 +386,14 @@ export default function Office3D() {
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-red-500 rounded-full"></div>
             <span>Error</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+            <span>Queued</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-gray-600 rounded-full opacity-50"></div>
+            <span>Offline</span>
           </div>
         </div>
       </div>
