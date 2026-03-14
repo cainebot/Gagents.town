@@ -2,7 +2,7 @@
 
 import { useRealtimeStatus } from '@/components/RealtimeProvider'
 import type { NodeRow, NodeStatus } from '@/types/supabase'
-import { Server, Wifi, WifiOff, HardDrive, Users, Clock } from 'lucide-react'
+import { Server, Wifi, WifiOff, HardDrive, Users, Clock, Cpu } from 'lucide-react'
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -13,6 +13,12 @@ function getRamPercent(node: NodeRow): number {
 
 function getRamBarColor(percent: number): string {
   if (percent > 85) return 'var(--error, #FF453A)'
+  if (percent > 70) return 'var(--warning, #FFD60A)'
+  return 'var(--success, #32D74B)'
+}
+
+function getCpuBarColor(percent: number): string {
+  if (percent > 90) return 'var(--error, #FF453A)'
   if (percent > 70) return 'var(--warning, #FFD60A)'
   return 'var(--success, #32D74B)'
 }
@@ -56,6 +62,8 @@ interface NodeCardProps {
 function NodeCard({ node, agentNames }: NodeCardProps) {
   const ramPercent = getRamPercent(node)
   const barColor = getRamBarColor(ramPercent)
+  const cpuPercent = Math.round(node.cpu_percent ?? 0)
+  const cpuBarColor = getCpuBarColor(cpuPercent)
   const color = statusColor(node.status)
 
   return (
@@ -142,6 +150,38 @@ function NodeCard({ node, agentNames }: NodeCardProps) {
         </div>
       </div>
 
+      {/* CPU usage */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Cpu size={13} color='var(--text-secondary, rgba(255,255,255,0.5))' />
+            <span style={{ fontSize: '12px', color: 'var(--text-secondary, rgba(255,255,255,0.5))' }}>CPU</span>
+          </div>
+          <span style={{ fontSize: '12px', color: 'var(--text-primary, #ffffff)' }}>
+            {cpuPercent}%
+          </span>
+        </div>
+        <div
+          style={{
+            width: '100%',
+            height: '6px',
+            background: 'var(--border, rgba(255,255,255,0.1))',
+            borderRadius: '3px',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              width: `${cpuPercent}%`,
+              height: '100%',
+              background: cpuBarColor,
+              borderRadius: '3px',
+              transition: 'width 0.4s ease',
+            }}
+          />
+        </div>
+      </div>
+
       {/* Agents */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -183,9 +223,49 @@ function NodeCard({ node, agentNames }: NodeCardProps) {
 
 // ── Page ───────────────────────────────────────────────────────────────────
 
+// ── AggregateSummary ───────────────────────────────────────────────────────
+
+interface SummaryStatProps {
+  label: string
+  value: number | string
+}
+
+function SummaryStat({ label, value }: SummaryStatProps) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '4px',
+        padding: '12px 20px',
+        background: 'var(--card, rgba(255,255,255,0.04))',
+        border: '1px solid var(--border, rgba(255,255,255,0.1))',
+        borderRadius: '10px',
+        minWidth: '80px',
+      }}
+    >
+      <span style={{ fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #ffffff)' }}>
+        {value}
+      </span>
+      <span style={{ fontSize: '11px', color: 'var(--text-secondary, rgba(255,255,255,0.4))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+        {label}
+      </span>
+    </div>
+  )
+}
+
+// ── Page ───────────────────────────────────────────────────────────────────
+
 export default function NodesPage() {
   const { connectionStatus, nodes, agents, nodesLoading } = useRealtimeStatus()
   const isDisconnected = connectionStatus === 'disconnected'
+
+  // Aggregate summary stats
+  const totalNodes = nodes.length
+  const onlineNodes = nodes.filter((n) => n.status === 'online').length
+  const degradedNodes = nodes.filter((n) => n.status === 'degraded').length
+  const totalAgents = nodes.reduce((sum, n) => sum + (n.agent_count ?? 0), 0)
 
   return (
     <div style={{ maxWidth: '1400px' }}>
@@ -236,6 +316,23 @@ export default function NodesPage() {
           </span>
         )}
       </div>
+
+      {/* Aggregate summary strip */}
+      {!nodesLoading && nodes.length > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '12px',
+            marginBottom: '24px',
+          }}
+        >
+          <SummaryStat label="Nodes" value={totalNodes} />
+          <SummaryStat label="Online" value={onlineNodes} />
+          <SummaryStat label="Agents" value={totalAgents} />
+          <SummaryStat label="Degraded" value={degradedNodes} />
+        </div>
+      )}
 
       {/* Loading state */}
       {nodesLoading && (
