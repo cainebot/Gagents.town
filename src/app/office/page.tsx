@@ -1,10 +1,10 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { RealtimeProvider, useRealtimeStatus } from '@/components/RealtimeProvider'
 import { eventBridge } from '@/components/Office2D/EventBridge'
 import AgentPanel from '@/components/Office2D/AgentPanel'
-import type { AgentRow } from '@/types/supabase'
+import type { AgentRow, TaskRow } from '@/types/supabase'
 import type { ConnectionStatus } from '@/components/RealtimeProvider'
 import dynamic from 'next/dynamic'
 
@@ -67,16 +67,81 @@ function ConnectionIndicator() {
   )
 }
 
+// ---------- Toast system ----------
+
+type ToastType = 'success' | 'error' | 'info'
+
+interface Toast {
+  id: number
+  message: string
+  type: ToastType
+}
+
+const TOAST_BORDER_COLORS: Record<ToastType, string> = {
+  success: '#22c55e',
+  error: '#ef4444',
+  info: '#3b82f6',
+}
+
+let toastCounter = 0
+
+function ToastContainer({ toasts }: { toasts: Toast[] }) {
+  if (toasts.length === 0) return null
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: '16px',
+        right: '16px',
+        zIndex: 1100,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+        pointerEvents: 'none',
+      }}
+    >
+      {toasts.map((toast) => (
+        <div
+          key={toast.id}
+          style={{
+            background: '#1f2937',
+            color: '#e5e7eb',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            minWidth: '280px',
+            borderLeft: `4px solid ${TOAST_BORDER_COLORS[toast.type]}`,
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            fontSize: '13px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+          }}
+        >
+          {toast.message}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // ---------- Office content (inside RealtimeProvider) ----------
 
 function OfficeContent() {
-  const { agents } = useRealtimeStatus()
+  const { agents, tasks } = useRealtimeStatus()
   const [selectedAgent, setSelectedAgent] = useState<AgentRow | null>(null)
   const [panelPosition, setPanelPosition] = useState<{ x: number; y: number } | null>(null)
+  const [toasts, setToasts] = useState<Toast[]>([])
+  const prevTasksRef = useRef<TaskRow[]>([])
 
   const closePanel = useCallback(() => {
     setSelectedAgent(null)
     setPanelPosition(null)
+  }, [])
+
+  const showToast = useCallback((message: string, type: ToastType) => {
+    const id = ++toastCounter
+    setToasts((prev) => [...prev, { id, message, type }])
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id))
+    }, 4000)
   }, [])
 
   // Subscribe to EventBridge events from Phaser
@@ -128,6 +193,62 @@ function OfficeContent() {
     // If agent not found, keep panel open with stale data (status shows offline by default)
   }, [agents]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Push tasks to Phaser via EventBridge
+  useEffect(() => {
+    eventBridge.emit('tasks-updated', tasks)
+  }, [tasks])
+
+  // Diff tasks for toast notifications and EventBridge task events
+  useEffect(() => {
+    const prev = prevTasksRef.current
+    for (const task of tasks) {
+      const oldTask = prev.find((t) => t.task_id === task.task_id)
+      if (oldTask && oldTask.status !== task.status) {
+        if (task.status === 'completed') {
+          showToast(`Task "${task.title}" completed`, 'success')
+          eventBridge.emit('task-completed', {
+            taskId: task.task_id,
+            agentId: task.target_agent_id || '',
+            title: task.title,
+          })
+        } else if (task.status === 'failed') {
+          showToast(`Task "${task.title}" failed`, 'error')
+          eventBridge.emit('task-failed', {
+            taskId: task.task_id,
+            agentId: task.target_agent_id || '',
+            title: task.title,
+          })
+        } else if (task.status === 'claimed' || task.status === 'in_progress') {
+          eventBridge.emit('task-assigned', {
+            taskId: task.task_id,
+            agentId: task.target_agent_id || '',
+            title: task.title,
+          })
+        }
+      }
+      // Detect transfer: target_agent_id changed on an existing task
+      if (
+        oldTask &&
+        oldTask.target_agent_id &&
+        task.target_agent_id &&
+        oldTask.target_agent_id !== task.target_agent_id
+      ) {
+        eventBridge.emit('task-transferred', {
+          taskId: task.task_id,
+          fromAgentId: oldTask.target_agent_id,
+          toAgentId: task.target_agent_id,
+          title: task.title,
+        })
+        showToast(`Task "${task.title}" transferred`, 'info')
+      }
+    }
+    prevTasksRef.current = tasks
+  }, [tasks, showToast])
+
+  const agentTasks = selectedAgent
+    ? tasks.filter((t) => t.target_agent_id === selectedAgent.agent_id)
+    : []
+
   return (
     <>
       <PhaserGame />
@@ -135,10 +256,12 @@ function OfficeContent() {
       {selectedAgent && panelPosition && (
         <AgentPanel
           agent={selectedAgent}
+          tasks={agentTasks}
           position={panelPosition}
           onClose={closePanel}
         />
       )}
+      <ToastContainer toasts={toasts} />
     </>
   )
 }

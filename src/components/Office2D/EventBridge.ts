@@ -4,13 +4,18 @@
  * React -> Phaser:
  *   'agents-updated': AgentRow[]          (Supabase Realtime data pushed to Phaser)
  *   'connection-status': ConnectionStatus (Realtime connection state)
+ *   'tasks-updated': TaskRow[]            (Full tasks array pushed to Phaser)
+ *   'task-assigned': { taskId, agentId, title } (Trigger worker emote)
+ *   'task-completed': { taskId, agentId, title } (Trigger completion visual)
+ *   'task-failed': { taskId, agentId, title }    (Trigger failure visual)
+ *   'task-transferred': { taskId, fromAgentId, toAgentId, title } (Transfer animation)
  *
  * Phaser -> React:
  *   'agent-clicked': { agentId, x, y }   (Agent sprite clicked)
  *   'agent-approached': { agentId }       (Player walked near agent + pressed E)
  */
 
-import type { AgentRow } from '@/types/supabase'
+import type { AgentRow, TaskRow } from '@/types/supabase'
 import type { ConnectionStatus } from '@/components/RealtimeProvider'
 
 // ---------- Event map ----------
@@ -19,6 +24,11 @@ export interface EventBridgeMap {
   // React -> Phaser
   'agents-updated': AgentRow[]
   'connection-status': ConnectionStatus
+  'tasks-updated': TaskRow[]
+  'task-assigned': { taskId: string; agentId: string; title: string }
+  'task-completed': { taskId: string; agentId: string; title: string }
+  'task-failed': { taskId: string; agentId: string; title: string }
+  'task-transferred': { taskId: string; fromAgentId: string; toAgentId: string; title: string }
 
   // Phaser -> React
   'agent-clicked': { agentId: string; x: number; y: number; fallbackAgent?: AgentRow }

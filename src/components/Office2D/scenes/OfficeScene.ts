@@ -9,6 +9,7 @@
 import * as Phaser from "phaser";
 import { Player } from "./entities/Player";
 import { resetWanderClock } from "./entities/Worker";
+import type { Worker } from "./entities/Worker";
 import { SPRITE_KEY, SPRITE_PATH, WORKER_SPRITES } from "./config/animations";
 import { EMOTE_SHEET_KEY, EMOTE_SHEET_PATH, EMOTE_FRAME_SIZE } from "./config/emotes";
 import { Pathfinder } from "./utils/Pathfinder";
@@ -37,6 +38,7 @@ import { DoorManager } from "./systems/DoorManager";
 import { initSceneEventBridge } from "./systems/SceneEventBridge";
 import type { EventBridge } from "../EventBridge";
 import type { AgentRow, AgentStatus } from "@/types/supabase";
+import { assignTask, completeTask, failTask } from "./entities/worker/task";
 
 const log = createLogger("OfficeScene");
 
@@ -320,9 +322,121 @@ export class OfficeScene extends Phaser.Scene {
       }),
     );
 
+    // Subscribe to task-assigned: find the worker by agentId, call assignTask()
+    unsubs.push(
+      bridge.on("task-assigned", ({ taskId, agentId, title }) => {
+        const worker = this.findWorkerByAgentId(agentId);
+        if (worker) {
+          assignTask(worker, taskId, title);
+        }
+      }),
+    );
+
+    // Subscribe to task-completed: find the worker by agentId, call completeTask()
+    unsubs.push(
+      bridge.on("task-completed", ({ agentId }) => {
+        const worker = this.findWorkerByAgentId(agentId);
+        if (worker) {
+          completeTask(worker);
+        }
+      }),
+    );
+
+    // Subscribe to task-failed: find the worker by agentId, call failTask()
+    unsubs.push(
+      bridge.on("task-failed", ({ agentId }) => {
+        const worker = this.findWorkerByAgentId(agentId);
+        if (worker) {
+          failTask(worker);
+        }
+      }),
+    );
+
+    // Subscribe to task-transferred: play transfer animation between source and target sprites
+    unsubs.push(
+      bridge.on("task-transferred", ({ fromAgentId, toAgentId, title }) => {
+        const fromWorker = this.findWorkerByAgentId(fromAgentId);
+        const toWorker = this.findWorkerByAgentId(toAgentId);
+        if (fromWorker && toWorker) {
+          this.playTransferAnimation(fromWorker.sprite, toWorker.sprite, title);
+        }
+      }),
+    );
+
     return () => {
       for (const unsub of unsubs) unsub();
     };
+  }
+
+  // -- Helper: find worker by agentId --
+
+  private findWorkerByAgentId(agentId: string): Worker | null {
+    return this.workerManager.workers.find((w) => w.agentId === agentId) ?? null;
+  }
+
+  // -- Transfer animation --
+
+  private playTransferAnimation(
+    fromSprite: Phaser.Physics.Arcade.Sprite,
+    toSprite: Phaser.Physics.Arcade.Sprite,
+    _title: string,
+  ) {
+    const graphics = this.add.graphics();
+    graphics.setDepth(15);
+
+    const startX = fromSprite.x;
+    const startY = fromSprite.y - 8;
+    const endX = toSprite.x;
+    const endY = toSprite.y - 8;
+
+    // Animate a particle (small circle) traveling along the line
+    const particle = this.add.circle(startX, startY, 4, 0x3b82f6);
+    particle.setDepth(16);
+
+    // Draw a faint trail line
+    const lineAlpha = { value: 0.6 };
+    const drawLine = () => {
+      graphics.clear();
+      graphics.lineStyle(2, 0x3b82f6, lineAlpha.value);
+      graphics.beginPath();
+      graphics.moveTo(startX, startY);
+      graphics.lineTo(endX, endY);
+      graphics.strokePath();
+    };
+    drawLine();
+
+    // Tween the particle from source to target over 600ms
+    this.tweens.add({
+      targets: particle,
+      x: endX,
+      y: endY,
+      duration: 600,
+      ease: "Cubic.easeInOut",
+      onComplete: () => {
+        // Brief flash on arrival
+        const flash = this.add.circle(endX, endY, 12, 0x3b82f6, 0.5);
+        flash.setDepth(16);
+        this.tweens.add({
+          targets: flash,
+          alpha: 0,
+          scaleX: 2,
+          scaleY: 2,
+          duration: 300,
+          onComplete: () => flash.destroy(),
+        });
+        particle.destroy();
+      },
+    });
+
+    // Fade out the trail line after the particle arrives
+    this.tweens.add({
+      targets: lineAlpha,
+      value: 0,
+      duration: 900,
+      delay: 300,
+      onUpdate: () => drawLine(),
+      onComplete: () => graphics.destroy(),
+    });
   }
 
   // -- Boss seat --
