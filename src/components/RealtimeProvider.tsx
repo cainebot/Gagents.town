@@ -4,7 +4,8 @@ import { createContext, useContext, useEffect, useRef, useState, type ReactNode 
 import { createBrowserClient } from '@/lib/supabase'
 import { useRealtimeNodes } from '@/hooks/useRealtimeNodes'
 import { useRealtimeAgents } from '@/hooks/useRealtimeAgents'
-import type { NodeRow, AgentRow } from '@/types/supabase'
+import { useRealtimeTasks } from '@/hooks/useRealtimeTasks'
+import type { NodeRow, AgentRow, TaskRow } from '@/types/supabase'
 
 export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected'
 
@@ -12,8 +13,10 @@ export interface RealtimeStatusContext {
   connectionStatus: ConnectionStatus
   nodes: NodeRow[]
   agents: AgentRow[]
+  tasks: TaskRow[]
   nodesLoading: boolean
   agentsLoading: boolean
+  tasksLoading: boolean
 }
 
 const RealtimeContext = createContext<RealtimeStatusContext | null>(null)
@@ -38,6 +41,12 @@ export function RealtimeProvider({ children }: RealtimeProviderProps) {
     resync: resyncAgents,
   } = useRealtimeAgents()
 
+  const {
+    tasks,
+    loading: tasksLoading,
+    resync: resyncTasks,
+  } = useRealtimeTasks()
+
   const supabase = createBrowserClient()
 
   useEffect(() => {
@@ -53,6 +62,7 @@ export function RealtimeProvider({ children }: RealtimeProviderProps) {
             wasDisconnected.current = false
             resyncNodes()
             resyncAgents()
+            resyncTasks()
           }
         } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
           setConnectionStatus('disconnected')
@@ -63,7 +73,7 @@ export function RealtimeProvider({ children }: RealtimeProviderProps) {
     return () => {
       supabase.removeChannel(statusChannel)
     }
-  }, [supabase, resyncNodes, resyncAgents])
+  }, [supabase, resyncNodes, resyncAgents, resyncTasks])
 
   return (
     <RealtimeContext.Provider
@@ -71,8 +81,10 @@ export function RealtimeProvider({ children }: RealtimeProviderProps) {
         connectionStatus,
         nodes,
         agents,
+        tasks,
         nodesLoading,
         agentsLoading,
+        tasksLoading,
       }}
     >
       {children}
