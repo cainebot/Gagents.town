@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRealtimeStatus } from '@/components/RealtimeProvider'
-import type { TaskRow, TaskStatus, AgentRow } from '@/types/supabase'
+import type { TaskRow, TaskStatus, AgentRow, NodeRow } from '@/types/supabase'
 
 // ── Constants ───────────────────────────────────────────────────────────────
 
@@ -296,10 +296,11 @@ function KanbanColumn({ label, color, tasks, agents }: KanbanColumnProps) {
 
 interface TaskCreationFormProps {
   agents: AgentRow[]
+  nodes: NodeRow[]
   onCreated: () => void
 }
 
-function TaskCreationForm({ agents, onCreated }: TaskCreationFormProps) {
+function TaskCreationForm({ agents, nodes, onCreated }: TaskCreationFormProps) {
   const [title, setTitle] = useState('')
   const [type, setType] = useState<string>('general')
   const [targetAgentId, setTargetAgentId] = useState('')
@@ -307,6 +308,11 @@ function TaskCreationForm({ agents, onCreated }: TaskCreationFormProps) {
   const [maxRetries, setMaxRetries] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Check if the selected target agent's node is offline
+  const selectedAgent = targetAgentId ? agents.find((a) => a.agent_id === targetAgentId) : null
+  const selectedAgentNode = selectedAgent ? nodes.find((n) => n.node_id === selectedAgent.node_id) : null
+  const isTargetNodeOffline = selectedAgentNode?.status === 'offline'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -442,6 +448,27 @@ function TaskCreationForm({ agents, onCreated }: TaskCreationFormProps) {
             </select>
           </div>
 
+          {/* Offline node warning */}
+          {isTargetNodeOffline && (
+            <div
+              style={{
+                gridColumn: '1 / -1',
+                background: 'rgba(255, 214, 10, 0.10)',
+                border: '1px solid #FFD60A',
+                borderRadius: '6px',
+                padding: '8px 12px',
+                fontSize: '12px',
+                color: '#FFD60A',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              <span style={{ fontSize: '14px' }}>&#9888;</span>
+              <span>This agent&apos;s node is offline. Task will be queued.</span>
+            </div>
+          )}
+
           {/* Priority */}
           <div>
             <label style={labelStyle}>Priority</label>
@@ -514,7 +541,7 @@ function TaskCreationForm({ agents, onCreated }: TaskCreationFormProps) {
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function TasksPage() {
-  const { tasks, agents, tasksLoading } = useRealtimeStatus()
+  const { tasks, agents, nodes, tasksLoading } = useRealtimeStatus()
   const [createdCount, setCreatedCount] = useState(0)
 
   // Group tasks by status, sorted by priority DESC then created_at DESC
@@ -563,6 +590,7 @@ export default function TasksPage() {
       {/* Task creation form */}
       <TaskCreationForm
         agents={agents}
+        nodes={nodes}
         onCreated={() => setCreatedCount((n) => n + 1)}
         key={createdCount}
       />

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { AgentRow, AgentStatus, TaskRow, TaskStatus } from '@/types/supabase'
+import type { AgentRow, AgentStatus, NodeRow, TaskRow, TaskStatus } from '@/types/supabase'
 
 // ---------- Props ----------
 
@@ -10,6 +10,7 @@ export interface AgentPanelProps {
   tasks: TaskRow[]
   position: { x: number; y: number }
   onClose: () => void
+  nodes?: NodeRow[]
 }
 
 // ---------- Status color map ----------
@@ -290,7 +291,7 @@ const styles = {
 
 // ---------- Component ----------
 
-export default function AgentPanel({ agent, tasks, position, onClose }: AgentPanelProps) {
+export default function AgentPanel({ agent, tasks, position, onClose, nodes }: AgentPanelProps) {
   const [refreshKey, setRefreshKey] = useState(0)
   const [showAssignForm, setShowAssignForm] = useState(false)
   const [assignTitle, setAssignTitle] = useState('')
@@ -342,6 +343,8 @@ export default function AgentPanel({ agent, tasks, position, onClose }: AgentPan
   )
 
   const statusColor = STATUS_COLORS[agent.status] || '#6b7280'
+  const agentNode = nodes?.find((n) => n.node_id === agent.node_id)
+  const isNodeOffline = agentNode?.status === 'offline'
 
   return (
     // Transparent overlay to catch clicks outside panel
@@ -420,6 +423,25 @@ export default function AgentPanel({ agent, tasks, position, onClose }: AgentPan
                 <span style={styles.taskTime}>{relativeTime(task.updated_at)}</span>
               </div>
             ))
+          )}
+          {showAssignForm && isNodeOffline && (
+            <div
+              style={{
+                background: 'rgba(255, 214, 10, 0.10)',
+                border: '1px solid #FFD60A',
+                borderRadius: '6px',
+                padding: '8px 12px',
+                fontSize: '12px',
+                color: '#92400e',
+                marginTop: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              <span style={{ fontSize: '14px' }}>&#9888;</span>
+              <span>This agent&apos;s node is offline. Task will be queued.</span>
+            </div>
           )}
           {showAssignForm ? (
             <form style={styles.assignForm} onSubmit={handleAssignTask}>

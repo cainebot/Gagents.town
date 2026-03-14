@@ -125,7 +125,7 @@ function ToastContainer({ toasts }: { toasts: Toast[] }) {
 // ---------- Office content (inside RealtimeProvider) ----------
 
 function OfficeContent() {
-  const { agents, tasks } = useRealtimeStatus()
+  const { agents, tasks, nodes } = useRealtimeStatus()
   const [selectedAgent, setSelectedAgent] = useState<AgentRow | null>(null)
   const [panelPosition, setPanelPosition] = useState<{ x: number; y: number } | null>(null)
   const [toasts, setToasts] = useState<Toast[]>([])
@@ -259,6 +259,7 @@ function OfficeContent() {
           tasks={agentTasks}
           position={panelPosition}
           onClose={closePanel}
+          nodes={nodes}
         />
       )}
       <ToastContainer toasts={toasts} />
