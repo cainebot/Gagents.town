@@ -8,8 +8,12 @@
  */
 
 import type { SeatDef } from "./utils/MapHelpers";
+import type { AgentStatus } from "@/types/supabase";
 
-// TODO: Replace SeatState with our AgentRow-based equivalent in Plan 05
+/**
+ * SeatState bridges Supabase AgentRow data into the Phaser Worker system.
+ * Each agent is assigned a seat; status maps from AgentStatus (6 states).
+ */
 export interface SeatState {
   seatId: string;
   label: string;
@@ -19,6 +23,10 @@ export interface SeatState {
   status: "empty" | "returning" | "running" | "done" | "failed";
   taskSnippet?: string;
   runId?: string;
+  /** Original Supabase agent status for tinting/display */
+  agentStatus?: AgentStatus;
+  /** Agent ID from Supabase for EventBridge identification */
+  agentId?: string;
 }
 
 export interface GameEventMap {

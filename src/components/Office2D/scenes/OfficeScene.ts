@@ -20,7 +20,7 @@ import {
   renderTileObjectLayer,
   type AnimatedProp,
 } from "./utils/MapHelpers";
-import { gameEvents } from "./events";
+import { gameEvents, type SeatState } from "./events";
 import { createLogger } from "./logger";
 import {
   BOSS_INTERACT_DISTANCE,
@@ -35,6 +35,8 @@ import { WorkerManager } from "./systems/WorkerManager";
 import { InteractionManager } from "./systems/InteractionManager";
 import { DoorManager } from "./systems/DoorManager";
 import { initSceneEventBridge } from "./systems/SceneEventBridge";
+import type { EventBridge } from "../EventBridge";
+import type { AgentRow, AgentStatus } from "@/types/supabase";
 
 const log = createLogger("OfficeScene");
 
@@ -59,6 +61,8 @@ export class OfficeScene extends Phaser.Scene {
   private interactionManager!: InteractionManager;
   private doorManager!: DoorManager;
   private cleanupEventBridge: (() => void) | null = null;
+  private bridge: EventBridge | null = null;
+  private cleanupBridge: (() => void) | null = null;
 
   constructor() {
     super({ key: "OfficeScene" });
@@ -206,8 +210,100 @@ export class OfficeScene extends Phaser.Scene {
 
     gameEvents.emit("seats-discovered", workerSpawns);
 
+    // -- React <-> Phaser EventBridge (Supabase Realtime agents) --
+    this.bridge = this.game.registry.get("eventBridge") as EventBridge | null;
+    if (this.bridge) {
+      this.cleanupBridge = this.initRealtimeBridge(this.bridge, workerSpawns);
+    }
+
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.cleanup());
     this.events.once(Phaser.Scenes.Events.DESTROY, () => this.cleanup());
+  }
+
+  /**
+   * Bridge Supabase AgentRow[] data into the existing Worker system.
+   * Converts agents to SeatState[], emits seat-configs-updated, applies tints,
+   * and wires click handlers for agent-clicked events.
+   */
+  private initRealtimeBridge(
+    bridge: EventBridge,
+    seatDefs: import("./utils/MapHelpers").SeatDef[],
+  ): () => void {
+    const unsubs: Array<() => void> = [];
+
+    // Map AgentStatus to WorkerManager-compatible SeatState status
+    const mapAgentStatus = (s: AgentStatus): SeatState["status"] => {
+      switch (s) {
+        case "working":
+        case "thinking":
+          return "running";
+        case "error":
+          return "failed";
+        case "offline":
+          return "empty";
+        case "queued":
+          return "returning";
+        case "idle":
+        default:
+          return "done";
+      }
+    };
+
+    // Assign each agent a seat and sprite from the available pool
+    const assignSpriteKey = (index: number): string | undefined => {
+      if (WORKER_SPRITES.length === 0) return undefined;
+      return WORKER_SPRITES[index % WORKER_SPRITES.length].key;
+    };
+
+    unsubs.push(
+      bridge.on("agents-updated", (agents: AgentRow[]) => {
+        const seats: SeatState[] = agents.map((agent, index) => {
+          const seatId = seatDefs[index % seatDefs.length]?.seatId ?? `seat-${index}`;
+          return {
+            seatId,
+            label: agent.name || agent.emoji || `Agent ${index + 1}`,
+            assigned: agent.status !== "offline",
+            spriteKey: assignSpriteKey(index),
+            status: mapAgentStatus(agent.status),
+            agentStatus: agent.status,
+            agentId: agent.agent_id,
+          };
+        });
+
+        gameEvents.emit("seat-configs-updated", seats);
+
+        // Apply AgentStatus tinting + store agentId on workers after sync
+        this.time.delayedCall(50, () => {
+          for (const seat of seats) {
+            if (!seat.agentId) continue;
+            const worker = this.workerManager.findBySeatId(seat.seatId);
+            if (worker) {
+              worker.agentId = seat.agentId;
+              if (seat.agentStatus) {
+                worker.applyAgentStatus(seat.agentStatus);
+              }
+              // Make sprite interactive for click-to-select
+              if (!worker.sprite.input) {
+                worker.sprite.setInteractive({ useHandCursor: true });
+                worker.sprite.on("pointerdown", (_pointer: Phaser.Input.Pointer) => {
+                  if (worker.agentId && this.bridge) {
+                    this.bridge.emit("agent-clicked", {
+                      agentId: worker.agentId,
+                      x: worker.sprite.x,
+                      y: worker.sprite.y,
+                    });
+                  }
+                });
+              }
+            }
+          }
+        });
+      }),
+    );
+
+    return () => {
+      for (const unsub of unsubs) unsub();
+    };
   }
 
   // -- Boss seat --
@@ -239,6 +335,10 @@ export class OfficeScene extends Phaser.Scene {
     this.cleanupEventBridge?.();
     this.cleanupEventBridge = null;
 
+    this.cleanupBridge?.();
+    this.cleanupBridge = null;
+    this.bridge = null;
+
     this.workerManager?.destroyAll();
     this.interactionManager?.destroy();
   }
@@ -267,6 +367,11 @@ export class OfficeScene extends Phaser.Scene {
 
     // Worker proximity + E-key interaction
     if (this.interactionManager.updateProximity(this.eKey)) {
+      // Emit agent-approached via EventBridge when E pressed near a worker
+      const nearest = this.interactionManager.nearestWorker;
+      if (nearest?.agentId && this.bridge) {
+        this.bridge.emit("agent-approached", { agentId: nearest.agentId });
+      }
       return;
     }
 

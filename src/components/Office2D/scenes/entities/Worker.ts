@@ -55,6 +55,9 @@ export class Worker implements WorkerCtx {
   readonly scene: Phaser.Scene;
   readonly initialFacing: Direction;
 
+  /** Supabase agent_id — used by EventBridge for click/approach events */
+  agentId: string | null = null;
+
   facing: Direction;
   moveTarget: { x: number; y: number } | null = null;
   currentPath: PathPoint[] = [];
@@ -292,6 +295,47 @@ export class Worker implements WorkerCtx {
     const bubbleX = this.sprite.x;
     const bubbleY = this.sprite.y - FRAME_HEIGHT * BUBBLE_Y_OFFSET;
     this.bubble.show(message, bubbleX, bubbleY, ttl);
+  }
+
+  // -- Agent status visuals (Supabase AgentStatus -> tint + dot) --
+
+  applyAgentStatus(agentStatus: string) {
+    // Status dot colors (6 Supabase states)
+    const dotColors: Record<string, number> = {
+      idle: 0x888888,
+      working: 0xfacc15,
+      error: 0xef4444,
+      offline: 0x666666,
+      thinking: 0x3b82f6,
+      queued: 0xeab308,
+    };
+    this.statusDot.setFillStyle(dotColors[agentStatus] ?? 0x888888);
+
+    // Sprite tinting
+    switch (agentStatus) {
+      case 'error':
+        this.sprite.setTint(0xff4444);
+        this.sprite.setAlpha(1);
+        break;
+      case 'offline':
+        this.sprite.clearTint();
+        this.sprite.setAlpha(0.4);
+        break;
+      case 'thinking':
+        this.sprite.setTint(0x6699ff);
+        this.sprite.setAlpha(1);
+        break;
+      case 'queued':
+        this.sprite.setTint(0xffdd44);
+        this.sprite.setAlpha(1);
+        break;
+      case 'working':
+      case 'idle':
+      default:
+        this.sprite.clearTint();
+        this.sprite.setAlpha(1);
+        break;
+    }
   }
 
   // -- Public helpers --
