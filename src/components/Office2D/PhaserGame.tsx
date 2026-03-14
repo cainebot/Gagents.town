@@ -53,7 +53,8 @@ export default function PhaserGame() {
         pixelArt: true,
         antialias: false,
         roundPixels: true,
-        scene: [OfficeScene],
+        // Don't auto-start scenes — we need to set registry BEFORE scene.create()
+        scene: [],
         scale: {
           mode: Phaser.Scale.RESIZE,
           autoCenter: Phaser.Scale.NO_CENTER,
@@ -68,8 +69,16 @@ export default function PhaserGame() {
 
       gameRef.current = game
 
-      // Pass EventBridge to the scene via registry (available in scene.init/create)
+      // Expose for debugging (dev only)
+      if (typeof window !== 'undefined') {
+        ;(window as unknown as Record<string, unknown>).__PHASER_GAME__ = game
+      }
+
+      // Pass EventBridge to the scene via registry BEFORE scene starts
       game.registry.set('eventBridge', eventBridge)
+
+      // Now add and start the scene (bridge is available in create())
+      game.scene.add('OfficeScene', OfficeScene, true)
 
       // Responsive resize
       resizeObserver = new ResizeObserver((entries) => {

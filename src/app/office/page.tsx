@@ -81,16 +81,16 @@ function OfficeContent() {
 
   // Subscribe to EventBridge events from Phaser
   useEffect(() => {
-    const unsubClick = eventBridge.on('agent-clicked', ({ agentId, x, y }) => {
-      const agent = agents.find((a) => a.agent_id === agentId)
+    const unsubClick = eventBridge.on('agent-clicked', ({ agentId, x, y, fallbackAgent }) => {
+      const agent = agents.find((a) => a.agent_id === agentId) ?? fallbackAgent
       if (agent) {
         setSelectedAgent(agent)
         setPanelPosition({ x, y })
       }
     })
 
-    const unsubApproach = eventBridge.on('agent-approached', ({ agentId }) => {
-      const agent = agents.find((a) => a.agent_id === agentId)
+    const unsubApproach = eventBridge.on('agent-approached', ({ agentId, fallbackAgent }) => {
+      const agent = agents.find((a) => a.agent_id === agentId) ?? fallbackAgent
       if (agent) {
         setSelectedAgent(agent)
         // Center panel on screen for approach interaction

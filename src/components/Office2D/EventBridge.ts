@@ -21,8 +21,8 @@ export interface EventBridgeMap {
   'connection-status': ConnectionStatus
 
   // Phaser -> React
-  'agent-clicked': { agentId: string; x: number; y: number }
-  'agent-approached': { agentId: string }
+  'agent-clicked': { agentId: string; x: number; y: number; fallbackAgent?: AgentRow }
+  'agent-approached': { agentId: string; fallbackAgent?: AgentRow }
 }
 
 // ---------- Listener type ----------

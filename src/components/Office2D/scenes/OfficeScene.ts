@@ -63,6 +63,7 @@ export class OfficeScene extends Phaser.Scene {
   private cleanupEventBridge: (() => void) | null = null;
   private bridge: EventBridge | null = null;
   private cleanupBridge: (() => void) | null = null;
+  private agentMap = new Map<string, AgentRow>();
 
   constructor() {
     super({ key: "OfficeScene" });
@@ -198,6 +199,12 @@ export class OfficeScene extends Phaser.Scene {
 
     resetWanderClock();
 
+    // Register E key for interactions (always needed, not just boss seat)
+    const kb = this.input.keyboard;
+    if (kb) {
+      this.eKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.E, false);
+    }
+
     // -- React <-> Phaser EventBridge (Supabase Realtime agents) --
     this.bridge = this.game.registry.get("eventBridge") as EventBridge | null;
 
@@ -262,6 +269,12 @@ export class OfficeScene extends Phaser.Scene {
 
     unsubs.push(
       bridge.on("agents-updated", (agents: AgentRow[]) => {
+        // Cache agents for fallback data in click/approach events
+        this.agentMap.clear();
+        for (const agent of agents) {
+          this.agentMap.set(agent.agent_id, agent);
+        }
+
         const seats: SeatState[] = agents.map((agent, index) => {
           const seatId = seatDefs[index % seatDefs.length]?.seatId ?? `seat-${index}`;
           return {
@@ -296,6 +309,7 @@ export class OfficeScene extends Phaser.Scene {
                       agentId: worker.agentId,
                       x: worker.sprite.x,
                       y: worker.sprite.y,
+                      fallbackAgent: this.agentMap.get(worker.agentId),
                     });
                   }
                 });
@@ -328,10 +342,7 @@ export class OfficeScene extends Phaser.Scene {
       .setDepth(20)
       .setVisible(false);
     this.promptText.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
-
-    const kb = this.input.keyboard;
-    if (!kb) return;
-    this.eKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.E, false);
+    // eKey is already registered in create() — no need to re-register here
   }
 
   // -- Cleanup --
@@ -390,7 +401,10 @@ export class OfficeScene extends Phaser.Scene {
       }
 
       if (nearest?.agentId && Phaser.Input.Keyboard.JustDown(this.eKey)) {
-        this.bridge.emit("agent-approached", { agentId: nearest.agentId });
+        this.bridge.emit("agent-approached", {
+          agentId: nearest.agentId,
+          fallbackAgent: this.agentMap.get(nearest.agentId),
+        });
         // Don't return — player keeps moving
       }
     } else {
