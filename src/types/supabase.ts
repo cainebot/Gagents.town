@@ -21,6 +21,7 @@ export interface NodeRow {
   agent_count: number;
   ram_usage_mb: number;
   ram_total_mb: number;
+  cpu_percent: number;
   last_heartbeat: string; // ISO timestamp
   created_at: string;
   updated_at: string;
