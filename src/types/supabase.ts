@@ -10,6 +10,8 @@ export type AgentStatus = 'idle' | 'working' | 'error' | 'offline' | 'thinking' 
 
 export type TaskStatus = 'pending' | 'claimed' | 'in_progress' | 'completed' | 'failed';
 
+export type TaskType = 'general' | 'code-review' | 'deploy' | 'research' | 'build' | 'test';
+
 export interface NodeRow {
   node_id: string;
   tailscale_ip: string;
@@ -43,11 +45,14 @@ export interface TaskRow {
   source_agent_id: string | null;
   target_agent_id: string | null;
   title: string;
+  type: string;
   status: TaskStatus;
   priority: number;
   payload: Record<string, unknown>;
   result: Record<string, unknown> | null;
   error_message: string | null;
+  max_retries: number;
+  retry_count: number;
   created_at: string;
   claimed_at: string | null;
   started_at: string | null;
