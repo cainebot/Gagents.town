@@ -16,7 +16,7 @@ import { eventBridge } from './EventBridge'
 export default function PhaserGame() {
   const containerRef = useRef<HTMLDivElement>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
-  const { agents, nodes, connectionStatus } = useRealtimeStatus()
+  const { agents, nodes, departments, connectionStatus } = useRealtimeStatus()
 
   // Push Supabase Realtime data into EventBridge whenever it changes
   useEffect(() => {
@@ -26,6 +26,10 @@ export default function PhaserGame() {
   useEffect(() => {
     eventBridge.emit('nodes-updated', nodes)
   }, [nodes])
+
+  useEffect(() => {
+    eventBridge.emit('departments-updated', departments)
+  }, [departments])
 
   useEffect(() => {
     eventBridge.emit('connection-status', connectionStatus)

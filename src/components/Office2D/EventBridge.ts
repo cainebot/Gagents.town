@@ -15,7 +15,7 @@
  *   'agent-approached': { agentId }       (Player walked near agent + pressed E)
  */
 
-import type { AgentRow, NodeRow, TaskRow } from '@/types/supabase'
+import type { AgentRow, NodeRow, TaskRow, DepartmentRow } from '@/types/supabase'
 import type { ConnectionStatus } from '@/components/RealtimeProvider'
 
 // ---------- Event map ----------
@@ -26,6 +26,7 @@ export interface EventBridgeMap {
   'nodes-updated': NodeRow[]
   'connection-status': ConnectionStatus
   'tasks-updated': TaskRow[]
+  'departments-updated': DepartmentRow[]
   'task-assigned': { taskId: string; agentId: string; title: string }
   'task-completed': { taskId: string; agentId: string; title: string }
   'task-failed': { taskId: string; agentId: string; title: string }
