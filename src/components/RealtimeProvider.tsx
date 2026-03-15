@@ -5,7 +5,8 @@ import { createBrowserClient } from '@/lib/supabase'
 import { useRealtimeNodes } from '@/hooks/useRealtimeNodes'
 import { useRealtimeAgents } from '@/hooks/useRealtimeAgents'
 import { useRealtimeTasks } from '@/hooks/useRealtimeTasks'
-import type { NodeRow, AgentRow, TaskRow } from '@/types/supabase'
+import { useRealtimeDepartments } from '@/hooks/useRealtimeDepartments'
+import type { NodeRow, AgentRow, TaskRow, DepartmentRow } from '@/types/supabase'
 
 export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected'
 
@@ -14,9 +15,12 @@ export interface RealtimeStatusContext {
   nodes: NodeRow[]
   agents: AgentRow[]
   tasks: TaskRow[]
+  departments: DepartmentRow[]
   nodesLoading: boolean
   agentsLoading: boolean
   tasksLoading: boolean
+  departmentsLoading: boolean
+  resyncDepartments: () => Promise<void>
 }
 
 const RealtimeContext = createContext<RealtimeStatusContext | null>(null)
@@ -47,6 +51,12 @@ export function RealtimeProvider({ children }: RealtimeProviderProps) {
     resync: resyncTasks,
   } = useRealtimeTasks()
 
+  const {
+    departments,
+    loading: departmentsLoading,
+    resync: resyncDepartments,
+  } = useRealtimeDepartments()
+
   const supabase = createBrowserClient()
 
   useEffect(() => {
@@ -63,6 +73,7 @@ export function RealtimeProvider({ children }: RealtimeProviderProps) {
             resyncNodes()
             resyncAgents()
             resyncTasks()
+            resyncDepartments()
           }
         } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
           setConnectionStatus('disconnected')
@@ -73,7 +84,7 @@ export function RealtimeProvider({ children }: RealtimeProviderProps) {
     return () => {
       supabase.removeChannel(statusChannel)
     }
-  }, [supabase, resyncNodes, resyncAgents, resyncTasks])
+  }, [supabase, resyncNodes, resyncAgents, resyncTasks, resyncDepartments])
 
   return (
     <RealtimeContext.Provider
@@ -82,9 +93,12 @@ export function RealtimeProvider({ children }: RealtimeProviderProps) {
         nodes,
         agents,
         tasks,
+        departments,
         nodesLoading,
         agentsLoading,
         tasksLoading,
+        departmentsLoading,
+        resyncDepartments,
       }}
     >
       {children}
