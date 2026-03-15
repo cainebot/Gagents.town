@@ -193,11 +193,6 @@ function OfficeContent() {
     // If agent not found, keep panel open with stale data (status shows offline by default)
   }, [agents]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Push tasks to Phaser via EventBridge
-  useEffect(() => {
-    eventBridge.emit('tasks-updated', tasks)
-  }, [tasks])
-
   // Diff tasks for toast notifications and EventBridge task events
   useEffect(() => {
     const prev = prevTasksRef.current

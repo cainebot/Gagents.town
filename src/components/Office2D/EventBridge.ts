@@ -4,7 +4,6 @@
  * React -> Phaser:
  *   'agents-updated': AgentRow[]          (Supabase Realtime data pushed to Phaser)
  *   'connection-status': ConnectionStatus (Realtime connection state)
- *   'tasks-updated': TaskRow[]            (Full tasks array pushed to Phaser)
  *   'task-assigned': { taskId, agentId, title } (Trigger worker emote)
  *   'task-completed': { taskId, agentId, title } (Trigger completion visual)
  *   'task-failed': { taskId, agentId, title }    (Trigger failure visual)
@@ -15,7 +14,7 @@
  *   'agent-approached': { agentId }       (Player walked near agent + pressed E)
  */
 
-import type { AgentRow, NodeRow, TaskRow, DepartmentRow } from '@/types/supabase'
+import type { AgentRow, NodeRow, DepartmentRow } from '@/types/supabase'
 import type { ConnectionStatus } from '@/components/RealtimeProvider'
 
 // ---------- Event map ----------
@@ -25,7 +24,6 @@ export interface EventBridgeMap {
   'agents-updated': AgentRow[]
   'nodes-updated': NodeRow[]
   'connection-status': ConnectionStatus
-  'tasks-updated': TaskRow[]
   'departments-updated': DepartmentRow[]
   'task-assigned': { taskId: string; agentId: string; title: string }
   'task-completed': { taskId: string; agentId: string; title: string }
