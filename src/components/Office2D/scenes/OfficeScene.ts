@@ -35,9 +35,10 @@ import { CameraController } from "./systems/CameraController";
 import { WorkerManager } from "./systems/WorkerManager";
 import { InteractionManager } from "./systems/InteractionManager";
 import { DoorManager } from "./systems/DoorManager";
+import { ZoneManager } from "./systems/ZoneManager";
 import { initSceneEventBridge } from "./systems/SceneEventBridge";
 import type { EventBridge } from "../EventBridge";
-import type { AgentRow, AgentStatus, NodeRow } from "@/types/supabase";
+import type { AgentRow, AgentStatus, NodeRow, DepartmentRow } from "@/types/supabase";
 
 const log = createLogger("OfficeScene");
 
@@ -61,11 +62,17 @@ export class OfficeScene extends Phaser.Scene {
   private workerManager!: WorkerManager;
   private interactionManager!: InteractionManager;
   private doorManager!: DoorManager;
+  private zoneManager!: ZoneManager;
   private cleanupEventBridge: (() => void) | null = null;
   private bridge: EventBridge | null = null;
   private cleanupBridge: (() => void) | null = null;
   private agentMap = new Map<string, AgentRow>();
   private nodeMap = new Map<string, NodeRow>();
+  private latestDepartments: DepartmentRow[] = [];
+  private latestAgents: AgentRow[] = [];
+  private mapWidth = 0;
+  private mapHeight = 0;
+  private fallbackSeatDefs: import("./utils/MapHelpers").SeatDef[] = [];
 
   constructor() {
     super({ key: "OfficeScene" });
@@ -175,6 +182,9 @@ export class OfficeScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.player.sprite.setCollideWorldBounds(true);
 
+    this.mapWidth = map.widthInPixels;
+    this.mapHeight = map.heightInPixels;
+
     this.input.keyboard?.disableGlobalCapture();
 
     // -- Systems --
@@ -187,6 +197,7 @@ export class OfficeScene extends Phaser.Scene {
     this.cameraController.init();
 
     this.workerManager = new WorkerManager(this, workerSpawns, pois, pathfinder);
+    this.zoneManager = new ZoneManager(this);
 
     this.interactionManager = new InteractionManager(
       this,
@@ -243,6 +254,9 @@ export class OfficeScene extends Phaser.Scene {
     bridge: EventBridge,
     seatDefs: import("./utils/MapHelpers").SeatDef[],
   ): () => void {
+    // Store as fallback for when no zones are available (agents load before departments)
+    this.fallbackSeatDefs = seatDefs;
+
     const unsubs: Array<() => void> = [];
 
     // Subscribe to nodes-updated: cache node statuses for node-aware agent graying
@@ -255,85 +269,28 @@ export class OfficeScene extends Phaser.Scene {
       }),
     );
 
-    // Map AgentStatus to WorkerManager-compatible SeatState status
-    const mapAgentStatus = (s: AgentStatus): SeatState["status"] => {
-      switch (s) {
-        case "working":
-        case "thinking":
-          return "running";
-        case "error":
-          return "failed";
-        case "offline":
-          return "empty";
-        case "queued":
-          return "returning";
-        case "idle":
-        default:
-          return "done";
-      }
-    };
-
-    // Assign each agent a seat and sprite from the available pool
-    const assignSpriteKey = (index: number): string | undefined => {
-      if (WORKER_SPRITES.length === 0) return undefined;
-      return WORKER_SPRITES[index % WORKER_SPRITES.length].key;
-    };
+    // Subscribe to departments-updated: update zone rectangles, then rebuild agent placements
+    unsubs.push(
+      bridge.on("departments-updated", (departments: DepartmentRow[]) => {
+        this.latestDepartments = departments;
+        this.zoneManager.updateZones(departments, this.mapWidth, this.mapHeight);
+        // Rebuild agent placements if agents are already cached
+        if (this.latestAgents.length > 0) {
+          this.rebuildAgentPlacements(bridge);
+        }
+      }),
+    );
 
     unsubs.push(
       bridge.on("agents-updated", (agents: AgentRow[]) => {
-        // Cache agents for fallback data in click/approach events
+        // Cache agents for fallback data in click/approach events and zone placement
         this.agentMap.clear();
         for (const agent of agents) {
           this.agentMap.set(agent.agent_id, agent);
         }
+        this.latestAgents = agents;
 
-        const seats: SeatState[] = agents.map((agent, index) => {
-          const seatId = seatDefs[index % seatDefs.length]?.seatId ?? `seat-${index}`;
-          return {
-            seatId,
-            label: agent.name || agent.emoji || `Agent ${index + 1}`,
-            assigned: agent.status !== "offline",
-            spriteKey: assignSpriteKey(index),
-            status: mapAgentStatus(agent.status),
-            agentStatus: agent.status,
-            agentId: agent.agent_id,
-          };
-        });
-
-        gameEvents.emit("seat-configs-updated", seats);
-
-        // Apply AgentStatus tinting + store agentId on workers after sync
-        this.time.delayedCall(50, () => {
-          for (const seat of seats) {
-            if (!seat.agentId) continue;
-            const worker = this.workerManager.findBySeatId(seat.seatId);
-            if (worker) {
-              worker.agentId = seat.agentId;
-              // Node-aware graying: if agent's node is offline, override visual to 'offline'
-              // regardless of the agent's own status field (handles edge case where heartbeat
-              // stops before agent-state-bridge marks agents offline)
-              const agentData = this.agentMap.get(seat.agentId);
-              const agentNode = agentData ? this.nodeMap.get(agentData.node_id) : null;
-              const effectiveStatus: AgentStatus =
-                agentNode?.status === "offline" ? "offline" : (seat.agentStatus ?? "idle");
-              worker.applyAgentStatus(effectiveStatus);
-              // Make sprite interactive for click-to-select
-              if (!worker.sprite.input) {
-                worker.sprite.setInteractive({ useHandCursor: true });
-                worker.sprite.on("pointerdown", (_pointer: Phaser.Input.Pointer) => {
-                  if (worker.agentId && this.bridge) {
-                    this.bridge.emit("agent-clicked", {
-                      agentId: worker.agentId,
-                      x: worker.sprite.x,
-                      y: worker.sprite.y,
-                      fallbackAgent: this.agentMap.get(worker.agentId),
-                    });
-                  }
-                });
-              }
-            }
-          }
-        });
+        this.rebuildAgentPlacements(bridge);
       }),
     );
 
@@ -379,6 +336,139 @@ export class OfficeScene extends Phaser.Scene {
     return () => {
       for (const unsub of unsubs) unsub();
     };
+  }
+
+  // -- Zone-aware agent placement --
+
+  /**
+   * Rebuilds synthetic seatDefs from zone positions and re-emits seat-configs-updated.
+   * Called from both agents-updated and departments-updated handlers to ensure
+   * eventual consistency regardless of subscription ordering (Pitfall 2).
+   *
+   * When zones are not yet available (latestDepartments empty), falls back to
+   * tilemap spawn seatDefs so the scene still works before departments load.
+   */
+  private rebuildAgentPlacements(bridge: EventBridge): void {
+    const agents = this.latestAgents;
+    const fallbackSeatDefs = this.fallbackSeatDefs;
+
+    const mapAgentStatus = (s: AgentStatus): SeatState["status"] => {
+      switch (s) {
+        case "working":
+        case "thinking":
+          return "running";
+        case "error":
+          return "failed";
+        case "offline":
+          return "empty";
+        case "queued":
+          return "returning";
+        case "idle":
+        default:
+          return "done";
+      }
+    };
+
+    const assignSpriteKey = (index: number): string | undefined => {
+      if (WORKER_SPRITES.length === 0) return undefined;
+      return WORKER_SPRITES[index % WORKER_SPRITES.length].key;
+    };
+
+    let seats: SeatState[];
+
+    if (this.zoneManager.zones.length === 0) {
+      // Zones not yet available — fall back to original tilemap-spawn placement
+      seats = agents.map((agent, index) => {
+        const seatId = fallbackSeatDefs[index % fallbackSeatDefs.length]?.seatId ?? `seat-${index}`;
+        return {
+          seatId,
+          label: agent.name || agent.emoji || `Agent ${index + 1}`,
+          assigned: agent.status !== "offline",
+          spriteKey: assignSpriteKey(index),
+          status: mapAgentStatus(agent.status),
+          agentStatus: agent.status,
+          agentId: agent.agent_id,
+        };
+      });
+    } else {
+      // Zone-aware placement: group agents by department_id, pack into zone grid
+      const agentsByDept = new Map<string, AgentRow[]>();
+      for (const agent of agents) {
+        const key = agent.department_id ?? "__unassigned__";
+        if (!agentsByDept.has(key)) agentsByDept.set(key, []);
+        agentsByDept.get(key)!.push(agent);
+      }
+
+      // Build synthetic seatDefs from zone positions
+      const syntheticSeatDefs: import("./utils/MapHelpers").SeatDef[] = [];
+      const seatsOrdered: SeatState[] = [];
+      let spriteIndex = 0;
+
+      for (const [deptId, deptAgents] of agentsByDept) {
+        const zone = this.zoneManager.getZoneForDepartment(deptId);
+        deptAgents.forEach((agent, slotIndex) => {
+          const pos = zone
+            ? this.zoneManager.getPositionInZone(zone, slotIndex, deptAgents.length)
+            : {
+                x: fallbackSeatDefs[spriteIndex % fallbackSeatDefs.length]?.x ?? 200 + spriteIndex * 48,
+                y: fallbackSeatDefs[spriteIndex % fallbackSeatDefs.length]?.y ?? 200,
+              };
+          const seatId = `zone-${deptId}-${slotIndex}`;
+          syntheticSeatDefs.push({
+            seatId,
+            x: pos.x,
+            y: pos.y,
+            facing: "down",
+            index: spriteIndex,
+          });
+          seatsOrdered.push({
+            seatId,
+            label: agent.name || agent.emoji || `Agent ${slotIndex + 1}`,
+            assigned: agent.status !== "offline",
+            spriteKey: assignSpriteKey(spriteIndex),
+            status: mapAgentStatus(agent.status),
+            agentStatus: agent.status,
+            agentId: agent.agent_id,
+          });
+          spriteIndex++;
+        });
+      }
+
+      // Replace seatDefs so WorkerManager.syncWorkers places workers at zone positions
+      this.workerManager.seatDefs = syntheticSeatDefs;
+      seats = seatsOrdered;
+    }
+
+    gameEvents.emit("seat-configs-updated", seats);
+
+    // Apply AgentStatus tinting + store agentId on workers after sync
+    this.time.delayedCall(50, () => {
+      for (const seat of seats) {
+        if (!seat.agentId) continue;
+        const worker = this.workerManager.findBySeatId(seat.seatId);
+        if (worker) {
+          worker.agentId = seat.agentId;
+          const agentData = this.agentMap.get(seat.agentId);
+          const agentNode = agentData ? this.nodeMap.get(agentData.node_id) : null;
+          const effectiveStatus: AgentStatus =
+            agentNode?.status === "offline" ? "offline" : (seat.agentStatus ?? "idle");
+          worker.applyAgentStatus(effectiveStatus);
+          if (!worker.sprite.input) {
+            worker.sprite.setInteractive({ useHandCursor: true });
+            worker.sprite.on("pointerdown", (_pointer: Phaser.Input.Pointer) => {
+              if (worker.agentId && this.bridge) {
+                this.bridge.emit("agent-clicked", {
+                  agentId: worker.agentId,
+                  x: worker.sprite.x,
+                  y: worker.sprite.y,
+                  fallbackAgent: this.agentMap.get(worker.agentId),
+                });
+              }
+            });
+          }
+        }
+      }
+    });
   }
 
   // -- Helper: find worker by agentId --
@@ -483,6 +573,7 @@ export class OfficeScene extends Phaser.Scene {
     this.bridge = null;
 
     this.workerManager?.destroyAll();
+    this.zoneManager?.destroy();
     this.interactionManager?.destroy();
   }
 
