@@ -49,11 +49,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
   const supabase = createServiceRoleClient()
 
-  // Ensure storage bucket exists — createBucket is idempotent
-  await supabase.storage.createBucket('attachments', { public: false })
+  // Ensure storage bucket exists — createBucket is idempotent (ignore "already exists" error)
+  await supabase.storage.createBucket('attachments', { public: false }).catch(() => {})
 
-  // Generate unique storage path
-  const storagePath = `card-attachments/${id}/${Date.now()}-${file.name}`
+  // Sanitize filename for Supabase Storage (replace spaces + special chars)
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+  const storagePath = `card-attachments/${id}/${Date.now()}-${safeName}`
 
   // Upload file to Supabase Storage
   const { error: uploadError } = await supabase.storage

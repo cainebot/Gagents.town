@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import type {
   BoardRow,
   CardRow,
@@ -17,6 +16,7 @@ import { BoardKanban } from '@/components/BoardKanban'
 import { BoardFilterBar } from '@/components/BoardFilterBar'
 import { CardDetailPanel } from '@/components/CardDetailPanel'
 import { ColumnManager } from '@/components/ColumnManager'
+import { ChevronDown } from 'lucide-react'
 
 // Loading skeleton for the Kanban board
 function KanbanSkeleton() {
@@ -70,6 +70,7 @@ function KanbanSkeleton() {
 
 export default function BoardPage() {
   const params = useParams()
+  const router = useRouter()
   const boardId = params.id as string
 
   const { board, cards: initialCards, loading, error, refetch } = useBoardData(boardId)
@@ -96,8 +97,12 @@ export default function BoardPage() {
     Record<string, CardCustomFieldValueRow[]>
   >({})
 
-  // All boards for the tab bar
+  // All boards for the selector dropdown
   const [allBoards, setAllBoards] = useState<BoardRow[]>([])
+  const [showBoardDropdown, setShowBoardDropdown] = useState(false)
+  const [creatingBoard, setCreatingBoard] = useState(false)
+  const [newBoardName, setNewBoardName] = useState('')
+  const newBoardInputRef = useRef<HTMLInputElement>(null)
 
   // Track previous card IDs to detect new cards from realtime
   const prevCardIdsRef = useRef<Set<string>>(new Set())
@@ -128,13 +133,15 @@ export default function BoardPage() {
     }
   }, [board?.workflow_id])
 
-  // Fetch card custom field values when cards change (needed for filter bar filtering)
+  // Fetch card custom field values when card list changes (needed for filter bar filtering)
+  // Use a stable key (sorted card IDs) to avoid re-running when cards array reference changes but content is the same
+  const cardIdsKey = cards.map((c) => c.card_id).sort().join(',')
   useEffect(() => {
-    if (cards.length === 0) {
+    if (!cardIdsKey) {
       setFieldValuesByCard({})
       return
     }
-    const cardIds = cards.map((c) => c.card_id)
+    const cardIds = cardIdsKey.split(',')
     const supabase = createBrowserClient()
     void (async () => {
       try {
@@ -142,14 +149,7 @@ export default function BoardPage() {
           .from('card_custom_field_values')
           .select('card_id, field_id, value')
           .in('card_id', cardIds)
-        // Gracefully handle table-not-found (42P01) or other errors
-        if (
-          error &&
-          (error.code === '42P01' ||
-            (error.message && error.message.includes('card_custom_field_values')))
-        ) {
-          return // Table doesn't exist yet — skip silently
-        }
+        // Gracefully handle any error (table may not exist yet — migration 06 not applied)
         if (error || !data) return
         // Group by card_id
         const grouped: Record<string, CardCustomFieldValueRow[]> = {}
@@ -162,7 +162,8 @@ export default function BoardPage() {
         // non-critical
       }
     })()
-  }, [cards])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardIdsKey])
 
   // Fetch all boards for the tab bar
   useEffect(() => {
@@ -172,12 +173,27 @@ export default function BoardPage() {
       .catch(() => {}) // non-critical
   }, [])
 
-  // Handle realtime card changes — refetch on any change, then mark new cards
-  const handleCardChange = useCallback(async () => {
-    await refetch()
-    // After refetch, detect new cards and animate them
-    // (done via useEffect on initialCards above + the newCardIds state)
-  }, [refetch])
+  // Handle realtime card changes — skip refetch for self-edits on the selected card,
+  // debounce rapid events to avoid "page refreshing like crazy" during typing
+  const realtimeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const handleCardChange = useCallback(
+    async (payload: { eventType: string; new: Record<string, unknown>; old: Record<string, unknown> }) => {
+      // Skip UPDATE events for the currently-selected card (user is editing it in the detail panel)
+      if (
+        payload.eventType === 'UPDATE' &&
+        selectedCardId &&
+        (payload.new?.card_id === selectedCardId || payload.old?.card_id === selectedCardId)
+      ) {
+        return
+      }
+      // Debounce rapid events (e.g. multiple field saves in quick succession)
+      if (realtimeTimerRef.current) clearTimeout(realtimeTimerRef.current)
+      realtimeTimerRef.current = setTimeout(async () => {
+        await refetch()
+      }, 1000)
+    },
+    [refetch, selectedCardId]
+  )
 
   // After refetch completes, find and animate new cards
   useEffect(() => {
@@ -286,57 +302,215 @@ export default function BoardPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* Multi-board tab bar */}
+      {/* Board selector dropdown */}
       {allBoards.length > 0 && (
-        <div
-          style={{
-            display: 'flex',
-            gap: '4px',
-            marginBottom: '0',
-            overflowX: 'auto',
-            borderBottom: '1px solid var(--border)',
-            paddingBottom: '0',
-          }}
-        >
-          {allBoards.map((b) => {
-            const isActive = b.board_id === boardId
-            return (
-              <Link
-                key={b.board_id}
-                href={`/boards/${b.board_id}`}
-                style={{ textDecoration: 'none' }}
+        <div style={{ position: 'relative', display: 'inline-block', marginTop: '12px', marginBottom: '4px' }}>
+          <button
+            onClick={() => setShowBoardDropdown(!showBoardDropdown)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontFamily: 'var(--font-heading)',
+              fontSize: '15px',
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              background: 'none',
+              border: '1px solid var(--border)',
+              borderRadius: '6px',
+              padding: '6px 12px',
+              cursor: 'pointer',
+              transition: 'border-color 0.15s',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--accent, #6366f1)' }}
+            onMouseLeave={(e) => { if (!showBoardDropdown) e.currentTarget.style.borderColor = 'var(--border)' }}
+          >
+            {board?.name ?? 'Select Board'}
+            <ChevronDown size={14} style={{ color: 'var(--text-muted)', transition: 'transform 0.15s', transform: showBoardDropdown ? 'rotate(180deg)' : 'rotate(0)' }} />
+          </button>
+
+          {/* Dropdown overlay */}
+          {showBoardDropdown && (
+            <>
+              <div
+                style={{ position: 'fixed', inset: 0, zIndex: 99 }}
+                onClick={() => { setShowBoardDropdown(false); setCreatingBoard(false); setNewBoardName('') }}
+              />
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  marginTop: '4px',
+                  minWidth: '220px',
+                  background: 'var(--surface-elevated, var(--surface))',
+                  border: '1px solid var(--border)',
+                  borderRadius: '6px',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+                  zIndex: 100,
+                  overflow: 'hidden',
+                }}
               >
-                <div
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '13px',
-                    fontWeight: isActive ? 600 : 400,
-                    color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
-                    padding: '8px 16px',
-                    borderBottom: isActive
-                      ? '2px solid var(--accent, #6366f1)'
-                      : '2px solid transparent',
-                    marginBottom: '-1px',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    transition: 'color 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) {
-                      ;(e.currentTarget as HTMLDivElement).style.color = 'var(--text-primary)'
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) {
-                      ;(e.currentTarget as HTMLDivElement).style.color = 'var(--text-secondary)'
-                    }
-                  }}
-                >
-                  {b.name}
+                {/* Board list */}
+                <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
+                  {allBoards.map((b) => {
+                    const isActive = b.board_id === boardId
+                    return (
+                      <button
+                        key={b.board_id}
+                        onClick={() => {
+                          setShowBoardDropdown(false)
+                          if (!isActive) router.push(`/boards/${b.board_id}`)
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          width: '100%',
+                          padding: '8px 12px',
+                          background: isActive ? 'rgba(99,102,241,0.1)' : 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontFamily: 'var(--font-body)',
+                          fontSize: '13px',
+                          fontWeight: isActive ? 600 : 400,
+                          color: isActive ? 'var(--accent, #6366f1)' : 'var(--text-primary)',
+                          textAlign: 'left',
+                          transition: 'background 0.1s',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isActive) e.currentTarget.style.background = 'none'
+                        }}
+                      >
+                        {isActive && <span style={{ fontSize: '11px' }}>&#10003;</span>}
+                        {b.name}
+                      </button>
+                    )
+                  })}
                 </div>
-              </Link>
-            )
-          })}
+
+                {/* Separator + Create board */}
+                <div style={{ borderTop: '1px solid var(--border)' }}>
+                  {creatingBoard ? (
+                    <div style={{ padding: '8px 12px', display: 'flex', gap: '6px' }}>
+                      <input
+                        ref={newBoardInputRef}
+                        type="text"
+                        value={newBoardName}
+                        onChange={(e) => setNewBoardName(e.target.value)}
+                        onKeyDown={async (e) => {
+                          if (e.key === 'Enter' && newBoardName.trim()) {
+                            try {
+                              const res = await fetch('/api/boards', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  name: newBoardName.trim(),
+                                  workflow_id: board?.workflow_id,
+                                }),
+                              })
+                              if (res.ok) {
+                                const newBoard = await res.json() as BoardRow
+                                setShowBoardDropdown(false)
+                                setCreatingBoard(false)
+                                setNewBoardName('')
+                                router.push(`/boards/${newBoard.board_id}`)
+                              }
+                            } catch { /* silent */ }
+                          }
+                          if (e.key === 'Escape') {
+                            setCreatingBoard(false)
+                            setNewBoardName('')
+                          }
+                        }}
+                        placeholder="Board name..."
+                        autoFocus
+                        style={{
+                          flex: 1,
+                          fontFamily: 'var(--font-body)',
+                          fontSize: '12px',
+                          background: 'var(--surface)',
+                          border: '1px solid var(--border)',
+                          borderRadius: '4px',
+                          padding: '4px 8px',
+                          color: 'var(--text-primary)',
+                          outline: 'none',
+                          minWidth: 0,
+                        }}
+                      />
+                      <button
+                        onClick={async () => {
+                          if (!newBoardName.trim()) return
+                          try {
+                            const res = await fetch('/api/boards', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                name: newBoardName.trim(),
+                                workflow_id: board?.workflow_id,
+                              }),
+                            })
+                            if (res.ok) {
+                              const newBoard = await res.json() as BoardRow
+                              setShowBoardDropdown(false)
+                              setCreatingBoard(false)
+                              setNewBoardName('')
+                              router.push(`/boards/${newBoard.board_id}`)
+                            }
+                          } catch { /* silent */ }
+                        }}
+                        disabled={!newBoardName.trim()}
+                        style={{
+                          fontFamily: 'var(--font-body)',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          background: newBoardName.trim() ? 'var(--accent, #6366f1)' : 'var(--surface)',
+                          color: newBoardName.trim() ? '#fff' : 'var(--text-muted)',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '4px 10px',
+                          cursor: newBoardName.trim() ? 'pointer' : 'not-allowed',
+                          flexShrink: 0,
+                        }}
+                      >
+                        Create
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setCreatingBoard(true)
+                        setTimeout(() => newBoardInputRef.current?.focus(), 50)
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        width: '100%',
+                        padding: '8px 12px',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '13px',
+                        color: 'var(--accent, #6366f1)',
+                        textAlign: 'left',
+                        transition: 'background 0.1s',
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99,102,241,0.08)' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'none' }}
+                    >
+                      <span style={{ fontSize: '14px', fontWeight: 700 }}>+</span>
+                      New board
+                    </button>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 
@@ -350,18 +524,7 @@ export default function BoardPage() {
             margin: '12px 0 8px 0',
           }}
         >
-          <h1
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontSize: '20px',
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              margin: 0,
-              flex: 1,
-            }}
-          >
-            {board.name}
-          </h1>
+          <div style={{ flex: 1 }} />
           {/* Manage Columns button */}
           <button
             onClick={() => setShowColumnManager(true)}
@@ -468,6 +631,8 @@ export default function BoardPage() {
       {selectedCardId && (
         <CardDetailPanel
           cardId={selectedCardId}
+          cardCode={cards.find((c) => c.card_id === selectedCardId)?.code}
+          cardCodeMap={Object.fromEntries(cards.filter((c) => c.code).map((c) => [c.card_id, c.code!]))}
           onClose={() => setSelectedCardId(null)}
           onCardDeleted={refetch}
           onNavigateToCard={setSelectedCardId}

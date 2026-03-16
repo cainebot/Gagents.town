@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { createBrowserClient } from '@/lib/supabase'
 import type { CardAttachmentRow } from '@/types/workflow'
 import { Paperclip, FileText, FileSpreadsheet, File, Download, X } from 'lucide-react'
 
@@ -41,28 +40,33 @@ export function CardAttachments({ cardId, attachments, onAttachmentAdded }: Card
   const [dragOver, setDragOver] = useState(false)
   const [signedUrls, setSignedUrls] = useState<Record<string, string>>({})
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const supabase = createBrowserClient()
 
-  // Generate signed URLs for all attachments
+  // Generate signed URLs via server endpoint (service role has storage access)
   useEffect(() => {
-    const imageAttachments = attachments.filter((a) => a.mime_type?.startsWith('image/'))
-    if (imageAttachments.length === 0) return
+    if (attachments.length === 0) return
 
     const fetchUrls = async () => {
-      const entries: [string, string][] = []
+      const paths: Record<string, string> = {}
       for (const att of attachments) {
-        const { data } = await supabase.storage
-          .from('attachments')
-          .createSignedUrl(att.storage_path, 3600)
-        if (data?.signedUrl) {
-          entries.push([att.attachment_id, data.signedUrl])
-        }
+        paths[att.attachment_id] = att.storage_path
       }
-      setSignedUrls(Object.fromEntries(entries))
+      try {
+        const res = await fetch(`/api/cards/${cardId}/attachments/urls`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paths }),
+        })
+        if (res.ok) {
+          const urls = await res.json() as Record<string, string>
+          setSignedUrls(urls)
+        }
+      } catch {
+        // Silent — thumbnails won't show but functionality still works
+      }
     }
 
     fetchUrls().catch(() => {})
-  }, [attachments, supabase])
+  }, [attachments, cardId])
 
   const uploadFile = useCallback(
     async (file: File) => {

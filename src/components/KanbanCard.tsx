@@ -51,6 +51,23 @@ export function KanbanCard({ card, onDragStart, onCardClick, isNew = false }: Ka
         ;(e.currentTarget as HTMLDivElement).style.borderColor = 'var(--border)'
       }}
     >
+      {/* Card code */}
+      {card.code && (
+        <span
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: '10px',
+            fontWeight: 600,
+            color: 'var(--text-muted)',
+            letterSpacing: '0.02em',
+            marginBottom: '2px',
+            display: 'block',
+          }}
+        >
+          {card.code}
+        </span>
+      )}
+
       {/* Title */}
       <p
         style={{

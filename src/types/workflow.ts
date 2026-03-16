@@ -89,6 +89,7 @@ export interface CardRow {
   labels: string[]
   due_date: string | null
   sort_order: string
+  code: string | null // JIRA-style code e.g. "SP-42" (null until migration 07 applied)
   created_at: string
   updated_at: string
 }
@@ -178,7 +179,7 @@ export type CardDetail = CardRow & {
   comments: CardCommentRow[]
   parent: { card_id: string; title: string; card_type: CardType } | null
   children: Pick<CardRow, 'card_id' | 'title' | 'card_type' | 'state_id'>[]
-  breadcrumb: Pick<CardRow, 'card_id' | 'title' | 'card_type'>[]
+  breadcrumb: Pick<CardRow, 'card_id' | 'title' | 'card_type' | 'code'>[]
   field_values: CardCustomFieldValueRow[]
 }
 

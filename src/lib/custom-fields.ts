@@ -29,7 +29,11 @@ export async function getFieldDefinitions(
   }
 
   const { data, error } = await query
-  if (error) throw error
+  if (error) {
+    // 42P01 / PGRST204 / PGRST205 = table does not exist (migration not yet applied)
+    if (error.code === '42P01' || error.code === 'PGRST204' || error.code === 'PGRST205') return []
+    throw error
+  }
   return data as CustomFieldDefinitionRow[]
 }
 
@@ -45,7 +49,10 @@ export async function getCardFieldValues(
     .select('*')
     .eq('card_id', cardId)
 
-  if (error) throw error
+  if (error) {
+    if (error.code === '42P01' || error.code === 'PGRST204' || error.code === 'PGRST205') return []
+    throw error
+  }
   return data as CardCustomFieldValueRow[]
 }
 
@@ -71,7 +78,12 @@ export async function createFieldDefinition(
     .select()
     .single()
 
-  if (error) throw error
+  if (error) {
+    if (error.code === '42P01' || error.code === 'PGRST204' || error.code === 'PGRST205') {
+      throw new Error('Custom fields migration not yet applied. Run migration 06-custom-fields.sql.')
+    }
+    throw error
+  }
   return row as CustomFieldDefinitionRow
 }
 

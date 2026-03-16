@@ -10,7 +10,12 @@ export function createBrowserClient(): SupabaseClient {
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!url || !anonKey) {
-    throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY')
+    // Env vars may be missing during SSR or if Turbopack hasn't inlined them yet.
+    // Return a non-singleton placeholder — will be replaced once env vars are available.
+    console.warn('[supabase] NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY not available yet')
+    return createClient('https://placeholder.supabase.co', 'placeholder', {
+      auth: { persistSession: false },
+    })
   }
 
   browserClient = createClient(url, anonKey, {

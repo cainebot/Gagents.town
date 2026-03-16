@@ -8,12 +8,14 @@ import { CardFieldEditor } from './CardFieldEditor'
 import { CardRichTextEditor } from './CardRichTextEditor'
 import { CardFieldReorder } from './CardFieldReorder'
 import { CardAttachments } from './CardAttachments'
-import { CardHierarchy } from './CardHierarchy'
+import { CardChildTasks } from './CardChildTasks'
 import { CustomFieldManager } from './CustomFieldManager'
 import { CardActivityTimeline } from './CardActivityTimeline'
 
 interface CardDetailPanelProps {
   cardId: string
+  cardCode?: string | null // JIRA-style code from board (e.g. "SP-3")
+  cardCodeMap?: Record<string, string> // card_id → code for parent/child lookups
   onClose: () => void
   onCardDeleted: () => void
   onNavigateToCard?: (cardId: string) => void
@@ -38,6 +40,13 @@ const cardTypeBadgeColors: Record<string, { bg: string; text: string }> = {
   bug: { bg: '#dc2626', text: '#fff' },
 }
 
+/** Format a snake_case / slug state name into Title Case (e.g. "cold_calling" → "Cold Calling") */
+function formatStateName(name: string): string {
+  return name
+    .replace(/[_-]/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
 function getStoredWidth(): number {
   if (typeof window === 'undefined') return DEFAULT_WIDTH
   const stored = localStorage.getItem(PANEL_WIDTH_KEY)
@@ -48,6 +57,8 @@ function getStoredWidth(): number {
 
 export function CardDetailPanel({
   cardId,
+  cardCode,
+  cardCodeMap = {},
   onClose,
   onCardDeleted,
   onNavigateToCard,
@@ -65,6 +76,10 @@ export function CardDetailPanel({
 
   // Workflow states for the state dropdown
   const [workflowStates, setWorkflowStates] = useState<WorkflowStateRow[]>([])
+  // Agents for the assignee dropdown
+  const [agents, setAgents] = useState<{ agent_id: string; name: string; emoji?: string }[]>([])
+  // Existing labels for autocomplete
+  const [existingLabels, setExistingLabels] = useState<string[]>([])
 
   const isResizing = useRef(false)
   const startX = useRef(0)
@@ -86,6 +101,19 @@ export function CardDetailPanel({
         .catch(() => {})
     }
   }, [card?.workflow_id])
+
+  // Fetch agents for assignee dropdown (once)
+  useEffect(() => {
+    fetch('/api/agents/list')
+      .then((r) => r.ok ? r.json() : [])
+      .then((data: { agent_id: string; name: string }[]) => setAgents(data))
+      .catch(() => {})
+    // Fetch existing labels for autocomplete (once)
+    fetch('/api/labels')
+      .then((r) => r.ok ? r.json() : [])
+      .then((data: string[]) => setExistingLabels(data))
+      .catch(() => {})
+  }, [])
 
   // Esc key closes panel
   useEffect(() => {
@@ -230,8 +258,10 @@ export function CardDetailPanel({
             key="assigned_agent_id"
             label="Assignee"
             value={card.assigned_agent_id}
-            type="text"
-            placeholder="Agent ID or name"
+            type="select"
+            options={agents.map((a) => a.agent_id)}
+            optionLabels={Object.fromEntries(agents.map((a) => [a.agent_id, `${a.emoji ?? ''} ${a.name}`.trim()]))}
+            placeholder="Select agent"
             onChange={(v) => updateField('assigned_agent_id', v || null)}
           />
         )
@@ -252,8 +282,17 @@ export function CardDetailPanel({
             label="Labels"
             value={card.labels ?? []}
             type="labels"
+            options={existingLabels}
             placeholder="Add label..."
-            onChange={(v) => updateField('labels', v)}
+            onChange={(v) => {
+              updateField('labels', v)
+              // Add new labels to existingLabels for immediate reuse
+              const newLabels = v as string[]
+              setExistingLabels((prev) => {
+                const merged = new Set([...prev, ...newLabels])
+                return [...merged].sort()
+              })
+            }}
           />
         )
     }
@@ -447,15 +486,110 @@ export function CardDetailPanel({
 
         {/* Scrollable content */}
         <div style={scrollAreaStyle}>
-          {/* Title */}
-          <div style={{ marginBottom: '12px' }}>
-            <CardFieldEditor
-              label=""
-              value={card.title}
-              type="text"
-              onChange={(v) => updateField('title', v)}
-              placeholder="Card title"
-            />
+          {/* Breadcrumb — JIRA style: parent codes as links + current code */}
+          {(() => {
+            const currentCode = card.code || cardCode
+            const breadcrumbItems = card.breadcrumb ?? []
+            const hasBreadcrumb = breadcrumbItems.length > 0 || currentCode
+
+            if (!hasBreadcrumb) return null
+
+            const linkStyle: React.CSSProperties = {
+              fontFamily: 'var(--font-body)',
+              fontSize: '12px',
+              fontWeight: 600,
+              color: 'var(--accent, #6366f1)',
+              letterSpacing: '0.02em',
+              cursor: 'pointer',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              textDecoration: 'none',
+            }
+            const separatorStyle: React.CSSProperties = {
+              color: 'var(--text-muted)',
+              fontSize: '10px',
+              margin: '0 2px',
+            }
+            const badgeStyle = (type: string): React.CSSProperties => ({
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '1px 6px',
+              borderRadius: '3px',
+              fontSize: '10px',
+              fontWeight: 600,
+              fontFamily: 'var(--font-body)',
+              textTransform: 'lowercase',
+              background: cardTypeBadgeColors[type]?.bg ?? '#6b7280',
+              color: cardTypeBadgeColors[type]?.text ?? '#fff',
+            })
+
+            return (
+              <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                {/* Parent breadcrumb chain */}
+                {breadcrumbItems.map((bc) => {
+                  const parentCode = bc.code || cardCodeMap[bc.card_id]
+                  return (
+                    <span key={bc.card_id} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <button
+                        onClick={() => onNavigateToCard?.(bc.card_id)}
+                        style={linkStyle}
+                        title={bc.title}
+                      >
+                        {parentCode || bc.card_type.toUpperCase()}
+                      </button>
+                      <span style={badgeStyle(bc.card_type)}>{bc.card_type}</span>
+                      <span style={separatorStyle}>/</span>
+                    </span>
+                  )
+                })}
+                {/* Current card */}
+                {currentCode && (
+                  <span style={{ ...linkStyle, color: 'var(--text-primary)', cursor: 'default' }}>
+                    {currentCode}
+                  </span>
+                )}
+                {card.card_type && (
+                  <span style={badgeStyle(card.card_type)}>{card.card_type}</span>
+                )}
+              </div>
+            )
+          })()}
+
+          {/* Title — inline editable heading */}
+          <div
+            contentEditable
+            suppressContentEditableWarning
+            onBlur={(e) => {
+              const newTitle = (e.currentTarget.textContent ?? '').trim()
+              if (newTitle && newTitle !== card.title) {
+                updateField('title', newTitle)
+              } else if (!newTitle) {
+                e.currentTarget.textContent = card.title
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLElement).blur() }
+            }}
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '16px',
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              outline: 'none',
+              padding: '2px 0',
+              marginBottom: '12px',
+              lineHeight: 1.3,
+              wordBreak: 'break-word',
+              borderBottom: '1px solid transparent',
+              transition: 'border-color 0.15s',
+              cursor: 'text',
+            }}
+            onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent, #6366f1)' }}
+            onBlurCapture={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'transparent' }}
+          >
+            {card.title}
           </div>
 
           {/* State dropdown */}
@@ -483,7 +617,7 @@ export function CardDetailPanel({
                 >
                   {workflowStates.map((s) => (
                     <option key={s.state_id} value={s.state_id}>
-                      {s.name}
+                      {formatStateName(s.name)}
                     </option>
                   ))}
                 </select>
@@ -502,18 +636,21 @@ export function CardDetailPanel({
                   fontFamily: 'var(--font-body)',
                 }}
               >
-                {currentState.name}
+                {formatStateName(currentState.name)}
               </span>
             ) : null}
           </div>
 
-          {/* Hierarchy — always render (hides if no parent/children) */}
-          <CardHierarchy
-            breadcrumb={card.breadcrumb}
-            parent={card.parent}
+          {/* Child tasks — JIRA-style create/link subtasks */}
+          <CardChildTasks
             children={card.children}
-            currentCardType={card.card_type}
+            parentCardId={card.card_id}
+            parentCardType={card.card_type}
+            workflowId={card.workflow_id}
+            stateId={card.state_id}
+            cardCodeMap={cardCodeMap}
             onNavigateToCard={onNavigateToCard ?? (() => {})}
+            onChildCreated={refetch}
           />
 
           {/* Unified fields section */}

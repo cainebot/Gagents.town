@@ -21,6 +21,7 @@ interface FieldEditorProps {
   value: string | number | boolean | string[] | null
   type: FieldEditorType
   options?: string[]
+  optionLabels?: Record<string, string> // value → display label mapping
   onChange: (value: unknown) => void
   placeholder?: string
   // richtext type needs special rendering from parent
@@ -43,6 +44,7 @@ export function CardFieldEditor({
   value,
   type,
   options = [],
+  optionLabels,
   onChange,
   placeholder,
   renderRichText,
@@ -50,6 +52,7 @@ export function CardFieldEditor({
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState<unknown>(value)
   const [labelInput, setLabelInput] = useState('')
+  const [showSuggestions, setShowSuggestions] = useState(false)
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null>(null)
 
   const enterEdit = useCallback(() => {
@@ -279,17 +282,24 @@ export function CardFieldEditor({
     )
   }
 
-  // Labels: chips + input
+  // Labels: chips + autocomplete input with suggestions
   if (type === 'labels') {
     const currentLabels: string[] = Array.isArray(value) ? (value as string[]) : []
+    // Available suggestions: existing labels not already applied
+    const suggestions = options.filter((o) => !currentLabels.includes(o))
+    const filteredSuggestions = labelInput.trim()
+      ? suggestions.filter((s) => s.toLowerCase().includes(labelInput.toLowerCase()))
+      : []
+    const exactMatch = options.some((o) => o.toLowerCase() === labelInput.trim().toLowerCase())
 
-    const addLabel = () => {
-      const trimmed = labelInput.trim()
+    const addLabel = (lbl?: string) => {
+      const trimmed = (lbl ?? labelInput).trim()
       if (trimmed && !currentLabels.includes(trimmed)) {
         const next = [...currentLabels, trimmed]
         onChange(next)
-        setLabelInput('')
       }
+      setLabelInput('')
+      setShowSuggestions(false)
     }
 
     const removeLabel = (label: string) => {
@@ -333,25 +343,92 @@ export function CardFieldEditor({
               </button>
             </span>
           ))}
-          <input
-            type="text"
-            value={labelInput}
-            onChange={(e) => setLabelInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') { e.preventDefault(); addLabel() }
-            }}
-            placeholder={currentLabels.length === 0 ? (placeholder ?? 'Add label...') : '+ label'}
-            style={{
-              ...inputStyle,
-              flex: '0 0 auto',
-              width: '100px',
-              border: 'none',
-              background: 'transparent',
-              padding: '2px 4px',
-              fontSize: '12px',
-            }}
-            tabIndex={0}
-          />
+          <div style={{ position: 'relative', flex: '0 0 auto' }}>
+            <input
+              type="text"
+              value={labelInput}
+              onChange={(e) => { setLabelInput(e.target.value); setShowSuggestions(true) }}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => { setTimeout(() => setShowSuggestions(false), 150) }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') { e.preventDefault(); addLabel() }
+                if (e.key === 'Escape') { setLabelInput(''); setShowSuggestions(false) }
+              }}
+              placeholder={currentLabels.length === 0 ? (placeholder ?? 'Add label...') : '+ label'}
+              style={{
+                ...inputStyle,
+                width: '130px',
+                border: 'none',
+                background: 'transparent',
+                padding: '2px 4px',
+                fontSize: '12px',
+              }}
+              tabIndex={0}
+            />
+            {showSuggestions && (filteredSuggestions.length > 0 || (labelInput.trim() && !exactMatch)) && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  zIndex: 100,
+                  background: 'var(--surface, #1e1e2e)',
+                  border: '1px solid var(--border, #333)',
+                  borderRadius: '6px',
+                  padding: '4px 0',
+                  minWidth: '160px',
+                  maxHeight: '180px',
+                  overflowY: 'auto',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                }}
+              >
+                {filteredSuggestions.map((s) => (
+                  <button
+                    key={s}
+                    onMouseDown={(e) => { e.preventDefault(); addLabel(s) }}
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'left',
+                      background: 'none',
+                      border: 'none',
+                      padding: '5px 10px',
+                      fontSize: '12px',
+                      color: 'var(--text-primary)',
+                      cursor: 'pointer',
+                      fontFamily: 'var(--font-body)',
+                    }}
+                    onMouseEnter={(e) => { (e.target as HTMLElement).style.background = 'var(--accent, #6366f1)' }}
+                    onMouseLeave={(e) => { (e.target as HTMLElement).style.background = 'none' }}
+                  >
+                    {s}
+                  </button>
+                ))}
+                {labelInput.trim() && !exactMatch && (
+                  <button
+                    onMouseDown={(e) => { e.preventDefault(); addLabel() }}
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'left',
+                      background: 'none',
+                      border: 'none',
+                      padding: '5px 10px',
+                      fontSize: '12px',
+                      color: 'var(--accent, #6366f1)',
+                      cursor: 'pointer',
+                      fontFamily: 'var(--font-body)',
+                      borderTop: filteredSuggestions.length > 0 ? '1px solid var(--border, #333)' : 'none',
+                    }}
+                    onMouseEnter={(e) => { (e.target as HTMLElement).style.background = 'var(--surface, #2a2a3e)' }}
+                    onMouseLeave={(e) => { (e.target as HTMLElement).style.background = 'none' }}
+                  >
+                    + Create &ldquo;{labelInput.trim()}&rdquo;
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     )
@@ -414,12 +491,14 @@ export function CardFieldEditor({
 
   // Select
   if (type === 'select') {
+    const getLabel = (val: string) => optionLabels?.[val] ?? val
+
     if (!editing) {
       return (
         <div style={containerStyle}>
           <span style={labelStyle}>{label}</span>
           <span style={displayStyle} onClick={enterEdit}>
-            {value ? String(value) : (placeholder ?? '—')}
+            {value ? getLabel(String(value)) : (placeholder ?? '—')}
           </span>
         </div>
       )
@@ -437,7 +516,7 @@ export function CardFieldEditor({
         >
           <option value="">— {placeholder ?? 'Select'} —</option>
           {options.map((o) => (
-            <option key={o} value={o}>{o}</option>
+            <option key={o} value={o}>{getLabel(o)}</option>
           ))}
         </select>
       </div>

@@ -160,7 +160,15 @@ export async function getCard(id: string): Promise<CardDetail> {
       client
         .from('card_custom_field_values')
         .select('*')
-        .eq('card_id', id),
+        .eq('card_id', id)
+        .then((res) => {
+          // Graceful fallback if table doesn't exist yet (migration 06 not applied)
+          if (res.error) {
+            console.warn('[getCard] card_custom_field_values query failed:', res.error.code, res.error.message)
+            return { data: [], error: null }
+          }
+          return res
+        }),
     ])
 
   if (attachmentsRes.error) throw attachmentsRes.error
@@ -216,9 +224,9 @@ export async function getCardChildren(cardId: string): Promise<CardRow[]> {
 
 export async function getCardBreadcrumb(
   cardId: string
-): Promise<Pick<CardRow, 'card_id' | 'title' | 'card_type'>[]> {
+): Promise<Pick<CardRow, 'card_id' | 'title' | 'card_type' | 'code'>[]> {
   const client = createServerClient()
-  const breadcrumb: Pick<CardRow, 'card_id' | 'title' | 'card_type'>[] = []
+  const breadcrumb: Pick<CardRow, 'card_id' | 'title' | 'card_type' | 'code'>[] = []
 
   // Start from the card itself and walk up parent chain (max 4 levels = subtask→task→story→epic)
   let currentId: string | null = cardId
@@ -255,6 +263,7 @@ export async function getCardBreadcrumb(
       card_id: ancestorRow.card_id,
       title: ancestorRow.title,
       card_type: ancestorRow.card_type,
+      code: (ancestorRow as CardRow).code ?? null,
     })
 
     currentId = ancestorRow.parent_card_id

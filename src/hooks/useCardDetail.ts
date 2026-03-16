@@ -31,7 +31,9 @@ export function useCardDetail(cardId: string | null): UseCardDetailReturn {
     try {
       const res = await fetch(`/api/cards/${id}`)
       if (!res.ok) {
-        throw new Error(`Failed to fetch card: ${res.statusText}`)
+        const body = await res.json().catch(() => null)
+        const msg = body?.message || res.statusText
+        throw new Error(`Failed to fetch card: ${msg}`)
       }
       const data: CardDetail = await res.json()
       setCard(data)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback, useState } from 'react'
+import { useEffect, useCallback, useState, useRef } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -45,8 +45,11 @@ export function CardRichTextEditor({ value, onChange, placeholder }: RichTextEdi
   const [showLinkInput, setShowLinkInput] = useState(false)
   const [linkUrl, setLinkUrl] = useState('')
 
-  // Debounce timer ref
-  const debounceRef = { current: null as ReturnType<typeof setTimeout> | null }
+  // Debounce timer ref — must be useRef to persist across renders
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Keep onChange in a ref so Tiptap callbacks always call the latest version
+  const onChangeRef = useRef(onChange)
+  onChangeRef.current = onChange
 
   const editor = useEditor({
     extensions: [
@@ -66,7 +69,7 @@ export function CardRichTextEditor({ value, onChange, placeholder }: RichTextEdi
     onUpdate: ({ editor }) => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
       debounceRef.current = setTimeout(() => {
-        onChange(editor.getHTML())
+        onChangeRef.current(editor.getHTML())
       }, 500)
     },
     onFocus: () => setIsFocused(true),
@@ -74,7 +77,7 @@ export function CardRichTextEditor({ value, onChange, placeholder }: RichTextEdi
       setIsFocused(false)
       // Immediate save on blur
       if (debounceRef.current) clearTimeout(debounceRef.current)
-      onChange(editor.getHTML())
+      onChangeRef.current(editor.getHTML())
     },
     editorProps: {
       attributes: {
@@ -316,11 +319,16 @@ export function CardRichTextEditor({ value, onChange, placeholder }: RichTextEdi
         .tiptap h1 { font-size: 18px; font-weight: 700; margin: 0 0 8px 0; color: var(--text-primary); }
         .tiptap h2 { font-size: 16px; font-weight: 600; margin: 0 0 8px 0; color: var(--text-primary); }
         .tiptap h3 { font-size: 14px; font-weight: 600; margin: 0 0 6px 0; color: var(--text-primary); }
-        .tiptap ul, .tiptap ol { margin: 0 0 8px 16px; padding: 0; }
+        .tiptap ul { margin: 0 0 8px 0; padding-left: 20px; list-style-type: disc; }
+        .tiptap ol { margin: 0 0 8px 0; padding-left: 20px; list-style-type: decimal; }
         .tiptap li { margin-bottom: 2px; }
+        .tiptap li p { margin: 0; }
         .tiptap blockquote { border-left: 3px solid var(--accent, #6366f1); margin: 0 0 8px 0; padding-left: 12px; color: var(--text-secondary); font-style: italic; }
-        .tiptap code { background: var(--surface, rgba(0,0,0,0.2)); border-radius: 3px; padding: 1px 4px; font-size: 12px; font-family: monospace; }
+        .tiptap code { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; padding: 1px 5px; font-size: 12px; font-family: 'JetBrains Mono', 'Fira Code', monospace; color: #e06c75; }
+        .tiptap pre { background: rgba(0,0,0,0.3); border: 1px solid var(--border, #333); border-radius: 6px; padding: 12px 16px; margin: 0 0 8px 0; overflow-x: auto; }
+        .tiptap pre code { background: none; border: none; padding: 0; color: #abb2bf; font-size: 12px; line-height: 1.5; }
         .tiptap a { color: var(--accent, #6366f1); text-decoration: underline; }
+        .tiptap hr { border: none; border-top: 1px solid var(--border, #333); margin: 12px 0; }
         .tiptap .is-editor-empty:first-child::before { content: attr(data-placeholder); color: var(--text-muted); pointer-events: none; float: left; height: 0; }
       `}</style>
     </div>
