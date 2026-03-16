@@ -88,8 +88,13 @@ export function KanbanColumn({
           justifyContent: 'space-between',
           padding: '8px 12px',
           marginBottom: '8px',
-          background: 'var(--surface)',
+          background: column.only_humans
+            ? 'linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(251, 191, 36, 0.04))'
+            : 'var(--surface)',
           border: '1px solid var(--border)',
+          borderLeft: column.only_humans
+            ? '3px solid rgba(251, 191, 36, 0.5)'
+            : '1px solid var(--border)',
           borderRadius: '6px',
         }}
       >
@@ -104,17 +109,21 @@ export function KanbanColumn({
           >
             {column.name}
           </span>
-          {/* Only-humans lock icon */}
+          {/* Only-humans badge */}
           {column.only_humans && (
             <span
-              title="Human-only column"
+              title="Human-only column — agents cannot move cards out of this column"
               style={{
-                fontSize: '11px',
-                color: 'var(--text-secondary)',
-                opacity: 0.7,
+                fontSize: '10px',
+                background: 'rgba(251, 191, 36, 0.15)',
+                color: '#fbbf24',
+                padding: '1px 5px',
+                borderRadius: '3px',
+                fontWeight: 500,
+                letterSpacing: '0.02em',
               }}
             >
-              &#128274;
+              HUMAN ONLY
             </span>
           )}
           {/* Card count badge */}
