@@ -4,6 +4,7 @@ import type {
   CardDetail,
   CardAttachmentRow,
   CardCommentRow,
+  CardCustomFieldValueRow,
   CursorPage,
   Priority,
   CardType,
@@ -140,7 +141,7 @@ export async function getCard(id: string): Promise<CardDetail> {
   const cardRow = card as CardRow
 
   // Fetch related data in parallel
-  const [attachmentsRes, commentsRes, childrenRes] =
+  const [attachmentsRes, commentsRes, childrenRes, fieldValuesRes] =
     await Promise.all([
       client
         .from('card_attachments')
@@ -156,11 +157,16 @@ export async function getCard(id: string): Promise<CardDetail> {
         .from('cards')
         .select('card_id, title, card_type, state_id')
         .eq('parent_card_id', id),
+      client
+        .from('card_custom_field_values')
+        .select('*')
+        .eq('card_id', id),
     ])
 
   if (attachmentsRes.error) throw attachmentsRes.error
   if (commentsRes.error) throw commentsRes.error
   if (childrenRes.error) throw childrenRes.error
+  if (fieldValuesRes.error) throw fieldValuesRes.error
 
   // Fetch parent card if exists
   let parent: { card_id: string; title: string; card_type: CardType } | null =
@@ -192,6 +198,7 @@ export async function getCard(id: string): Promise<CardDetail> {
       'card_id' | 'title' | 'card_type' | 'state_id'
     >[],
     breadcrumb,
+    field_values: fieldValuesRes.data as CardCustomFieldValueRow[],
   }
 }
 
