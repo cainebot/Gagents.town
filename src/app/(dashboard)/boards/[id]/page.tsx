@@ -7,6 +7,7 @@ import type { BoardRow, CardRow } from '@/types/workflow'
 import { useBoardData } from '@/hooks/useBoardData'
 import { useRealtimeCards } from '@/hooks/useRealtimeCards'
 import { BoardKanban } from '@/components/BoardKanban'
+import { BoardFilterBar } from '@/components/BoardFilterBar'
 
 // Loading skeleton for the Kanban board
 function KanbanSkeleton() {
@@ -67,6 +68,9 @@ export default function BoardPage() {
   // Local cards state for optimistic updates
   const [cards, setCards] = useState<CardRow[]>([])
   const [newCardIds, setNewCardIds] = useState<Set<string>>(new Set())
+
+  // Filtered cards state — null means "no filter active, show all"
+  const [filteredCards, setFilteredCards] = useState<CardRow[] | null>(null)
 
   // All boards for the tab bar
   const [allBoards, setAllBoards] = useState<BoardRow[]>([])
@@ -170,6 +174,36 @@ export default function BoardPage() {
     console.log('Card clicked:', cardId)
   }, [])
 
+  // Card created inline: add to local state + trigger refetch for Realtime consistency
+  const handleCardCreated = useCallback(
+    async (card: CardRow) => {
+      setCards((prev) => [...prev, card])
+      setNewCardIds((prev) => new Set([...prev, card.card_id]))
+      // Animate new card indicator briefly
+      setTimeout(() => {
+        setNewCardIds((prev) => {
+          const next = new Set(prev)
+          next.delete(card.card_id)
+          return next
+        })
+      }, 600)
+      // Refetch to sync any server-side changes
+      await refetch()
+    },
+    [refetch]
+  )
+
+  // Import complete: refetch board data
+  const handleImportComplete = useCallback(async () => {
+    await refetch()
+  }, [refetch])
+
+  // Handle filter changes from BoardFilterBar
+  const handleFilterChange = useCallback((filtered: CardRow[]) => {
+    // If filtered count == total cards, treat as no filter (avoids stale reference issues)
+    setFilteredCards(filtered)
+  }, [])
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Multi-board tab bar */}
@@ -178,7 +212,7 @@ export default function BoardPage() {
           style={{
             display: 'flex',
             gap: '4px',
-            marginBottom: '16px',
+            marginBottom: '0',
             overflowX: 'auto',
             borderBottom: '1px solid var(--border)',
             paddingBottom: '0',
@@ -234,11 +268,21 @@ export default function BoardPage() {
             fontSize: '20px',
             fontWeight: 700,
             color: 'var(--text-primary)',
-            margin: '0 0 16px 0',
+            margin: '12px 0 8px 0',
           }}
         >
           {board.name}
         </h1>
+      )}
+
+      {/* Filter bar — always visible when board is loaded */}
+      {!loading && !error && board && (
+        <BoardFilterBar
+          boardId={boardId}
+          cards={cards}
+          agents={[]}
+          onFilterChange={handleFilterChange}
+        />
       )}
 
       {/* Loading skeleton */}
@@ -265,9 +309,12 @@ export default function BoardPage() {
         <BoardKanban
           board={board}
           cards={cards}
+          filteredCards={filteredCards}
           onMoveCard={handleMoveCard}
           onReorderCard={handleReorderCard}
           onCardClick={handleCardClick}
+          onCardCreated={handleCardCreated}
+          onImportComplete={handleImportComplete}
           newCardIds={newCardIds}
         />
       )}
