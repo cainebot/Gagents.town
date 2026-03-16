@@ -143,6 +143,26 @@ export interface SavedFilterRow {
   created_at: string
 }
 
+export type CustomFieldType = 'text' | 'number' | 'date' | 'url' | 'email' | 'select' | 'multi_select' | 'checkbox'
+
+export interface CustomFieldDefinitionRow {
+  field_id: string
+  workflow_id: string
+  card_type: CardType | null
+  name: string
+  field_type: CustomFieldType
+  options: string[] | null
+  position: number
+  required: boolean
+  created_at: string
+}
+
+export interface CardCustomFieldValueRow {
+  card_id: string
+  field_id: string
+  value: unknown  // JSONB — type depends on field_type
+}
+
 // ---- Composite types for API responses ----
 
 export type WorkflowWithStates = WorkflowRow & {
@@ -159,6 +179,7 @@ export type CardDetail = CardRow & {
   parent: { card_id: string; title: string; card_type: CardType } | null
   children: Pick<CardRow, 'card_id' | 'title' | 'card_type' | 'state_id'>[]
   breadcrumb: Pick<CardRow, 'card_id' | 'title' | 'card_type'>[]
+  field_values: CardCustomFieldValueRow[]
 }
 
 // ---- Pagination ----
