@@ -11,6 +11,7 @@ import { CardAttachments } from './CardAttachments'
 import { CardChildTasks } from './CardChildTasks'
 import { CustomFieldManager } from './CustomFieldManager'
 import { CardActivityTimeline } from './CardActivityTimeline'
+import { ConfirmActionDialog } from '@/components/ui/confirm-action-dialog'
 
 interface CardDetailPanelProps {
   cardId: string
@@ -778,93 +779,19 @@ export function CardDetailPanel({
           </div>
         </div>
 
-        {/* Delete confirmation dialog */}
-        {showDeleteConfirm && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0,0,0,0.5)',
-              zIndex: 200,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            onClick={() => setShowDeleteConfirm(false)}
-          >
-            <div
-              style={{
-                background: 'var(--surface-elevated, var(--surface))',
-                border: '1px solid var(--border)',
-                borderRadius: '8px',
-                padding: '24px',
-                maxWidth: '360px',
-                width: '90%',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3
-                style={{
-                  fontFamily: 'var(--font-heading)',
-                  fontSize: '16px',
-                  fontWeight: 600,
-                  color: 'var(--text-primary)',
-                  margin: '0 0 8px 0',
-                }}
-              >
-                Delete this card?
-              </h3>
-              <p
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '13px',
-                  color: 'var(--text-secondary)',
-                  margin: '0 0 20px 0',
-                  lineHeight: 1.5,
-                }}
-              >
-                This will also delete all child cards, attachments, and comments.
-              </p>
-              <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  style={{
-                    background: 'none',
-                    border: '1px solid var(--border)',
-                    borderRadius: '6px',
-                    padding: '6px 14px',
-                    cursor: 'pointer',
-                    color: 'var(--text-secondary)',
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '13px',
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDelete}
-                  disabled={deleting}
-                  style={{
-                    background: '#ef4444',
-                    border: 'none',
-                    borderRadius: '6px',
-                    padding: '6px 14px',
-                    cursor: deleting ? 'not-allowed' : 'pointer',
-                    color: '#fff',
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    opacity: deleting ? 0.7 : 1,
-                  }}
-                >
-                  {deleting ? 'Deleting...' : 'Delete'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Delete confirmation dialog — uses ConfirmActionDialog (no name required for cards) */}
+      <ConfirmActionDialog
+        open={showDeleteConfirm}
+        onOpenChange={(open) => { if (!open) setShowDeleteConfirm(false) }}
+        title="Delete card?"
+        description="This action cannot be undone. All child cards, attachments, and comments will also be deleted."
+        onConfirm={handleDelete}
+        isConfirming={deleting}
+        confirmLabel="Delete Card"
+        confirmingLabel="Deleting..."
+      />
 
       {/* Custom Field Manager modal */}
       {showFieldManager && (
