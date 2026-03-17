@@ -7,9 +7,13 @@ const PUBLIC_ROUTES = new Set(["/login"]);
 // API routes that are always public (auth endpoints + health check)
 const PUBLIC_API_PREFIXES = ["/api/auth/", "/api/health"];
 
-function isAuthenticated(request: NextRequest): boolean {
+function isBrowserAuthenticated(request: NextRequest): boolean {
   const authCookie = request.cookies.get("mc_auth");
   return !!(authCookie && authCookie.value === process.env.AUTH_SECRET);
+}
+
+function isAgentRequest(request: NextRequest): boolean {
+  return !!request.headers.get("x-agent-key");
 }
 
 export function middleware(request: NextRequest) {
@@ -25,8 +29,15 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check authentication
-  if (!isAuthenticated(request)) {
+  // Agent API requests: allow through if X-Agent-Key header present.
+  // Full bcrypt validation happens inside the route handler via validateAgentKey().
+  // This avoids running bcrypt/DB in Edge middleware.
+  if (pathname.startsWith("/api/") && isAgentRequest(request)) {
+    return NextResponse.next();
+  }
+
+  // Browser authentication via mc_auth cookie
+  if (!isBrowserAuthenticated(request)) {
     // For API routes: return 401 JSON (not a redirect)
     if (pathname.startsWith("/api/")) {
       return NextResponse.json(
