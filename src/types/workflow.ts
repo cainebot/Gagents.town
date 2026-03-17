@@ -29,6 +29,7 @@ export type ActivityAction =
   | 'parent_change'
   | 'attachment_add'
   | 'attachment_remove'
+  | 'gdpr_anonymize'
 
 // ---- Row interfaces (matching DB columns exactly) ----
 

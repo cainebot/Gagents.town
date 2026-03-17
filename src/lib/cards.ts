@@ -8,6 +8,8 @@ import type {
   CursorPage,
   Priority,
   CardType,
+  WorkflowStateRow,
+  CustomFieldDefinitionRow,
 } from '@/types/workflow'
 
 // ---- Card filter params for getCards() ----
@@ -349,4 +351,157 @@ export async function moveCard(
   })
 
   if (error) throw error
+}
+
+// ---- GDPR anonymization ----
+
+/**
+ * gdprAnonymizeCard — GDPR opt-out handler.
+ * Removes all PII from a card while preserving its structure for audit purposes.
+ * - Clears title, description, assigned_agent_id, due_date
+ * - Deletes attachment files from Storage and card_attachments table
+ * - Anonymizes all comments (author + text)
+ * - Clears PII custom field values (text, email, url types)
+ * - Adds 'gdpr-optout' label
+ * - Moves card to a done-category state (lost equivalent)
+ * - Logs a gdpr_anonymize action to card_activity
+ */
+export async function gdprAnonymizeCard(cardId: string): Promise<CardRow> {
+  const client = createServiceRoleClient()
+
+  // Step 1: Fetch the card
+  const { data: cardData, error: cardErr } = await client
+    .from('cards')
+    .select('*')
+    .eq('card_id', cardId)
+    .single()
+
+  if (cardErr) throw cardErr
+  const card = cardData as CardRow
+
+  // Step 2: Find a done-category state — prefer one named "lost"
+  let lostStateId: string | null = null
+  const { data: doneStates } = await client
+    .from('workflow_states')
+    .select('state_id, name, category')
+    .eq('workflow_id', card.workflow_id)
+    .eq('category', 'done')
+    .order('position')
+
+  if (doneStates && doneStates.length > 0) {
+    const states = doneStates as WorkflowStateRow[]
+    const lostState = states.find((s) =>
+      s.name.toLowerCase().includes('lost')
+    )
+    // Prefer a "lost" named state; fall back to last done-category state by position
+    lostStateId = lostState ? lostState.state_id : states[states.length - 1].state_id
+  }
+
+  // Step 3: Fetch card attachments
+  const { data: attachments } = await client
+    .from('card_attachments')
+    .select('*')
+    .eq('card_id', cardId)
+
+  const attachmentRows = (attachments ?? []) as CardAttachmentRow[]
+
+  // Step 4: Delete attachment files from Supabase Storage (non-blocking per file)
+  for (const attachment of attachmentRows) {
+    const { error: storageErr } = await client.storage
+      .from('attachments')
+      .remove([attachment.storage_path])
+    if (storageErr) {
+      // Log but do not abort — file may already be gone
+      console.warn('[gdprAnonymizeCard] Storage remove failed for', attachment.storage_path, storageErr.message)
+    }
+  }
+
+  // Step 5: Delete attachment records
+  if (attachmentRows.length > 0) {
+    const { error: attachDeleteErr } = await client
+      .from('card_attachments')
+      .delete()
+      .eq('card_id', cardId)
+    if (attachDeleteErr) throw attachDeleteErr
+  }
+
+  // Step 6: Anonymize comments
+  const { error: commentsErr } = await client
+    .from('card_comments')
+    .update({ author: '[GDPR Removed]', text: '[GDPR Removed]' })
+    .eq('card_id', cardId)
+  if (commentsErr) throw commentsErr
+
+  // Step 7: Clear PII custom field values (text, email, url types)
+  const { data: piiFields, error: piiFieldsErr } = await client
+    .from('custom_field_definitions')
+    .select('field_id, field_type')
+    .in('field_type', ['text', 'email', 'url'])
+
+  if (piiFieldsErr) {
+    // Table may not exist yet (migration 06 not applied) — skip gracefully
+    if (
+      piiFieldsErr.code !== '42P01' &&
+      !piiFieldsErr.message.includes('42P01')
+    ) {
+      throw piiFieldsErr
+    }
+    console.warn('[gdprAnonymizeCard] custom_field_definitions not found, skipping PII field clear')
+  } else if (piiFields && piiFields.length > 0) {
+    const piiFieldIds = (piiFields as CustomFieldDefinitionRow[]).map((f) => f.field_id)
+    const { error: valDeleteErr } = await client
+      .from('card_custom_field_values')
+      .delete()
+      .eq('card_id', cardId)
+      .in('field_id', piiFieldIds)
+    if (valDeleteErr) {
+      if (
+        valDeleteErr.code !== '42P01' &&
+        !valDeleteErr.message.includes('42P01')
+      ) {
+        throw valDeleteErr
+      }
+      console.warn('[gdprAnonymizeCard] card_custom_field_values not found, skipping')
+    }
+  }
+
+  // Step 8: Update the card — anonymize PII fields, add gdpr-optout label, move to lost state
+  const existingLabels: string[] = Array.isArray(card.labels) ? card.labels : []
+  const updatedLabels = [
+    ...existingLabels.filter((l) => l !== 'gdpr-optout'),
+    'gdpr-optout',
+  ]
+
+  const cardUpdate: Partial<CardRow> & { updated_at: string } = {
+    title: '[GDPR Removed]',
+    description: null,
+    assigned_agent_id: null,
+    due_date: null,
+    labels: updatedLabels,
+    updated_at: new Date().toISOString(),
+    ...(lostStateId ? { state_id: lostStateId } : {}),
+  }
+
+  const { data: updatedCard, error: updateErr } = await client
+    .from('cards')
+    .update(cardUpdate)
+    .eq('card_id', cardId)
+    .select()
+    .single()
+
+  if (updateErr) throw updateErr
+
+  // Step 9: Log GDPR anonymization to card_activity
+  const { error: activityErr } = await client
+    .from('card_activity')
+    .insert({
+      card_id: cardId,
+      actor: 'system',
+      action: 'gdpr_anonymize',
+      old_value: { title: card.title },
+      new_value: { title: '[GDPR Removed]' },
+    })
+  if (activityErr) throw activityErr
+
+  return updatedCard as CardRow
 }
