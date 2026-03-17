@@ -261,64 +261,18 @@ const styles = {
     color: '#9ca3af',
     padding: '4px 0',
   },
-  assignForm: {
-    display: 'flex',
-    gap: '6px',
-    marginTop: '8px',
-    alignItems: 'center',
-  },
-  assignInput: {
-    flex: 1,
-    padding: '6px 10px',
-    border: '1px solid #e5e7eb',
-    borderRadius: '8px',
-    fontSize: '12px',
-    color: '#1f2937',
-    outline: 'none',
-  },
-  assignSubmitBtn: {
-    padding: '6px 12px',
-    background: '#7c3aed',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '12px',
-    fontWeight: 600,
-    cursor: 'pointer',
-    flexShrink: 0,
-  },
 }
 
 // ---------- Component ----------
 
 export default function AgentPanel({ agent, tasks, position, onClose, nodes }: AgentPanelProps) {
   const [refreshKey, setRefreshKey] = useState(0)
-  const [showAssignForm, setShowAssignForm] = useState(false)
-  const [assignTitle, setAssignTitle] = useState('')
-  const [assigning, setAssigning] = useState(false)
 
   // Refresh relative times every 30s
   useEffect(() => {
     const interval = setInterval(() => setRefreshKey((k) => k + 1), 30000)
     return () => clearInterval(interval)
   }, [])
-
-  const handleAssignTask = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!assignTitle.trim() || assigning) return
-    setAssigning(true)
-    try {
-      // TODO(v1.3): Wire to Card→Task bridge — create card + task via Supabase
-      // Old /api/tasks endpoint was removed
-      console.warn('[AgentPanel] Task assignment not yet connected — Card→Task bridge coming in v1.3')
-      setAssignTitle('')
-      setShowAssignForm(false)
-    } catch (err) {
-      console.error('[AgentPanel] Failed to create task:', err)
-    } finally {
-      setAssigning(false)
-    }
-  }
 
   // Show last 5 tasks (already filtered by parent for this agent)
   const recentTasks = tasks.slice(0, 5)
@@ -337,8 +291,6 @@ export default function AgentPanel({ agent, tasks, position, onClose, nodes }: A
   )
 
   const statusColor = STATUS_COLORS[agent.status] || '#6b7280'
-  const agentNode = nodes?.find((n) => n.node_id === agent.node_id)
-  const isNodeOffline = agentNode?.status === 'offline'
 
   return (
     // Transparent overlay to catch clicks outside panel
@@ -418,59 +370,10 @@ export default function AgentPanel({ agent, tasks, position, onClose, nodes }: A
               </div>
             ))
           )}
-          {showAssignForm && isNodeOffline && (
-            <div
-              style={{
-                background: 'rgba(255, 214, 10, 0.10)',
-                border: '1px solid #FFD60A',
-                borderRadius: '6px',
-                padding: '8px 12px',
-                fontSize: '12px',
-                color: '#92400e',
-                marginTop: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-              }}
-            >
-              <span style={{ fontSize: '14px' }}>&#9888;</span>
-              <span>This agent&apos;s node is offline. Task will be queued.</span>
-            </div>
-          )}
-          {showAssignForm ? (
-            <form style={styles.assignForm} onSubmit={handleAssignTask}>
-              <input
-                style={styles.assignInput}
-                type="text"
-                placeholder="Task title..."
-                value={assignTitle}
-                onChange={(e) => setAssignTitle(e.target.value)}
-                autoFocus
-                disabled={assigning}
-              />
-              <button
-                type="submit"
-                style={styles.assignSubmitBtn}
-                disabled={assigning || !assignTitle.trim()}
-                onMouseEnter={(e) => { (e.target as HTMLElement).style.background = '#6d28d9' }}
-                onMouseLeave={(e) => { (e.target as HTMLElement).style.background = '#7c3aed' }}
-              >
-                {assigning ? '...' : 'Add'}
-              </button>
-            </form>
-          ) : null}
         </div>
 
         {/* Action buttons */}
         <div style={styles.actions}>
-          <button
-            style={styles.primaryBtn}
-            onClick={() => setShowAssignForm((v) => !v)}
-            onMouseEnter={(e) => { (e.target as HTMLElement).style.background = '#6d28d9' }}
-            onMouseLeave={(e) => { (e.target as HTMLElement).style.background = '#7c3aed' }}
-          >
-            Assign Task
-          </button>
           <button
             style={{
               ...styles.iconBtn,

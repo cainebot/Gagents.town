@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   startOfWeek,
   addDays,
@@ -24,12 +24,6 @@ export function WeeklyCalendar() {
   const [currentWeekStart, setCurrentWeekStart] = useState(() =>
     startOfWeek(new Date(), { weekStartsOn: 1 })
   );
-
-  useEffect(() => {
-    // TODO(v1.3): Wire to Card→Task bridge when agent task system is connected
-    // Old /api/tasks endpoint was removed — tasks will come from Supabase cards
-    setTasks([]);
-  }, []);
 
   const days = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
   const hours = Array.from({ length: 24 }, (_, i) => i);
