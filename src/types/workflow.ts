@@ -10,7 +10,7 @@ export type StateCategory = 'to-do' | 'in_progress' | 'done'
 
 export type CardType = 'epic' | 'story' | 'task' | 'subtask' | 'bug'
 
-export type Priority = 'baja' | 'media' | 'alta'
+export type Priority = 'baja' | 'media' | 'alta' | 'critica'
 
 export type NotificationType =
   | 'mention'

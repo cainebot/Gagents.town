@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback, KeyboardEvent } from 'react'
+import type { Priority } from '@/types/workflow'
 
 export type FieldEditorType =
   | 'text'
@@ -274,7 +275,7 @@ export function CardFieldEditor({
           onKeyDown={handleKeyDown}
           style={{ ...inputStyle, cursor: 'pointer' }}
         >
-          {['baja', 'media', 'alta'].map((p) => (
+          {(['critica', 'alta', 'media', 'baja'] as Priority[]).map((p) => (
             <option key={p} value={p}>{p}</option>
           ))}
         </select>

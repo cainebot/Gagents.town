@@ -13,6 +13,7 @@ const priorityConfig: Record<Priority, { label: string; color: string; bg: strin
   baja: { label: 'Baja', color: '#9ca3af', bg: 'rgba(156,163,175,0.12)' },
   media: { label: 'Media', color: '#6366f1', bg: 'rgba(99,102,241,0.12)' },
   alta: { label: 'Alta', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+  critica: { label: 'CRITICA', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
 }
 
 export function KanbanCard({ card, onDragStart, onCardClick, isNew = false }: KanbanCardProps) {
