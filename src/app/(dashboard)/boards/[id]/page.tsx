@@ -17,6 +17,8 @@ import { BoardFilterBar } from '@/components/BoardFilterBar'
 import { CardDetailPanel } from '@/components/CardDetailPanel'
 import { ColumnManager } from '@/components/ColumnManager'
 import { ChevronDown } from 'lucide-react'
+import { AgentFilterProvider, useAgentFilter, type AgentListItem } from '@/contexts/AgentFilterContext'
+import { AgentSidePanel } from '@/components/organisms/AgentSidePanel'
 
 // Loading skeleton for the Kanban board
 function KanbanSkeleton() {
@@ -68,12 +70,15 @@ function KanbanSkeleton() {
   )
 }
 
-export default function BoardPage() {
+function BoardPageInner() {
   const params = useParams()
   const router = useRouter()
   const boardId = params.id as string
 
   const { board, cards: initialCards, loading, error, refetch } = useBoardData(boardId)
+
+  // Agent filter context (provided by outer BoardPage wrapper)
+  const { agents, setAgents, selectedAgentId, setSelectedAgentId, agentPanelOpen, setAgentPanelOpen, setBoardId } = useAgentFilter()
 
   // Local cards state for optimistic updates
   const [cards, setCards] = useState<CardRow[]>([])
@@ -173,6 +178,20 @@ export default function BoardPage() {
       .catch(() => {}) // non-critical
   }, [])
 
+  // Fetch agents list for sidebar AGENTS section
+  useEffect(() => {
+    fetch('/api/agents/list')
+      .then((res) => res.json())
+      .then((data: AgentListItem[]) => setAgents(Array.isArray(data) ? data : []))
+      .catch(() => setAgents([]))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Set boardId in context so AgentSidePanel can fetch cards for this board
+  useEffect(() => {
+    setBoardId(boardId)
+  }, [boardId, setBoardId])
+
   // Handle realtime card changes — skip refetch for self-edits on the selected card,
   // debounce rapid events to avoid "page refreshing like crazy" during typing
   const realtimeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -265,10 +284,12 @@ export default function BoardPage() {
     [refetch]
   )
 
-  // Card click: open detail panel
+  // Card click: open detail panel, close agent panel (mutual exclusion)
   const handleCardClick = useCallback((cardId: string) => {
     setSelectedCardId(cardId)
-  }, [])
+    // Close agent panel when card detail opens (one panel at a time)
+    setAgentPanelOpen(false)
+  }, [setAgentPanelOpen])
 
   // Card created inline: add to local state + trigger refetch for Realtime consistency
   const handleCardCreated = useCallback(
@@ -299,6 +320,12 @@ export default function BoardPage() {
     // If filtered count == total cards, treat as no filter (avoids stale reference issues)
     setFilteredCards(filtered)
   }, [])
+
+  // Derived display cards: apply agent filter on top of BoardFilterBar filter
+  // When an agent is selected, only show cards where card.assigned_agent_id === selectedAgentId
+  const displayCards = selectedAgentId
+    ? (filteredCards ?? cards).filter((c) => c.assigned_agent_id === selectedAgentId)
+    : filteredCards  // null = show all (existing behavior preserved)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -521,10 +548,40 @@ export default function BoardPage() {
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            margin: '12px 0 8px 0',
+            padding: '16px 0 8px 0',
+            maxHeight: '56px',
           }}
         >
-          <div style={{ flex: 1 }} />
+          {/* Board name + description */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h1 style={{
+              fontFamily: 'var(--font-heading)',
+              fontSize: '16px',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              margin: 0,
+              lineHeight: '1.2',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>
+              {board.name}
+            </h1>
+            {board.description && (
+              <p style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '13px',
+                fontWeight: 500,
+                color: 'var(--text-secondary)',
+                margin: '2px 0 0 0',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}>
+                {board.description}
+              </p>
+            )}
+          </div>
           {/* Manage Columns button */}
           <button
             onClick={() => setShowColumnManager(true)}
@@ -616,7 +673,7 @@ export default function BoardPage() {
           <BoardKanban
             board={board}
             cards={cards}
-            filteredCards={filteredCards}
+            filteredCards={displayCards}
             onMoveCard={handleMoveCard}
             onReorderCard={handleReorderCard}
             onCardClick={handleCardClick}
@@ -650,6 +707,22 @@ export default function BoardPage() {
         />
       )}
 
+      {/* Agent side panel — overlay, zIndex 49 (below CardDetailPanel at 50) */}
+      {agentPanelOpen && selectedAgentId && (() => {
+        const selectedAgent = agents.find((a) => a.agent_id === selectedAgentId)
+        if (!selectedAgent) return null
+        return (
+          <AgentSidePanel
+            agent={selectedAgent}
+            boardId={boardId}
+            onClose={() => {
+              setAgentPanelOpen(false)
+              setSelectedAgentId(null)
+            }}
+          />
+        )
+      })()}
+
       {/* Global CSS for animations */}
       <style>{`
         @keyframes fadeIn {
@@ -663,4 +736,10 @@ export default function BoardPage() {
       `}</style>
     </div>
   )
+}
+
+// AgentFilterProvider is provided at dashboard layout level (layout.tsx),
+// so both DashboardSidebar and BoardPageInner share the same context instance.
+export default function BoardPage() {
+  return <BoardPageInner />
 }

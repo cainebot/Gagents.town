@@ -23,6 +23,8 @@ import {
 import { BrandMark } from "@/components/atoms/BrandMark";
 import NodeStatusStrip from "@/components/NodeStatusStrip";
 import { cn } from "@/lib/cn";
+import { useAgentFilter } from "@/contexts/AgentFilterContext";
+import { StatusDot } from "@/components/atoms/StatusDot";
 
 interface NavItem {
   label: string;
@@ -156,6 +158,15 @@ const BOTTOM_NAV: NavItem[] = [
 export function DashboardSidebar() {
   const pathname = usePathname();
 
+  // AgentFilter context — always safe to call because AgentFilterContext has a non-undefined defaultValue.
+  // Outside an AgentFilterProvider (non-board pages), returns defaults: agents=[], selectedAgentId=null.
+  const agentFilterContext = useAgentFilter();
+
+  // Show AGENTS section only on single-board pages: /boards/[id]
+  // Match: starts with /boards/ AND has a second path segment (not just /boards or /boards/)
+  const isBoardDetailPage = /^\/boards\/[^/]+\/?$/.test(pathname);
+  const showAgentSection = isBoardDetailPage;
+
   return (
     <aside
       className="sidebar-width shrink-0"
@@ -213,6 +224,138 @@ export function DashboardSidebar() {
             </div>
           </div>
         ))}
+
+        {/* AGENTS section — only on /boards/[id] pages */}
+        {showAgentSection && (() => {
+          const { agents, selectedAgentId, setSelectedAgentId, setAgentPanelOpen } = agentFilterContext;
+
+          // Count active agents (not offline/error)
+          const activeCount = agents.filter((a) =>
+            ['working', 'thinking', 'paused', 'idle', 'queued'].includes(a.status)
+          ).length;
+
+          // Sort: LEAD badge first, then alphabetical
+          const sortedAgents = [...agents].sort((a, b) => {
+            const aIsLead = a.badge === 'LEAD' ? -1 : 0;
+            const bIsLead = b.badge === 'LEAD' ? -1 : 0;
+            if (aIsLead !== bIsLead) return aIsLead - bIsLead;
+            return a.name.localeCompare(b.name);
+          });
+
+          const handleAgentClick = (agentId: string) => {
+            if (selectedAgentId === agentId) {
+              // Toggle off: deselect agent, close panel
+              setSelectedAgentId(null);
+              setAgentPanelOpen(false);
+            } else {
+              // Select agent: set filter + open panel
+              setSelectedAgentId(agentId);
+              setAgentPanelOpen(true);
+            }
+          };
+
+          const handleAllAgentsClick = () => {
+            setSelectedAgentId(null);
+            setAgentPanelOpen(false);
+          };
+
+          return (
+            <div>
+              {/* Section label row — "AGENTS · N active" — clickable to reset */}
+              <button
+                onClick={handleAllAgentsClick}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  textAlign: 'left',
+                  fontSize: '10px',
+                  fontWeight: 600,
+                  letterSpacing: '0.08em',
+                  color: 'var(--text-muted)',
+                  paddingLeft: '8px',
+                  paddingBottom: '6px',
+                  paddingTop: '2px',
+                  fontFamily: 'var(--font-heading)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                AGENTS · {activeCount} active
+              </button>
+
+              {/* Agent list — max 200px with scroll */}
+              <div style={{ maxHeight: '200px', overflowY: 'auto' }} className="flex flex-col gap-0.5">
+                {sortedAgents.map((agent) => {
+                  const isSelected = selectedAgentId === agent.agent_id;
+                  return (
+                    <button
+                      key={agent.agent_id}
+                      onClick={() => handleAgentClick(agent.agent_id)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        width: '100%',
+                        height: '40px',
+                        padding: '0 12px',
+                        background: isSelected ? 'rgba(255,59,48,0.10)' : 'none',
+                        borderTop: 'none',
+                        borderRight: 'none',
+                        borderBottom: 'none',
+                        borderLeft: isSelected ? '2px solid var(--accent)' : '2px solid transparent',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        transition: 'background 0.1s',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isSelected) e.currentTarget.style.background = 'var(--surface-hover, #2E2E2E)';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isSelected) e.currentTarget.style.background = 'none';
+                      }}
+                    >
+                      <StatusDot status={agent.status} variant="agent" />
+                      {/* Emoji avatar */}
+                      <span style={{ fontSize: '14px', flexShrink: 0, lineHeight: 1 }}>
+                        {agent.emoji || agent.name.charAt(0)}
+                      </span>
+                      {/* Agent name */}
+                      <span style={{
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '13px',
+                        fontWeight: 500,
+                        color: isSelected ? 'var(--accent)' : 'var(--text-primary)',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        flex: 1,
+                        textAlign: 'left',
+                      }}>
+                        {agent.name}
+                      </span>
+                      {/* Lead badge */}
+                      {agent.badge === 'LEAD' && (
+                        <span style={{
+                          fontSize: '10px',
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          background: 'rgba(255,59,48,0.10)',
+                          color: 'var(--accent)',
+                          borderRadius: '9999px',
+                          padding: '2px 6px',
+                          flexShrink: 0,
+                        }}>
+                          Lead
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
       </nav>
 
       {/* Fixed bottom — Office, Settings */}
