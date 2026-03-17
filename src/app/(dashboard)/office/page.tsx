@@ -269,7 +269,7 @@ function OfficeContent() {
 export default function OfficePage() {
   return (
     <RealtimeProvider>
-      <div className="flex-1 -m-6" style={{ position: 'relative', padding: 0 }}>
+      <div className="-m-6" style={{ position: 'relative', padding: 0, width: 'calc(100% + 48px)', height: 'calc(100% + 48px)' }}>
         <OfficeContent />
       </div>
     </RealtimeProvider>

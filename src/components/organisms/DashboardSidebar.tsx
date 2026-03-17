@@ -15,6 +15,7 @@ import {
   Building2,
   Zap,
   Bot,
+  Server,
   Map,
   Settings,
 } from "lucide-react";
@@ -126,6 +127,12 @@ const NAV_SECTIONS: NavSection[] = [
         icon: Bot,
         isActive: (p) => p.startsWith("/agents"),
       },
+      {
+        label: "Workspaces",
+        href: "/workspaces",
+        icon: Server,
+        isActive: (p) => p.startsWith("/workspaces"),
+      },
     ],
   },
 ];
@@ -151,21 +158,25 @@ export function DashboardSidebar() {
 
   return (
     <aside
-      className="sidebar-width flex flex-col shrink-0"
+      className="sidebar-width shrink-0"
       style={{
+        position: 'sticky',
+        top: 0,
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
         backgroundColor: 'var(--surface)',
         borderRight: '1px solid var(--border)',
-        minHeight: '100vh',
       }}
     >
-      {/* Brand mark */}
+      {/* Brand mark — fixed top */}
       <BrandMark />
 
       {/* Divider */}
       <div style={{ height: '1px', backgroundColor: 'var(--border)', margin: '0 12px' }} />
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 flex flex-col gap-4 overflow-y-auto">
+      {/* Scrollable navigation sections */}
+      <nav className="flex-1 px-3 py-4 flex flex-col gap-4 overflow-y-auto" style={{ minHeight: 0 }}>
         {NAV_SECTIONS.map((section) => (
           <div key={section.label}>
             {/* Section label */}
@@ -202,29 +213,29 @@ export function DashboardSidebar() {
             </div>
           </div>
         ))}
-
-        {/* Bottom nav items (Office, Settings) */}
-        <div className="mt-auto pt-2" style={{ borderTop: '1px solid var(--border)' }}>
-          <div className="flex flex-col gap-0.5">
-            {BOTTOM_NAV.map((item) => {
-              const Icon = item.icon;
-              const active = item.isActive(pathname);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn("nav-item", active && "active")}
-                >
-                  <Icon size={16} />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
       </nav>
 
-      {/* Node status strip at bottom */}
+      {/* Fixed bottom — Office, Settings */}
+      <div className="px-3 pt-2 pb-1" style={{ borderTop: '1px solid var(--border)' }}>
+        <div className="flex flex-col gap-0.5">
+          {BOTTOM_NAV.map((item) => {
+            const Icon = item.icon;
+            const active = item.isActive(pathname);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn("nav-item", active && "active")}
+              >
+                <Icon size={16} />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Fixed bottom — Node status strip */}
       <div className="px-3 py-3" style={{ borderTop: '1px solid var(--border)' }}>
         <NodeStatusStrip />
       </div>

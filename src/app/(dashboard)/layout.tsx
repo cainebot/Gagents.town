@@ -10,7 +10,7 @@ export default function DashboardLayout({
 }) {
   return (
     <RealtimeProvider>
-      <div className="flex min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+      <div className="flex h-screen" style={{ backgroundColor: 'var(--background)' }}>
         <DashboardSidebar />
         <main className="flex-1 p-6 overflow-auto">
           {children}

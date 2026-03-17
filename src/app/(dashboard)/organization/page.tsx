@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect, type ComponentType } from 'react'
-import { Building2, Plus, Edit2, Trash2, Users, X, Check, Search, LayoutGrid, Shield, Briefcase, Zap, Target, type LucideProps } from 'lucide-react'
+import { useState, type ComponentType } from 'react'
+import { Building2, Plus, Edit2, Trash2, Users, X, Check, Search, LayoutGrid, Shield, Briefcase, Zap, Target, Bot, type LucideProps } from 'lucide-react'
 import { useRealtimeDepartments } from '@/hooks/useRealtimeDepartments'
 import { useRealtimeAgents } from '@/hooks/useRealtimeAgents'
 import type { DepartmentRow } from '@/types/supabase'
+import { Badge } from '@/components/ui/badge'
 
 // Map icon name strings from DB to actual lucide-react components
 const ICON_MAP: Record<string, ComponentType<LucideProps>> = {
@@ -20,7 +21,6 @@ const ICON_MAP: Record<string, ComponentType<LucideProps>> = {
 function DeptIcon({ name, className, style }: { name: string; className?: string; style?: React.CSSProperties }) {
   const IconComponent = ICON_MAP[name]
   if (IconComponent) return <IconComponent className={className} style={style} />
-  // Fallback: if it looks like an emoji, render as text; otherwise use Building2
   if (/\p{Emoji}/u.test(name)) return <span className={className} style={style}>{name}</span>
   return <Building2 className={className} style={style} />
 }
@@ -41,12 +41,11 @@ const DEFAULT_FORM: DepartmentFormData = {
   sort_order: 0,
 }
 
-// Extend DepartmentRow to allow agent count from API response
 interface DepartmentWithCount extends DepartmentRow {
   agents?: Array<{ count: number }>
 }
 
-export default function DepartmentsPage() {
+export default function OrganizationPage() {
   const { departments: rawDepartments, loading, error } = useRealtimeDepartments()
   const departments = rawDepartments as DepartmentWithCount[]
   const { agents } = useRealtimeAgents()
@@ -66,9 +65,8 @@ export default function DepartmentsPage() {
     }
   })
 
-  const getAgentCount = (dept: DepartmentWithCount): number => {
-    return agentCountMap[dept.id] || 0
-  }
+  const totalAgents = agents.length
+  const getAgentCount = (dept: DepartmentWithCount): number => agentCountMap[dept.id] || 0
 
   const openCreateForm = () => {
     setFormData(DEFAULT_FORM)
@@ -167,11 +165,9 @@ export default function DepartmentsPage() {
 
   if (loading) {
     return (
-      <div className="p-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-pulse text-lg" style={{ color: 'var(--text-muted)' }}>
-            Loading departments...
-          </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-pulse text-lg" style={{ color: 'var(--text-muted)' }}>
+          Loading organization...
         </div>
       </div>
     )
@@ -179,17 +175,15 @@ export default function DepartmentsPage() {
 
   if (error) {
     return (
-      <div className="p-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div style={{ color: '#ef4444' }}>Error: {error}</div>
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div style={{ color: '#ef4444' }}>Error: {error}</div>
       </div>
     )
   }
 
   const DepartmentForm = ({ onSubmit, isEdit }: { onSubmit: (e: React.FormEvent) => void; isEdit: boolean }) => (
     <div
-      className="rounded-xl p-5 mb-6"
+      className="rounded-2xl p-5 mb-6"
       style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
     >
       <div className="flex items-center justify-between mb-4">
@@ -206,7 +200,7 @@ export default function DepartmentsPage() {
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>
+            <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-muted)' }}>
               Display Name *
             </label>
             <input
@@ -217,7 +211,7 @@ export default function DepartmentsPage() {
               placeholder="e.g. Sales Prospecting"
               className="w-full px-3 py-2 rounded-lg text-sm"
               style={{
-                backgroundColor: 'var(--bg)',
+                backgroundColor: 'var(--background)',
                 border: '1px solid var(--border)',
                 color: 'var(--text-primary)',
                 outline: 'none',
@@ -225,7 +219,7 @@ export default function DepartmentsPage() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>
+            <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-muted)' }}>
               Icon (emoji)
             </label>
             <input
@@ -235,7 +229,7 @@ export default function DepartmentsPage() {
               placeholder="🏢"
               className="w-full px-3 py-2 rounded-lg text-sm"
               style={{
-                backgroundColor: 'var(--bg)',
+                backgroundColor: 'var(--background)',
                 border: '1px solid var(--border)',
                 color: 'var(--text-primary)',
                 outline: 'none',
@@ -244,7 +238,7 @@ export default function DepartmentsPage() {
           </div>
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>
+          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-muted)' }}>
             Objective
           </label>
           <textarea
@@ -254,7 +248,7 @@ export default function DepartmentsPage() {
             rows={3}
             className="w-full px-3 py-2 rounded-lg text-sm resize-none"
             style={{
-              backgroundColor: 'var(--bg)',
+              backgroundColor: 'var(--background)',
               border: '1px solid var(--border)',
               color: 'var(--text-primary)',
               outline: 'none',
@@ -263,7 +257,7 @@ export default function DepartmentsPage() {
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>
+            <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-muted)' }}>
               Color
             </label>
             <div className="flex items-center gap-2">
@@ -280,7 +274,7 @@ export default function DepartmentsPage() {
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>
+            <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-muted)' }}>
               Sort Order
             </label>
             <input
@@ -289,7 +283,7 @@ export default function DepartmentsPage() {
               onChange={(e) => setFormData((f) => ({ ...f, sort_order: parseInt(e.target.value) || 0 }))}
               className="w-full px-3 py-2 rounded-lg text-sm"
               style={{
-                backgroundColor: 'var(--bg)',
+                backgroundColor: 'var(--background)',
                 border: '1px solid var(--border)',
                 color: 'var(--text-primary)',
                 outline: 'none',
@@ -316,7 +310,7 @@ export default function DepartmentsPage() {
             type="button"
             onClick={closeForm}
             className="px-4 py-2 rounded-lg text-sm font-medium"
-            style={{ backgroundColor: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer' }}
+            style={{ backgroundColor: 'var(--background)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer' }}
           >
             Cancel
           </button>
@@ -326,173 +320,194 @@ export default function DepartmentsPage() {
   )
 
   return (
-    <div className="p-4 md:p-8">
-      {/* Header */}
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1
-            className="text-3xl font-bold mb-2"
-            style={{
-              fontFamily: 'var(--font-heading)',
-              color: 'var(--text-primary)',
-              letterSpacing: '-1.5px',
-            }}
-          >
-            <Building2 className="inline-block w-8 h-8 mr-2 mb-1" />
-            Departments
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-            Organizational structure • {departments.length} department{departments.length !== 1 ? 's' : ''}
-          </p>
+    <div className="-m-6">
+      {/* Sticky header — matches openclaw-mission-control template style */}
+      <div
+        className="sticky top-0 z-30"
+        style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}
+      >
+        <div className="px-4 pt-2 pb-4 md:px-8 md:pt-3 md:pb-5">
+          <div className="flex flex-wrap items-center justify-between gap-6">
+            <div>
+              <div className="flex flex-wrap items-center gap-3">
+                <h1
+                  className="text-2xl font-semibold tracking-tight"
+                  style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-heading)' }}
+                >
+                  Organization
+                </h1>
+                <Badge variant="outline" className="flex items-center gap-2">
+                  <Building2 className="h-3.5 w-3.5" />
+                  The Digital Circus
+                </Badge>
+              </div>
+              <p className="mt-1 text-sm" style={{ color: 'var(--text-muted)' }}>
+                Manage departments and agent assignments across your workspace.
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-4 text-xs" style={{ color: 'var(--text-muted)' }}>
+                <span>
+                  <strong style={{ color: 'var(--text-primary)' }}>{departments.length}</strong> departments
+                </span>
+                <span>
+                  <strong style={{ color: 'var(--text-primary)' }}>{totalAgents}</strong> agents
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {!showCreateForm && editingId === null && (
+                <button
+                  onClick={openCreateForm}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
+                  style={{ backgroundColor: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                >
+                  <Plus className="w-4 h-4" />
+                  New Department
+                </button>
+              )}
+            </div>
+          </div>
         </div>
-        {!showCreateForm && editingId === null && (
-          <button
-            onClick={openCreateForm}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
-            style={{ backgroundColor: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer' }}
-          >
-            <Plus className="w-4 h-4" />
-            New Department
-          </button>
-        )}
       </div>
 
-      {/* Create form */}
-      {showCreateForm && <DepartmentForm onSubmit={handleCreate} isEdit={false} />}
+      {/* Content area */}
+      <div className="px-4 py-4 md:px-8 md:py-8">
+        {/* Create form */}
+        {showCreateForm && <DepartmentForm onSubmit={handleCreate} isEdit={false} />}
 
-      {/* Empty state */}
-      {departments.length === 0 && !showCreateForm && (
-        <div
-          className="rounded-xl p-12 text-center"
-          style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
-        >
-          <Building2 className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--text-muted)' }} />
-          <p className="text-lg font-medium mb-2" style={{ color: 'var(--text-primary)' }}>No departments yet</p>
-          <p className="text-sm mb-4" style={{ color: 'var(--text-muted)' }}>Create your first department to organize agents</p>
-          <button
-            onClick={openCreateForm}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium mx-auto"
-            style={{ backgroundColor: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer' }}
+        {/* Empty state */}
+        {departments.length === 0 && !showCreateForm && (
+          <div
+            className="rounded-2xl p-12 text-center"
+            style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
           >
-            <Plus className="w-4 h-4" />
-            Create Department
-          </button>
-        </div>
-      )}
+            <Building2 className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--text-muted)' }} />
+            <p className="text-lg font-medium mb-2" style={{ color: 'var(--text-primary)' }}>No departments yet</p>
+            <p className="text-sm mb-4" style={{ color: 'var(--text-muted)' }}>Create your first department to organize agents</p>
+            <button
+              onClick={openCreateForm}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium mx-auto"
+              style={{ backgroundColor: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer' }}
+            >
+              <Plus className="w-4 h-4" />
+              Create Department
+            </button>
+          </div>
+        )}
 
-      {/* Departments grid */}
-      {departments.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {departments.map((dept) => {
-            const agentCount = getAgentCount(dept)
-            const isEditing = editingId === dept.id
+        {/* Departments table — openclaw-mission-control style rounded card */}
+        {departments.length > 0 && (
+          <div
+            className="overflow-hidden rounded-2xl"
+            style={{ border: '1px solid var(--border)', backgroundColor: 'var(--card)' }}
+          >
+            {/* Table header */}
+            <div
+              className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"
+              style={{ borderBottom: '1px solid var(--border)' }}
+            >
+              <div>
+                <h2 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  Departments
+                </h2>
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                  Organizational structure and agent allocation.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-muted)' }}>
+                <Users className="h-4 w-4" />
+                {departments.length} total
+              </div>
+            </div>
 
-            return (
-              <div key={dept.id}>
-                {isEditing ? (
-                  <DepartmentForm onSubmit={handleEdit} isEdit={true} />
-                ) : (
+            {/* Table rows */}
+            <div>
+              {departments.map((dept, idx) => {
+                const agentCount = getAgentCount(dept)
+                const isEditing = editingId === dept.id
+                const isLast = idx === departments.length - 1
+
+                if (isEditing) {
+                  return (
+                    <div key={dept.id} className="px-5 py-4" style={!isLast ? { borderBottom: '1px solid var(--border)' } : undefined}>
+                      <DepartmentForm onSubmit={handleEdit} isEdit={true} />
+                    </div>
+                  )
+                }
+
+                return (
                   <div
-                    className="rounded-xl overflow-hidden"
+                    key={dept.id}
+                    className="flex items-center gap-4 px-5 py-4 transition-colors"
                     style={{
-                      backgroundColor: 'var(--card)',
-                      border: '1px solid var(--border)',
-                      borderLeft: `4px solid ${dept.color}`,
+                      borderBottom: !isLast ? '1px solid var(--border)' : undefined,
+                      borderLeft: `3px solid ${dept.color}`,
                     }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--surface)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
                   >
-                    {/* Card header */}
-                    <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          <DeptIcon name={dept.icon} className="w-6 h-6" style={{ color: dept.color }} />
-                          <div>
-                            <h3
-                              className="font-semibold"
-                              style={{ color: 'var(--text-primary)', fontSize: '15px' }}
-                            >
-                              {dept.display_name}
-                            </h3>
-                            <div className="flex items-center gap-1 mt-1">
-                              <Users className="w-3 h-3" style={{ color: 'var(--text-muted)' }} />
-                              <span
-                                className="text-xs"
-                                style={{ color: 'var(--text-muted)' }}
-                              >
-                                {agentCount} agent{agentCount !== 1 ? 's' : ''}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          className="w-3 h-3 rounded-full flex-shrink-0 mt-1"
-                          style={{ backgroundColor: dept.color }}
-                          title={dept.color}
-                        />
+                    {/* Icon + name */}
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div
+                        className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: `${dept.color}20` }}
+                      >
+                        <DeptIcon name={dept.icon} className="w-5 h-5" style={{ color: dept.color }} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
+                          {dept.display_name}
+                        </p>
+                        <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>
+                          {dept.objective || 'No objective defined'}
+                        </p>
                       </div>
                     </div>
 
-                    {/* Card body */}
-                    <div className="px-5 py-3" style={{ borderBottom: '1px solid var(--border)' }}>
-                      {dept.objective ? (
-                        <p
-                          className="text-sm"
-                          style={{
-                            color: 'var(--text-secondary)',
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                          }}
-                        >
-                          {dept.objective}
-                        </p>
-                      ) : (
-                        <p className="text-sm" style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                          No objective defined
-                        </p>
-                      )}
+                    {/* Agent count badge */}
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <Bot className="w-3.5 h-3.5" style={{ color: 'var(--text-muted)' }} />
+                      <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
+                        {agentCount} agent{agentCount !== 1 ? 's' : ''}
+                      </span>
                     </div>
 
-                    {/* Card footer */}
-                    <div className="px-5 py-3 flex items-center justify-end gap-2">
+                    {/* Actions */}
+                    <div className="flex items-center gap-1 flex-shrink-0">
                       <button
                         onClick={() => openEditForm(dept)}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium"
-                        style={{
-                          backgroundColor: 'var(--bg)',
-                          border: '1px solid var(--border)',
-                          color: 'var(--text-secondary)',
-                          cursor: 'pointer',
-                        }}
+                        className="p-1.5 rounded-lg transition-colors"
+                        style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
                         title="Edit department"
+                        onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.backgroundColor = 'var(--background)' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.backgroundColor = 'transparent' }}
                       >
-                        <Edit2 className="w-3 h-3" />
-                        Edit
+                        <Edit2 className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(dept)}
                         disabled={agentCount > 0}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium"
+                        className="p-1.5 rounded-lg transition-colors"
                         style={{
-                          backgroundColor: agentCount > 0 ? 'var(--bg)' : '#ef444415',
-                          border: `1px solid ${agentCount > 0 ? 'var(--border)' : '#ef444440'}`,
                           color: agentCount > 0 ? 'var(--text-muted)' : '#ef4444',
+                          background: 'none',
+                          border: 'none',
                           cursor: agentCount > 0 ? 'not-allowed' : 'pointer',
-                          opacity: agentCount > 0 ? 0.5 : 1,
+                          opacity: agentCount > 0 ? 0.4 : 1,
                         }}
                         title={agentCount > 0 ? 'Cannot delete: has assigned agents' : 'Delete department'}
+                        onMouseEnter={(e) => { if (agentCount === 0) { e.currentTarget.style.backgroundColor = '#ef444415' } }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
                       >
-                        <Trash2 className="w-3 h-3" />
-                        Delete
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      )}
+                )
+              })}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

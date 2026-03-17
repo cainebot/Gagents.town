@@ -107,7 +107,7 @@ export async function createBoard(
 export async function updateBoard(
   id: string,
   data: Partial<
-    Pick<BoardRow, 'name' | 'description' | 'card_type_filter' | 'state_filter'>
+    Pick<BoardRow, 'name' | 'description' | 'card_type_filter' | 'state_filter' | 'workflow_id'>
   >
 ): Promise<BoardRow> {
   const client = createServiceRoleClient()

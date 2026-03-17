@@ -300,7 +300,7 @@ export default function NodesPage() {
             color: 'var(--text-primary, #ffffff)',
           }}
         >
-          Nodes
+          Workspaces
         </h1>
         {!nodesLoading && (
           <span
