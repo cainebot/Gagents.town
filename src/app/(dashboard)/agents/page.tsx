@@ -10,6 +10,7 @@ import {
   Tag,
   Building2,
   ExternalLink,
+  Plus,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -17,6 +18,7 @@ import { AgentOrganigrama } from '@/components/AgentOrganigrama'
 import { useRealtimeAgents } from '@/hooks/useRealtimeAgents'
 import { useRealtimeDepartments } from '@/hooks/useRealtimeDepartments'
 import { StatusDot } from '@/components/atoms/StatusDot'
+import { AgentFormPanel } from '@/components/organisms/AgentFormPanel'
 import type { AgentRow, AgentStatus } from '@/types/supabase'
 
 const STATUS_COLORS: Record<AgentStatus, string> = {
@@ -62,6 +64,8 @@ export default function AgentsPage() {
   const { agents, loading } = useRealtimeAgents()
   const { departments } = useRealtimeDepartments()
   const [activeTab, setActiveTab] = useState<'cards' | 'organigrama'>('cards')
+  const [formMode, setFormMode] = useState<'create' | 'edit' | null>(null)
+  const [editAgent, setEditAgent] = useState<AgentRow | null>(null)
 
   const getDepartment = (departmentId?: string | null) => {
     if (!departmentId) return null
@@ -85,21 +89,43 @@ export default function AgentsPage() {
   return (
     <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="mb-6">
-        <h1
-          className="text-3xl font-bold mb-2"
+      <div className="mb-6" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div>
+          <h1
+            className="text-3xl font-bold mb-2"
+            style={{
+              fontFamily: 'var(--font-heading)',
+              color: 'var(--text-primary)',
+              letterSpacing: '-1.5px',
+            }}
+          >
+            <Users className="inline-block w-8 h-8 mr-2 mb-1" />
+            Agents
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+            Multi-agent system overview • {agents.length} agents configured
+          </p>
+        </div>
+        <button
+          onClick={() => { setFormMode('create'); setEditAgent(null) }}
           style={{
-            fontFamily: 'var(--font-heading)',
-            color: 'var(--text-primary)',
-            letterSpacing: '-1.5px',
+            background: 'var(--accent)',
+            color: 'white',
+            borderRadius: '8px',
+            padding: '8px 16px',
+            fontSize: '13px',
+            fontWeight: 600,
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            flexShrink: 0,
           }}
         >
-          <Users className="inline-block w-8 h-8 mr-2 mb-1" />
-          Agents
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-          Multi-agent system overview • {agents.length} agents configured
-        </p>
+          <Plus size={16} />
+          New Agent
+        </button>
       </div>
 
       {/* Tab switcher */}
@@ -141,6 +167,11 @@ export default function AgentsPage() {
       )}
 
       {/* Agents Grid */}
+      {activeTab === 'cards' && agents.length === 0 && !loading && (
+        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-muted)', fontSize: '14px' }}>
+          No agents configured. Click &ldquo;New Agent&rdquo; to create one.
+        </div>
+      )}
       {activeTab === 'cards' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {agents.map((agent) => {
@@ -155,7 +186,9 @@ export default function AgentsPage() {
                 style={{
                   backgroundColor: 'var(--card)',
                   border: '1px solid var(--border)',
+                  cursor: 'pointer',
                 }}
+                onClick={() => { setFormMode('edit'); setEditAgent(agent) }}
               >
                 {/* Header with status */}
                 <div
@@ -211,6 +244,20 @@ export default function AgentsPage() {
                             {agent.badge}
                           </span>
                         )}
+                        {agent.soul_dirty === true && (
+                          <span
+                            style={{
+                              fontSize: '9px',
+                              fontWeight: 600,
+                              background: 'rgba(255,214,10,0.15)',
+                              color: 'var(--warning, #FFD60A)',
+                              borderRadius: '4px',
+                              padding: '1px 6px',
+                            }}
+                          >
+                            Needs sync
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -225,6 +272,7 @@ export default function AgentsPage() {
                       color: agentColor,
                     }}
                     title="View full profile"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <ExternalLink className="w-3 h-3" />
                     Profile
@@ -320,6 +368,16 @@ export default function AgentsPage() {
             )
           })}
         </div>
+      )}
+
+      {/* Agent Form Panel (create / edit) */}
+      {formMode && (
+        <AgentFormPanel
+          mode={formMode}
+          agent={editAgent}
+          onClose={() => { setFormMode(null); setEditAgent(null) }}
+          onSaved={() => { setFormMode(null); setEditAgent(null) }}
+        />
       )}
     </div>
   )
