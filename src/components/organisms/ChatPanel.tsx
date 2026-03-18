@@ -44,7 +44,7 @@ function channelBadge(channel: AgentMessageRow['channel']): { label: string; bg:
     case 'tui':
       return { label: 'TUI', bg: 'rgba(50,215,75,0.15)', color: '#32D74B' }
     default:
-      return { label: channel.toUpperCase(), bg: 'rgba(82,82,82,0.12)', color: 'var(--text-muted)' }
+      return { label: (channel as string).toUpperCase(), bg: 'rgba(82,82,82,0.12)', color: 'var(--text-muted)' }
   }
 }
 

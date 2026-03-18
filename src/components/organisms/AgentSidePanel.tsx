@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { X, Send, AlertTriangle, Clock, MessageCircle } from 'lucide-react'
+import { X, AlertTriangle, Clock, MessageCircle } from 'lucide-react'
 import { StatusDot } from '@/components/atoms/StatusDot'
 import { PriorityBadge } from '@/components/atoms/PriorityBadge'
+import { ChatPanel } from '@/components/organisms/ChatPanel'
 import type { AgentListItem } from '@/contexts/AgentFilterContext'
 import type { CardRow, CursorPage } from '@/types/workflow'
 
@@ -84,12 +85,6 @@ function roleLabel(role?: string): string {
 interface ActivityItem {
   action: string
   created_at: string
-}
-
-interface ChatMessage {
-  text: string
-  sender: 'user'
-  ts: Date
 }
 
 const sectionLabelStyle: React.CSSProperties = {
@@ -190,15 +185,18 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
       .catch(() => setActivities([]))
   }, [agent.agent_id])
 
-  // Chat
-  const [chatMsg, setChatMsg] = useState('')
-  const [messages, setMessages] = useState<ChatMessage[]>([])
+  // Unread message count for Messages tab badge
+  const [unreadCount, setUnreadCount] = useState(0)
 
-  const handleSend = () => {
-    if (!chatMsg.trim()) return
-    setMessages((prev) => [...prev, { text: chatMsg, sender: 'user', ts: new Date() }])
-    setChatMsg('')
-  }
+  useEffect(() => {
+    fetch(`/api/agents/${agent.agent_id}/messages/topics`)
+      .then((r) => r.ok ? r.json() : { topics: [] })
+      .then((json: { topics: Array<{ name: string; unread_count: number }> }) => {
+        const total = json.topics.reduce((sum, t) => sum + t.unread_count, 0)
+        setUnreadCount(total)
+      })
+      .catch(() => setUnreadCount(0))
+  }, [agent.agent_id, activeTab])
 
   const statusPill = statusPillColors(agent.status)
   const agentBadge = badgeColors(agent.badge)
@@ -365,6 +363,23 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
             >
               <Icon size={13} />
               {tab.label}
+              {tab.id === 'messages' && unreadCount > 0 && (
+                <span style={{
+                  width: '16px',
+                  height: '16px',
+                  borderRadius: '50%',
+                  background: 'var(--accent)',
+                  color: '#fff',
+                  fontSize: '9px',
+                  fontWeight: 700,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginLeft: '4px',
+                }}>
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </button>
           )
         })}
@@ -499,89 +514,9 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
 
         {/* Messages tab */}
         {activeTab === 'messages' && (
-          <div style={{ padding: '16px' }}>
-            {messages.length === 0 ? (
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic' }}>Sin mensajes. Usa el campo de abajo para enviar uno.</div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {messages.map((m, i) => (
-                  <div key={i} style={{ fontSize: '12px', color: 'var(--text-secondary)', background: 'var(--surface)', borderRadius: '6px', padding: '8px 10px' }}>
-                    {m.text}
-                    <div style={{ fontSize: '9px', color: 'var(--text-muted)', marginTop: '4px' }}>{relativeTime(m.ts.toISOString())}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <ChatPanel agentId={agent.agent_id} agentName={agent.name} />
         )}
       </div>
-
-      {/* SEND MESSAGE TO [NAME] — only visible on Messages tab */}
-      {activeTab === 'messages' && <div
-        style={{
-          borderTop: '1px solid var(--border)',
-          background: 'var(--surface-elevated, #242424)',
-          padding: '12px 16px',
-          flexShrink: 0,
-        }}
-      >
-        <div style={{ ...sectionLabelStyle, marginBottom: '8px' }}>
-          SEND MESSAGE TO {agent.name.toUpperCase()}
-        </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
-          <textarea
-            value={chatMsg}
-            onChange={(e) => setChatMsg(e.target.value)}
-            placeholder={`Message ${agent.name}... (@ to mention)`}
-            rows={1}
-            style={{
-              flex: 1,
-              fontSize: '13px',
-              fontFamily: 'var(--font-body)',
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-              borderRadius: '6px',
-              minHeight: '36px',
-              maxHeight: '100px',
-              resize: 'none',
-              color: 'var(--text-primary)',
-              padding: '8px 10px',
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-            onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
-            onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault()
-                handleSend()
-              }
-            }}
-          />
-          <button
-            onClick={handleSend}
-            disabled={!chatMsg.trim()}
-            aria-label="Enviar mensaje"
-            style={{
-              width: '36px',
-              height: '36px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'transparent',
-              border: 'none',
-              cursor: chatMsg.trim() ? 'pointer' : 'not-allowed',
-              color: chatMsg.trim() ? 'var(--accent)' : 'var(--text-muted)',
-              opacity: chatMsg.trim() ? 1 : 0.4,
-              flexShrink: 0,
-              borderRadius: '6px',
-              padding: 0,
-            }}
-          >
-            <Send size={16} />
-          </button>
-        </div>
-      </div>}
     </div>
   )
 }
