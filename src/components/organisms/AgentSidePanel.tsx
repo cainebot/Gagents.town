@@ -183,9 +183,9 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
   const [activities, setActivities] = useState<ActivityItem[]>([])
 
   useEffect(() => {
-    fetch(`/api/activities?actor=${agent.agent_id}&limit=5`)
-      .then((r) => r.ok ? r.json() : [])
-      .then((items: ActivityItem[]) => setActivities(Array.isArray(items) ? items.slice(0, 5) : []))
+    fetch(`/api/activities?agent=${agent.agent_id}&limit=5`)
+      .then((r) => r.ok ? r.json() : { activities: [] })
+      .then((json: { activities?: ActivityItem[] }) => setActivities(Array.isArray(json.activities) ? json.activities.slice(0, 5) : []))
       .catch(() => setActivities([]))
   }, [agent.agent_id])
 
@@ -216,12 +216,12 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
   const [systemEvents, setSystemEvents] = useState<Array<{ description: string; created_at: string }>>([])
 
   useEffect(() => {
-    fetch(`/api/activities?actor=${agent.agent_id}&type=system_event&limit=10`)
-      .then((r) => r.ok ? r.json() : [])
-      .then((items: Array<{ action: string; created_at: string }>) => {
+    fetch(`/api/activities?agent=${agent.agent_id}&limit=10`)
+      .then((r) => r.ok ? r.json() : { activities: [] })
+      .then((json: { activities?: Array<{ description: string; created_at: string }> }) => {
         setSystemEvents(
-          Array.isArray(items)
-            ? items.map((item) => ({ description: item.action, created_at: item.created_at }))
+          Array.isArray(json.activities)
+            ? json.activities.map((item) => ({ description: item.description, created_at: item.created_at }))
             : []
         )
       })

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient, createServiceRoleClient } from '@/lib/supabase'
+import { validateAgentKey } from '@/lib/agent-auth'
 import type { AgentMessageRow } from '@/types/supabase'
 
 export const dynamic = 'force-dynamic'
@@ -54,6 +55,16 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+
+  // Validate agent key if request comes from an agent (x-agent-key header)
+  const agentKey = request.headers.get('x-agent-key')
+  if (agentKey) {
+    const { valid } = await validateAgentKey(agentKey)
+    if (!valid) {
+      return NextResponse.json({ error: 'Invalid agent key' }, { status: 401 })
+    }
+  }
+
   const body = await request.json()
 
   const text = body.text?.trim()

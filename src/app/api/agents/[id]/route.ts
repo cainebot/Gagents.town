@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient, createServiceRoleClient } from '@/lib/supabase'
+import { validateAgentKey } from '@/lib/agent-auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -41,6 +42,16 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+
+  // Validate agent key if request comes from an agent (x-agent-key header)
+  const agentKey = request.headers.get('x-agent-key')
+  if (agentKey) {
+    const { valid } = await validateAgentKey(agentKey)
+    if (!valid) {
+      return NextResponse.json({ error: 'Invalid agent key' }, { status: 401 })
+    }
+  }
+
   const body = await request.json()
 
   // Filter to only editable fields — never touch bridge-managed fields
