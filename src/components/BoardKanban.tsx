@@ -98,6 +98,7 @@ export function BoardKanban({
           justifyContent: 'flex-end',
           alignItems: 'center',
           marginBottom: '8px',
+          padding: '0 24px',
           gap: '8px',
         }}
       >
@@ -135,7 +136,7 @@ export function BoardKanban({
           gap: '12px',
           overflowX: 'auto',
           overflowY: 'visible',
-          padding: '4px 0 12px 0',
+          padding: '4px 24px 12px 24px',
           alignItems: 'flex-start',
         }}
       >

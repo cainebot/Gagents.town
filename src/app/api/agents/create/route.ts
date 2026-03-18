@@ -88,7 +88,10 @@ export async function POST(request: NextRequest) {
       soul_config: (body.soul_config as Record<string, unknown>) || {},
       soul_dirty: true,
       api_key_hash: apiKeyHash,
-      metadata: {},
+      metadata: {
+        avatar_type: (body.avatar_type as string) || 'emoji',
+        avatar_bg_color: (body.avatar_bg_color as string) || '#475569',
+      },
     })
     .select('*')
     .single()

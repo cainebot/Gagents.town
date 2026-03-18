@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { X, Send } from 'lucide-react'
+import { X, Send, AlertTriangle, Clock, MessageCircle } from 'lucide-react'
 import { StatusDot } from '@/components/atoms/StatusDot'
 import { PriorityBadge } from '@/components/atoms/PriorityBadge'
 import type { AgentListItem } from '@/contexts/AgentFilterContext'
 import type { CardRow, CursorPage } from '@/types/workflow'
 
-// ---- Helper ----
+// ---- Helpers ----
 
 function relativeTime(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime()
@@ -17,6 +17,66 @@ function relativeTime(iso: string): string {
   if (diffH < 24) return `hace ${diffH}h`
   const diffD = Math.floor(diffH / 24)
   return `hace ${diffD}d`
+}
+
+function statusLabel(status: string): string {
+  switch (status) {
+    case 'working':
+    case 'thinking':
+      return 'WORKING'
+    case 'paused':
+      return 'PAUSED'
+    case 'idle':
+    case 'queued':
+      return 'IDLE'
+    case 'offline':
+      return 'OFFLINE'
+    case 'error':
+      return 'ERROR'
+    default:
+      return 'OFFLINE'
+  }
+}
+
+function statusPillColors(status: string): { bg: string; color: string } {
+  switch (status) {
+    case 'working':
+    case 'thinking':
+      return { bg: 'rgba(50, 215, 75, 0.15)', color: 'var(--positive, #32D74B)' }
+    case 'paused':
+      return { bg: 'rgba(255, 214, 10, 0.15)', color: 'var(--warning, #FFD60A)' }
+    case 'idle':
+    case 'queued':
+      return { bg: 'rgba(10, 132, 255, 0.15)', color: 'var(--info, #0A84FF)' }
+    default:
+      return { bg: 'rgba(255, 69, 58, 0.15)', color: 'var(--negative, #FF453A)' }
+  }
+}
+
+function badgeColors(badge?: string): { bg: string; color: string } {
+  switch (badge) {
+    case 'LEAD':
+      return { bg: 'rgba(255,59,48,0.12)', color: '#FF3B30' }
+    case 'SPC':
+      return { bg: 'rgba(249,115,22,0.12)', color: '#f97316' }
+    case 'INT':
+      return { bg: 'rgba(10,132,255,0.12)', color: '#0A84FF' }
+    default:
+      return { bg: 'rgba(82,82,82,0.12)', color: 'var(--text-muted)' }
+  }
+}
+
+function roleLabel(role?: string): string {
+  switch (role) {
+    case 'lead':
+      return 'Scrum Master'
+    case 'specialist':
+      return 'Specialist'
+    case 'intern':
+      return 'Intern'
+    default:
+      return role ?? 'Agent'
+  }
 }
 
 // ---- Types ----
@@ -32,8 +92,6 @@ interface ChatMessage {
   ts: Date
 }
 
-// ---- Section label style (reused across all sections) ----
-
 const sectionLabelStyle: React.CSSProperties = {
   fontSize: '10px',
   fontWeight: 700,
@@ -43,24 +101,21 @@ const sectionLabelStyle: React.CSSProperties = {
   marginBottom: '8px',
 }
 
-// ---- Props ----
-
 interface AgentSidePanelProps {
   agent: AgentListItem
   boardId: string
   onClose: () => void
 }
 
-// ---- Component ----
+type TabId = 'details' | 'timeline' | 'messages'
 
 export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps) {
-  // Panel slide CSS — always visible when rendered (parent controls mount)
   const panelStyle: React.CSSProperties = {
     position: 'fixed',
     right: 0,
-    top: '48px',
+    top: 0,
     bottom: 0,
-    width: '360px',
+    width: '380px',
     background: 'var(--surface-elevated, #242424)',
     borderLeft: '1px solid var(--border)',
     zIndex: 49,
@@ -72,13 +127,21 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
     flexDirection: 'column',
   }
 
-  // ---- Section 2: Soul Description ----
+  const [activeTab, setActiveTab] = useState<TabId>('details')
+
+  // ESC to close
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onClose])
+
+  // Description editing
   const [isEditingDesc, setIsEditingDesc] = useState(false)
   const [descDraft, setDescDraft] = useState(agent.about ?? '')
   const [descSaving, setDescSaving] = useState(false)
   const [descError, setDescError] = useState<string | null>(null)
 
-  // Reset draft when agent changes
   useEffect(() => {
     setDescDraft(agent.about ?? '')
     setIsEditingDesc(false)
@@ -104,7 +167,7 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
     }
   }, [agent.agent_id, descDraft])
 
-  // ---- Section 3: Assigned Cards ----
+  // Assigned Cards
   const [assignedCards, setAssignedCards] = useState<CardRow[]>([])
   const [cardsLoading, setCardsLoading] = useState(true)
 
@@ -117,7 +180,7 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
       .finally(() => setCardsLoading(false))
   }, [agent.agent_id, boardId])
 
-  // ---- Section 4: Recent Activity ----
+  // Recent Activity
   const [activities, setActivities] = useState<ActivityItem[]>([])
 
   useEffect(() => {
@@ -127,7 +190,7 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
       .catch(() => setActivities([]))
   }, [agent.agent_id])
 
-  // ---- Section 5: Chat ----
+  // Chat
   const [chatMsg, setChatMsg] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([])
 
@@ -137,87 +200,40 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
     setChatMsg('')
   }
 
-  // ---- Render ----
+  const statusPill = statusPillColors(agent.status)
+  const agentBadge = badgeColors(agent.badge)
+  const attentionCount = assignedCards.length
 
   return (
     <div style={panelStyle} role="complementary" aria-label={`Panel de ${agent.name}`}>
 
-      {/* Section 1 — Header */}
+      {/* AGENT PROFILE header bar */}
       <div
         style={{
-          padding: '16px',
+          padding: '12px 16px',
           borderBottom: '1px solid var(--border)',
-          flexShrink: 0,
           display: 'flex',
-          alignItems: 'flex-start',
-          gap: '12px',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexShrink: 0,
         }}
       >
-        {/* Avatar */}
         <span
           style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            background: 'var(--surface)',
-            color: 'var(--text-secondary)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '18px',
-            flexShrink: 0,
-            fontFamily: 'var(--font-body)',
+            fontSize: '11px',
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            color: 'var(--text-muted)',
+            fontFamily: 'var(--font-heading)',
           }}
-          aria-hidden="true"
         >
-          {agent.emoji || agent.name.charAt(0).toUpperCase()}
+          AGENT PROFILE
         </span>
-
-        {/* Name + status */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-            <span
-              style={{
-                fontSize: '16px',
-                fontWeight: 700,
-                color: 'var(--text-primary)',
-                fontFamily: 'var(--font-heading)',
-                lineHeight: 1.2,
-              }}
-            >
-              {agent.name}
-            </span>
-            {agent.badge === 'LEAD' && (
-              <span
-                style={{
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  background: 'rgba(255,59,48,0.10)',
-                  color: 'var(--accent)',
-                  borderRadius: '9999px',
-                  padding: '2px 6px',
-                  letterSpacing: '0.8px',
-                }}
-              >
-                Lead
-              </span>
-            )}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
-            <StatusDot status={agent.status} variant="agent" />
-            <span style={{ fontSize: '10px', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              {agent.status}
-            </span>
-          </div>
-        </div>
-
-        {/* Close button */}
         <button
           onClick={onClose}
           style={{
-            width: '32px',
-            height: '32px',
+            width: '28px',
+            height: '28px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -226,7 +242,6 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
             cursor: 'pointer',
             color: 'var(--text-muted)',
             borderRadius: '4px',
-            flexShrink: 0,
           }}
           aria-label="Cerrar panel"
           onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-primary)')}
@@ -236,220 +251,288 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
         </button>
       </div>
 
-      {/* Section 2 — Soul Description */}
+      {/* Profile: horizontal layout — avatar left, info right */}
       <div
         style={{
           padding: '16px',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '14px',
           borderBottom: '1px solid var(--border)',
         }}
       >
-        <div style={sectionLabelStyle}>DESCRIPCIÓN</div>
+        {/* Avatar */}
+        <span
+          style={{
+            width: '48px',
+            height: '48px',
+            borderRadius: '50%',
+            background: 'var(--surface)',
+            color: 'var(--text-secondary)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '24px',
+            fontFamily: 'var(--font-body)',
+            flexShrink: 0,
+          }}
+        >
+          {agent.emoji || agent.name.charAt(0).toUpperCase()}
+        </span>
 
-        {/* Unsaved indicator */}
-        {isEditingDesc && (
-          <span
-            aria-label="Cambios sin guardar"
-            style={{
-              display: 'inline-block',
-              width: '6px',
-              height: '6px',
-              borderRadius: '50%',
-              background: 'var(--warning)',
-              marginBottom: '6px',
-            }}
-          />
-        )}
-
-        {isEditingDesc ? (
-          <textarea
-            autoFocus
-            value={descDraft}
-            onChange={(e) => setDescDraft(e.target.value)}
-            onBlur={handleDescSave}
-            disabled={descSaving}
-            rows={4}
-            style={{
-              width: '100%',
-              fontSize: '13px',
-              fontFamily: 'var(--font-body)',
-              color: 'var(--text-secondary)',
-              lineHeight: 1.5,
-              background: 'transparent',
-              border: '1px solid var(--accent)',
-              borderRadius: '4px',
-              padding: '6px 8px',
-              resize: 'vertical',
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-          />
-        ) : (
-          <div
-            onClick={() => setIsEditingDesc(true)}
-            style={{
-              fontSize: '13px',
-              color: descDraft ? 'var(--text-secondary)' : 'var(--text-muted)',
-              fontStyle: descDraft ? 'normal' : 'italic',
-              lineHeight: 1.5,
-              cursor: 'text',
-              minHeight: '24px',
-            }}
-          >
-            {descDraft || 'Sin descripción.'}
+        {/* Info column */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Name */}
+          <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'var(--font-heading)', lineHeight: 1.2 }}>
+            {agent.name}
           </div>
-        )}
 
-        {descError && (
-          <div
-            style={{
-              marginTop: '6px',
-              fontSize: '12px',
-              color: 'var(--negative)',
-            }}
-          >
-            {descError}
+          {/* Role */}
+          <div style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-secondary)', fontFamily: 'var(--font-body)', marginTop: '2px' }}>
+            {roleLabel(agent.role)}
           </div>
-        )}
-      </div>
 
-      {/* Section 3 — Assigned Cards */}
-      <div
-        style={{
-          padding: '16px',
-          borderBottom: '1px solid var(--border)',
-        }}
-      >
-        <div style={sectionLabelStyle}>TARJETAS ASIGNADAS</div>
-
-        {cardsLoading ? (
-          <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-            Cargando…
-          </div>
-        ) : assignedCards.length === 0 ? (
-          <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-            Sin tarjetas asignadas en este tablero.
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {assignedCards.map((card) => (
-              <div
-                key={card.card_id}
+          {/* Badge + Status pill row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
+            {agent.badge && (
+              <span
                 style={{
-                  background: 'var(--surface)',
-                  borderRadius: 'var(--radius-sm, 4px)',
-                  padding: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  fontFamily: 'var(--font-body)',
+                  textTransform: 'uppercase',
+                  background: agentBadge.bg,
+                  color: agentBadge.color,
+                  borderRadius: '9999px',
+                  padding: '3px 10px',
                 }}
               >
-                <PriorityBadge priority={card.priority} size="sm" />
-                {card.code && (
-                  <span
-                    style={{
-                      fontSize: '10px',
-                      color: 'var(--text-muted)',
-                      fontWeight: 700,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {card.code}
-                  </span>
-                )}
-                <span
+                {agent.badge === 'LEAD' ? 'Lead' : agent.badge === 'SPC' ? 'Specialist' : agent.badge === 'INT' ? 'Intern' : agent.badge}
+              </span>
+            )}
+
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontSize: '10px',
+                fontWeight: 700,
+                fontFamily: 'var(--font-body)',
+                background: statusPill.bg,
+                color: statusPill.color,
+                borderRadius: '9999px',
+                padding: '3px 12px',
+              }}
+            >
+              <StatusDot status={agent.status} variant="agent" />
+              {statusLabel(agent.status)}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs: Details | Timeline | Messages — right after profile */}
+      <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', padding: '0 16px', flexShrink: 0 }}>
+        {([
+          { id: 'details' as TabId, label: 'Details', icon: AlertTriangle },
+          { id: 'timeline' as TabId, label: 'Timeline', icon: Clock },
+          { id: 'messages' as TabId, label: 'Messages', icon: MessageCircle },
+        ]).map((tab) => {
+          const isActive = activeTab === tab.id
+          const Icon = tab.icon
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '4px',
+                padding: '10px 4px',
+                background: 'none',
+                border: 'none',
+                borderBottom: isActive ? '2px solid var(--accent)' : '2px solid transparent',
+                cursor: 'pointer',
+                fontSize: '11px',
+                fontWeight: isActive ? 600 : 500,
+                fontFamily: 'var(--font-body)',
+                color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
+                transition: 'color 0.1s',
+              }}
+            >
+              <Icon size={13} />
+              {tab.label}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Tab content — scrollable */}
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+
+        {/* Details tab: STATUS REASON + ABOUT + SKILLS */}
+        {activeTab === 'details' && (
+          <>
+            {/* STATUS REASON */}
+            <div style={{ padding: '16px', borderBottom: '1px solid var(--border)' }}>
+              <div style={sectionLabelStyle}>STATUS REASON</div>
+              <div
+                style={{
+                  borderLeft: '3px solid var(--border)',
+                  paddingLeft: '12px',
+                  fontSize: '12px',
+                  fontFamily: 'var(--font-body)',
+                  color: 'var(--text-secondary)',
+                  lineHeight: 1.5,
+                  fontStyle: 'italic',
+                }}
+              >
+                {agent.status === 'working' || agent.status === 'thinking'
+                  ? 'Agent is currently working on assigned tasks.'
+                  : agent.status === 'idle'
+                  ? 'Agent is idle, ready for new tasks.'
+                  : agent.status === 'paused'
+                  ? 'Agent is paused by operator.'
+                  : 'Agent is offline or disconnected.'}
+              </div>
+            </div>
+
+            {/* ABOUT */}
+            <div style={{ padding: '16px', borderBottom: '1px solid var(--border)' }}>
+              <div style={sectionLabelStyle}>ABOUT</div>
+              {isEditingDesc && (
+                <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: 'var(--warning)', marginBottom: '6px' }} />
+              )}
+              {isEditingDesc ? (
+                <textarea
+                  autoFocus
+                  value={descDraft}
+                  onChange={(e) => setDescDraft(e.target.value)}
+                  onBlur={handleDescSave}
+                  disabled={descSaving}
+                  rows={5}
+                  style={{
+                    width: '100%',
+                    fontSize: '13px',
+                    fontFamily: 'var(--font-body)',
+                    color: 'var(--text-secondary)',
+                    lineHeight: 1.5,
+                    background: 'transparent',
+                    border: '1px solid var(--accent)',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    resize: 'vertical',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              ) : (
+                <div
+                  onClick={() => setIsEditingDesc(true)}
                   style={{
                     fontSize: '13px',
-                    fontWeight: 500,
-                    color: 'var(--text-primary)',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    flex: 1,
+                    color: descDraft ? 'var(--text-secondary)' : 'var(--text-muted)',
+                    fontStyle: descDraft ? 'normal' : 'italic',
+                    lineHeight: 1.6,
+                    cursor: 'text',
+                    minHeight: '24px',
                   }}
                 >
-                  {card.title}
-                </span>
+                  {descDraft || 'Sin descripción.'}
+                </div>
+              )}
+              {descError && (
+                <div style={{ marginTop: '6px', fontSize: '12px', color: 'var(--negative)' }}>{descError}</div>
+              )}
+            </div>
+
+            {/* SKILLS */}
+            <div style={{ padding: '16px' }}>
+              <div style={sectionLabelStyle}>SKILLS</div>
+              {agent.skills && agent.skills.length > 0 ? (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                  {agent.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: 500,
+                        fontFamily: 'var(--font-body)',
+                        background: 'var(--surface)',
+                        color: 'var(--text-secondary)',
+                        border: '1px solid var(--border)',
+                        borderRadius: '4px',
+                        padding: '3px 8px',
+                      }}
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic' }}>Sin skills definidas.</div>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* Timeline tab */}
+        {activeTab === 'timeline' && (
+          <div style={{ padding: '16px' }}>
+            {activities.length === 0 ? (
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic' }}>Sin actividad reciente.</div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {activities.map((item, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: 1.4 }}>{item.action}</span>
+                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', flexShrink: 0 }}>{relativeTime(item.created_at)}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
+          </div>
+        )}
+
+        {/* Messages tab */}
+        {activeTab === 'messages' && (
+          <div style={{ padding: '16px' }}>
+            {messages.length === 0 ? (
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic' }}>Sin mensajes. Usa el campo de abajo para enviar uno.</div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {messages.map((m, i) => (
+                  <div key={i} style={{ fontSize: '12px', color: 'var(--text-secondary)', background: 'var(--surface)', borderRadius: '6px', padding: '8px 10px' }}>
+                    {m.text}
+                    <div style={{ fontSize: '9px', color: 'var(--text-muted)', marginTop: '4px' }}>{relativeTime(m.ts.toISOString())}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* Section 4 — Recent Activity */}
-      <div
+      {/* SEND MESSAGE TO [NAME] — only visible on Messages tab */}
+      {activeTab === 'messages' && <div
         style={{
-          padding: '16px',
-          borderBottom: '1px solid var(--border)',
-          flex: 1,
-        }}
-      >
-        <div style={sectionLabelStyle}>ACTIVIDAD RECIENTE</div>
-
-        {activities.length === 0 ? (
-          <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-            Sin actividad reciente.
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {activities.map((item, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
-                <span style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>
-                  {item.action}
-                </span>
-                <span style={{ fontSize: '10px', color: 'var(--text-muted)', flexShrink: 0 }}>
-                  {relativeTime(item.created_at)}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Section 5 — Chat Input (sticky bottom) */}
-      <div
-        style={{
-          position: 'sticky',
-          bottom: 0,
           borderTop: '1px solid var(--border)',
           background: 'var(--surface-elevated, #242424)',
           padding: '12px 16px',
           flexShrink: 0,
         }}
       >
-        {/* Chat message history (local only) */}
-        {messages.length > 0 && (
-          <div
-            style={{
-              marginBottom: '8px',
-              maxHeight: '120px',
-              overflowY: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '4px',
-            }}
-          >
-            {messages.map((m, i) => (
-              <div
-                key={i}
-                style={{
-                  fontSize: '12px',
-                  color: 'var(--text-secondary)',
-                  background: 'var(--surface)',
-                  borderRadius: '4px',
-                  padding: '4px 8px',
-                }}
-              >
-                {m.text}
-              </div>
-            ))}
-          </div>
-        )}
-
+        <div style={{ ...sectionLabelStyle, marginBottom: '8px' }}>
+          SEND MESSAGE TO {agent.name.toUpperCase()}
+        </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
           <textarea
             value={chatMsg}
             onChange={(e) => setChatMsg(e.target.value)}
-            placeholder="Escribe un mensaje…"
+            placeholder={`Message ${agent.name}... (@ to mention)`}
             rows={1}
             style={{
               flex: 1,
@@ -466,8 +549,9 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
               outline: 'none',
               boxSizing: 'border-box',
             }}
+            onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
+            onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
             onKeyDown={(e) => {
-              // Enter without Shift sends
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault()
                 handleSend()
@@ -497,7 +581,7 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
             <Send size={16} />
           </button>
         </div>
-      </div>
+      </div>}
     </div>
   )
 }

@@ -721,7 +721,7 @@ export function BoardFilterBar({
         alignItems: 'center',
         gap: '6px',
         padding: '0 4px',
-        background: 'var(--surface-elevated, var(--surface))',
+        background: 'transparent',
         borderBottom: '1px solid var(--border)',
         marginBottom: '8px',
         flexShrink: 0,

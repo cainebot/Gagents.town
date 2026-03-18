@@ -12,6 +12,7 @@ export interface AgentListItem {
   role?: string      // AgentRole — optional
   badge?: string     // AgentBadge — optional
   about?: string | null
+  skills?: string[]
 }
 
 interface AgentFilterContextValue {

@@ -66,6 +66,17 @@ export async function PUT(
 
   const supabase = createServiceRoleClient()
 
+  // Handle metadata merge (avatar_type, avatar_bg_color, etc.)
+  // Merge incoming metadata with existing to avoid wiping profile_photo_url
+  if ('metadata' in body && typeof body.metadata === 'object') {
+    const { data: current } = await supabase
+      .from('agents')
+      .select('metadata')
+      .eq('agent_id', id)
+      .single()
+    finalUpdates.metadata = { ...((current?.metadata as Record<string, unknown>) ?? {}), ...body.metadata }
+  }
+
   const { data, error } = await supabase
     .from('agents')
     .update(finalUpdates)

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { X, Plus, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react'
 import { ConfirmActionDialog } from '@/components/ui/confirm-action-dialog'
+import { AvatarPickerModal } from '@/components/organisms/AvatarPickerModal'
 import { useRealtimeDepartments } from '@/hooks/useRealtimeDepartments'
 import type { AgentRow, AgentRole, NodeRow } from '@/types/supabase'
 
@@ -68,6 +69,13 @@ function nodeStatusColor(status: string): string {
 export function AgentFormPanel({ mode, agent, onClose, onSaved }: AgentFormPanelProps) {
   const { departments } = useRealtimeDepartments()
 
+  // ESC to close
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onClose])
+
   // Nodes state
   const [nodes, setNodes] = useState<NodeRow[]>([])
   const [nodesLoading, setNodesLoading] = useState(true)
@@ -87,6 +95,15 @@ export function AgentFormPanel({ mode, agent, onClose, onSaved }: AgentFormPanel
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Avatar picker
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false)
+  const [avatarType, setAvatarType] = useState<'emoji' | 'photo'>(
+    ((agent?.metadata as Record<string, string>)?.avatar_type as 'emoji' | 'photo') ?? 'emoji'
+  )
+  const [avatarBgColor, setAvatarBgColor] = useState<string>(
+    ((agent?.metadata as Record<string, string>)?.avatar_bg_color as string) ?? '#475569'
+  )
 
   // Submission state
   const [saving, setSaving] = useState(false)
@@ -211,6 +228,8 @@ export function AgentFormPanel({ mode, agent, onClose, onSaved }: AgentFormPanel
       if (departmentId) body.department_id = departmentId
       if (skills.length > 0) body.skills = skills
       if (about.trim()) body.about = about.trim()
+      body.avatar_type = avatarType
+      body.avatar_bg_color = avatarBgColor
 
       const res = await fetch('/api/agents/create', {
         method: 'POST',
@@ -268,6 +287,12 @@ export function AgentFormPanel({ mode, agent, onClose, onSaved }: AgentFormPanel
         JSON.stringify([...skills].sort()) === JSON.stringify([...(agent.skills ?? [])].sort())
       if (!skillsSame) changed.skills = skills
       if (about.trim() !== (agent.about ?? '').trim()) changed.about = about.trim()
+
+      // Avatar metadata
+      const currentMeta = (agent.metadata ?? {}) as Record<string, string>
+      if (avatarType !== (currentMeta.avatar_type ?? 'emoji') || avatarBgColor !== (currentMeta.avatar_bg_color ?? '#475569')) {
+        changed.metadata = { avatar_type: avatarType, avatar_bg_color: avatarBgColor }
+      }
 
       if (Object.keys(changed).length > 0) {
         const res = await fetch(`/api/agents/${agent.agent_id}`, {
@@ -527,17 +552,17 @@ export function AgentFormPanel({ mode, agent, onClose, onSaved }: AgentFormPanel
         {/* Scrollable form body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-          {/* Photo section */}
+          {/* Avatar section — click opens AvatarPickerModal */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
             <button
               type="button"
-              onClick={handlePhotoClick}
+              onClick={() => setShowAvatarPicker(true)}
               style={{
                 width: '64px',
                 height: '64px',
                 borderRadius: '50%',
-                background: 'var(--surface)',
-                border: '2px dashed var(--border)',
+                background: avatarDisplay ? 'var(--surface)' : avatarBgColor,
+                border: '2px solid var(--border)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -546,9 +571,9 @@ export function AgentFormPanel({ mode, agent, onClose, onSaved }: AgentFormPanel
                 padding: 0,
                 flexShrink: 0,
               }}
-              aria-label="Upload profile photo"
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
+              aria-label="Choose avatar"
+              onMouseEnter={(e) => { e.currentTarget.style.borderStyle = 'dashed'; e.currentTarget.style.borderColor = 'var(--accent)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderStyle = 'solid'; e.currentTarget.style.borderColor = 'var(--border)' }}
             >
               {avatarDisplay ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -561,14 +586,7 @@ export function AgentFormPanel({ mode, agent, onClose, onSaved }: AgentFormPanel
                 <span style={{ fontSize: '28px', lineHeight: 1 }}>{avatarFallback}</span>
               )}
             </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              onChange={handlePhotoChange}
-            />
-            <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Click to upload photo</span>
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Click to upload profile image</span>
           </div>
 
           {/* Agent ID (create only) */}
@@ -609,21 +627,6 @@ export function AgentFormPanel({ mode, agent, onClose, onSaved }: AgentFormPanel
             />
           </div>
 
-          {/* Emoji */}
-          <div>
-            <div style={sectionLabelStyle}>Emoji</div>
-            <input
-              type="text"
-              value={emoji}
-              onChange={(e) => setEmoji(e.target.value)}
-              placeholder={name ? name.charAt(0).toUpperCase() : '🤖'}
-              style={{ ...inputStyle, width: '72px' }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
-              onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
-              maxLength={4}
-            />
-          </div>
-
           {/* Workspace / Node */}
           <div>
             <div style={sectionLabelStyle}>Workspace (Node)</div>
@@ -637,7 +640,8 @@ export function AgentFormPanel({ mode, agent, onClose, onSaved }: AgentFormPanel
                 <select
                   value={nodeId}
                   onChange={(e) => setNodeId(e.target.value)}
-                  style={selectStyle}
+                  disabled={mode === 'edit'}
+                  style={{ ...selectStyle, opacity: mode === 'edit' ? 0.6 : 1, cursor: mode === 'edit' ? 'not-allowed' : 'pointer' }}
                   onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
                   onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
                 >
@@ -979,6 +983,30 @@ export function AgentFormPanel({ mode, agent, onClose, onSaved }: AgentFormPanel
           cancelLabel="Cancelar"
         />
       )}
+
+      {/* Avatar Picker Modal */}
+      <AvatarPickerModal
+        open={showAvatarPicker}
+        onClose={() => setShowAvatarPicker(false)}
+        agentName={name}
+        currentEmoji={emoji}
+        currentPhotoPreview={photoPreview ?? existingPhotoUrl}
+        currentAvatarType={avatarType}
+        currentBgColor={avatarBgColor}
+        onConfirm={(result) => {
+          setEmoji(result.emoji)
+          setAvatarType(result.avatarType)
+          setAvatarBgColor(result.bgColor)
+          if (result.photoFile) {
+            setPhotoFile(result.photoFile)
+            setPhotoPreview(result.photoPreview)
+          } else if (result.avatarType === 'emoji') {
+            // Switching to emoji clears photo preview (but doesn't delete from storage)
+            setPhotoPreview(null)
+          }
+          setShowAvatarPicker(false)
+        }}
+      />
     </>
   )
 }

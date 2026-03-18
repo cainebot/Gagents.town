@@ -331,7 +331,7 @@ function BoardPageInner() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Board selector dropdown */}
       {allBoards.length > 0 && (
-        <div style={{ position: 'relative', display: 'inline-block', marginTop: '12px', marginBottom: '4px' }}>
+        <div style={{ position: 'relative', display: 'inline-block', marginTop: '12px', marginBottom: '4px', padding: '0 24px' }}>
           <button
             onClick={() => setShowBoardDropdown(!showBoardDropdown)}
             style={{
@@ -548,7 +548,7 @@ function BoardPageInner() {
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            padding: '16px 0 8px 0',
+            padding: '16px 24px 8px 24px',
             maxHeight: '56px',
           }}
         >

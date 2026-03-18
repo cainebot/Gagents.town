@@ -1,0 +1,431 @@
+'use client'
+
+import { useState } from 'react'
+import { PanelLeftClose, PanelLeftOpen, Users } from 'lucide-react'
+import { useAgentFilter } from '@/contexts/AgentFilterContext'
+import { StatusDot } from '@/components/atoms/StatusDot'
+
+/** Map agent status to display label */
+function statusLabel(status: string): string {
+  switch (status) {
+    case 'working':
+    case 'thinking':
+      return 'WORKING'
+    case 'paused':
+      return 'PAUSED'
+    case 'idle':
+    case 'queued':
+      return 'IDLE'
+    case 'offline':
+      return 'INACTIVE'
+    case 'error':
+      return 'ERROR'
+    default:
+      return 'OFFLINE'
+  }
+}
+
+/** Get left accent bar color based on agent status */
+function accentBarColor(status: string): string {
+  switch (status) {
+    case 'working':
+    case 'thinking':
+      return 'var(--positive, #32D74B)'
+    case 'paused':
+      return 'var(--warning, #FFD60A)'
+    case 'idle':
+    case 'queued':
+      return 'var(--info, #0A84FF)'
+    case 'offline':
+    case 'error':
+      return 'var(--negative, #FF453A)'
+    default:
+      return 'var(--border)'
+  }
+}
+
+/** Badge color by type */
+function badgeColors(badge?: string): { bg: string; color: string } {
+  switch (badge) {
+    case 'LEAD':
+      return { bg: 'rgba(255,59,48,0.12)', color: '#FF3B30' }
+    case 'SPC':
+      return { bg: 'rgba(249,115,22,0.12)', color: '#f97316' }
+    case 'INT':
+      return { bg: 'rgba(10,132,255,0.12)', color: '#0A84FF' }
+    default:
+      return { bg: 'rgba(82,82,82,0.12)', color: 'var(--text-muted)' }
+  }
+}
+
+/** Map role to display name */
+function roleLabel(role?: string): string {
+  switch (role) {
+    case 'lead':
+      return 'Scrum Master'
+    case 'specialist':
+      return 'Specialist'
+    case 'intern':
+      return 'Intern'
+    default:
+      return role ?? 'Agent'
+  }
+}
+
+export function AgentListPanel() {
+  const { agents, selectedAgentId, setSelectedAgentId, setAgentPanelOpen } = useAgentFilter()
+  const [collapsed, setCollapsed] = useState(false)
+
+  const activeCount = agents.filter((a) =>
+    ['working', 'thinking', 'paused', 'idle', 'queued'].includes(a.status)
+  ).length
+
+  // Sort: LEAD badge first, then alphabetical
+  const sortedAgents = [...agents].sort((a, b) => {
+    const aIsLead = a.badge === 'LEAD' ? -1 : 0
+    const bIsLead = b.badge === 'LEAD' ? -1 : 0
+    if (aIsLead !== bIsLead) return aIsLead - bIsLead
+    return a.name.localeCompare(b.name)
+  })
+
+  const handleAgentClick = (agentId: string) => {
+    if (selectedAgentId === agentId) {
+      setSelectedAgentId(null)
+      setAgentPanelOpen(false)
+    } else {
+      setSelectedAgentId(agentId)
+      setAgentPanelOpen(true)
+    }
+  }
+
+  const handleAllAgentsClick = () => {
+    setSelectedAgentId(null)
+    setAgentPanelOpen(false)
+  }
+
+  if (agents.length === 0) return null
+
+  const panelWidth = collapsed ? 48 : 260
+
+  return (
+    <aside
+      style={{
+        width: `${panelWidth}px`,
+        minWidth: `${panelWidth}px`,
+        flexShrink: 0,
+        height: '100vh',
+        position: 'sticky',
+        top: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: 'var(--surface)',
+        borderRight: '1px solid var(--border)',
+        transition: 'width 0.2s ease, min-width 0.2s ease',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Header — "AGENTS  N" */}
+      {!collapsed ? (
+        <div
+          style={{
+            padding: '16px 16px 12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontSize: '11px',
+              fontWeight: 700,
+              color: 'var(--text-muted)',
+              letterSpacing: '0.08em',
+            }}
+          >
+            AGENTS
+          </span>
+          <span
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '11px',
+              fontWeight: 500,
+              color: 'var(--text-muted)',
+              background: 'rgba(82,82,82,0.15)',
+              borderRadius: '9999px',
+              padding: '1px 7px',
+            }}
+          >
+            {agents.length}
+          </span>
+        </div>
+      ) : (
+        <div
+          style={{
+            padding: '14px 0 10px 0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Users size={16} style={{ color: 'var(--text-muted)' }} />
+        </div>
+      )}
+
+      {/* "All Agents" row — like reference */}
+      {!collapsed && (
+        <button
+          onClick={handleAllAgentsClick}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            width: '100%',
+            padding: '8px 16px',
+            background: selectedAgentId === null ? 'rgba(255,59,48,0.06)' : 'none',
+            border: 'none',
+            cursor: 'pointer',
+            textAlign: 'left',
+            borderLeft: selectedAgentId === null ? '3px solid var(--accent)' : '3px solid transparent',
+            transition: 'background 0.1s',
+          }}
+          onMouseEnter={(e) => {
+            if (selectedAgentId !== null) e.currentTarget.style.background = 'var(--surface-hover, #2E2E2E)'
+          }}
+          onMouseLeave={(e) => {
+            if (selectedAgentId !== null) e.currentTarget.style.background = 'none'
+          }}
+        >
+          {/* All agents icon */}
+          <div
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '50%',
+              background: 'var(--surface-elevated, #242424)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <Users size={16} style={{ color: 'var(--text-secondary)' }} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '13px',
+                fontWeight: 600,
+                color: 'var(--text-primary)',
+              }}
+            >
+              All Agents
+            </div>
+            <div
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '10px',
+                fontWeight: 500,
+                color: 'var(--text-muted)',
+                marginTop: '1px',
+              }}
+            >
+              {agents.length} total
+            </div>
+          </div>
+          <span
+            style={{
+              fontSize: '10px',
+              fontWeight: 600,
+              fontFamily: 'var(--font-body)',
+              color: 'var(--positive, #32D74B)',
+            }}
+          >
+            {activeCount} ACTIVE
+          </span>
+        </button>
+      )}
+
+      {/* Divider */}
+      <div style={{ height: '1px', backgroundColor: 'var(--border)', margin: collapsed ? '4px 4px' : '4px 0' }} />
+
+      {/* Agent list */}
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {sortedAgents.map((agent) => {
+          const isSelected = selectedAgentId === agent.agent_id
+          const badgeStyle = badgeColors(agent.badge)
+
+          return (
+            <button
+              key={agent.agent_id}
+              onClick={() => handleAgentClick(agent.agent_id)}
+              title={collapsed ? `${agent.name} — ${statusLabel(agent.status)}` : undefined}
+              style={{
+                display: 'flex',
+                alignItems: collapsed ? 'center' : 'center',
+                justifyContent: collapsed ? 'center' : 'flex-start',
+                gap: collapsed ? 0 : '10px',
+                width: '100%',
+                padding: collapsed ? '8px 0' : '10px 16px',
+                background: isSelected ? 'rgba(255,59,48,0.06)' : 'none',
+                border: 'none',
+                borderLeft: 'none',
+                cursor: 'pointer',
+                transition: 'background 0.1s',
+                textAlign: 'left',
+              }}
+              onMouseEnter={(e) => {
+                if (!isSelected) e.currentTarget.style.background = 'var(--surface-hover, #2E2E2E)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = isSelected ? 'rgba(255,59,48,0.06)' : 'none'
+              }}
+            >
+              {/* Avatar circle */}
+              <div
+                style={{
+                  width: collapsed ? '28px' : '32px',
+                  height: collapsed ? '28px' : '32px',
+                  borderRadius: '50%',
+                  background: 'var(--surface-elevated, #242424)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  fontSize: collapsed ? '13px' : '16px',
+                  lineHeight: 1,
+                  position: 'relative',
+                  marginLeft: 0,
+                }}
+              >
+                {agent.emoji || agent.name.charAt(0)}
+                {/* Status dot overlay when collapsed */}
+                {collapsed && (
+                  <span style={{ position: 'absolute', bottom: '-1px', right: '-1px' }}>
+                    <StatusDot status={agent.status} variant="agent" />
+                  </span>
+                )}
+              </div>
+
+              {/* Name + badge + role — expanded only */}
+              {!collapsed && (
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  {/* Line 1: Name + Badge pill */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        color: isSelected ? 'var(--accent)' : 'var(--text-primary)',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {agent.name}
+                    </span>
+                    {/* Badge pill (LEAD / SPC / INT) */}
+                    {agent.badge && (
+                      <span
+                        style={{
+                          fontSize: '9px',
+                          fontWeight: 700,
+                          fontFamily: 'var(--font-body)',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.03em',
+                          background: badgeStyle.bg,
+                          color: badgeStyle.color,
+                          borderRadius: '4px',
+                          padding: '1px 5px',
+                          flexShrink: 0,
+                          lineHeight: '14px',
+                        }}
+                      >
+                        {agent.badge}
+                      </span>
+                    )}
+                  </div>
+                  {/* Line 2: Role */}
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '10px',
+                      fontWeight: 500,
+                      color: 'var(--text-muted)',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      marginTop: '2px',
+                    }}
+                  >
+                    {roleLabel(agent.role)}
+                  </div>
+                </div>
+              )}
+
+              {/* Status dot + label — expanded only */}
+              {!collapsed && (
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    flexShrink: 0,
+                  }}
+                >
+                  <StatusDot status={agent.status} variant="agent" />
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: 600,
+                      fontFamily: 'var(--font-body)',
+                      color: accentBarColor(agent.status),
+                    }}
+                  >
+                    {statusLabel(agent.status)}
+                  </span>
+                </span>
+              )}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Collapse toggle */}
+      <div style={{ borderTop: '1px solid var(--border)', padding: '4px 6px' }}>
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          title={collapsed ? 'Expand agents' : 'Collapse agents'}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            gap: '8px',
+            width: '100%',
+            padding: collapsed ? '8px 0' : '8px 8px',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--text-muted)',
+            fontSize: '12px',
+            fontFamily: 'var(--font-body)',
+            borderRadius: '6px',
+            transition: 'background 0.1s, color 0.1s',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--surface-hover, #2E2E2E)'
+            e.currentTarget.style.color = 'var(--text-primary)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'none'
+            e.currentTarget.style.color = 'var(--text-muted)'
+          }}
+        >
+          {collapsed ? <PanelLeftOpen size={14} /> : <PanelLeftClose size={14} />}
+        </button>
+      </div>
+    </aside>
+  )
+}
