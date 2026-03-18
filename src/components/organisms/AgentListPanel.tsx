@@ -11,6 +11,8 @@ function statusLabel(status: string): string {
     case 'working':
     case 'thinking':
       return 'WORKING'
+    case 'executing_tool':
+      return 'EXECUTING'
     case 'paused':
       return 'PAUSED'
     case 'idle':
@@ -30,6 +32,7 @@ function accentBarColor(status: string): string {
   switch (status) {
     case 'working':
     case 'thinking':
+    case 'executing_tool':
       return 'var(--positive, #32D74B)'
     case 'paused':
       return 'var(--warning, #FFD60A)'
@@ -77,7 +80,7 @@ export function AgentListPanel() {
   const [collapsed, setCollapsed] = useState(false)
 
   const activeCount = agents.filter((a) =>
-    ['working', 'thinking', 'paused', 'idle', 'queued'].includes(a.status)
+    ['working', 'thinking', 'executing_tool', 'paused', 'idle', 'queued'].includes(a.status)
   ).length
 
   // Sort: LEAD badge first, then alphabetical

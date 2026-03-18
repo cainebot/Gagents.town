@@ -25,6 +25,8 @@ function statusLabel(status: string): string {
     case 'working':
     case 'thinking':
       return 'WORKING'
+    case 'executing_tool':
+      return 'EXECUTING'
     case 'paused':
       return 'PAUSED'
     case 'idle':
@@ -43,6 +45,7 @@ function statusPillColors(status: string): { bg: string; color: string } {
   switch (status) {
     case 'working':
     case 'thinking':
+    case 'executing_tool':
       return { bg: 'rgba(50, 215, 75, 0.15)', color: 'var(--positive, #32D74B)' }
     case 'paused':
       return { bg: 'rgba(255, 214, 10, 0.15)', color: 'var(--warning, #FFD60A)' }
@@ -405,7 +408,7 @@ export function AgentSidePanel({ agent, boardId, onClose }: AgentSidePanelProps)
                   fontStyle: 'italic',
                 }}
               >
-                {agent.status === 'working' || agent.status === 'thinking'
+                {agent.status === 'working' || agent.status === 'thinking' || agent.status === 'executing_tool'
                   ? 'Agent is currently working on assigned tasks.'
                   : agent.status === 'idle'
                   ? 'Agent is idle, ready for new tasks.'

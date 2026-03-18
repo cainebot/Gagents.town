@@ -22,6 +22,7 @@ const STATUS_COLORS: Record<AgentStatus, string> = {
   error: '#ef4444',
   offline: '#6b7280',
   queued: '#eab308',
+  executing_tool: '#3b82f6',
 }
 
 const TASK_STATUS_COLORS: Record<TaskStatus, string> = {

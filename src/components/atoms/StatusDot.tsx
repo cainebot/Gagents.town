@@ -5,6 +5,7 @@ import { cn } from "@/lib/cn";
 const AGENT_STATUS_COLORS: Record<string, string> = {
   working: 'var(--positive)',
   thinking: 'var(--positive)',
+  executing_tool: 'var(--positive)',
   paused: 'var(--warning)',
   idle: 'var(--info)',
   queued: 'var(--info)',

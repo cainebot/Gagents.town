@@ -7,8 +7,8 @@
 
 export type NodeStatus = 'online' | 'offline' | 'degraded';
 
-// 6 states as per Phase 3 spec (thinking + queued added via migration)
-export type AgentStatus = 'idle' | 'working' | 'error' | 'offline' | 'thinking' | 'queued';
+// 7 states — executing_tool added in Phase 26 for tool-call visibility
+export type AgentStatus = 'idle' | 'working' | 'error' | 'offline' | 'thinking' | 'queued' | 'executing_tool';
 
 export type TaskStatus = 'pending' | 'claimed' | 'in_progress' | 'completed' | 'failed';
 

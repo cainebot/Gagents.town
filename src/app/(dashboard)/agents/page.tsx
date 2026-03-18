@@ -28,6 +28,7 @@ const STATUS_COLORS: Record<AgentStatus, string> = {
   offline: '#6b7280',
   thinking: '#3b82f6',
   queued: '#eab308',
+  executing_tool: '#f59e0b',
 }
 
 const formatLastActivity = (timestamp?: string) => {
