@@ -28,6 +28,15 @@ type ModalAction =
   | { type: 'ERROR' }
   | { type: 'DISCOVERY_SELECT'; payload: SkillDraft };
 
+// --- Conversation history ---
+
+type ChatMessage = {
+  id: string;
+  role: 'user' | 'caine';
+  text: string;
+  timestamp: number;
+};
+
 function modalReducer(state: ModalState, action: ModalAction): ModalState {
   switch (action.type) {
     case 'DETECT':
@@ -145,6 +154,7 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
   const [inlineError, setInlineError] = useState<string | null>(null);
   const [lastInput, setLastInput] = useState<string | null>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -171,6 +181,15 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
       el.style.height = Math.min(el.scrollHeight, 200) + 'px';
     }
   }, [inputValue]);
+
+  function appendMessage(role: 'user' | 'caine', text: string) {
+    setMessages(prev => [...prev, {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      role,
+      text,
+      timestamp: Date.now(),
+    }]);
+  }
 
   const interpretationText = getInterpretationText(state);
   const detectionBadge = getDetectionBadge(state);
