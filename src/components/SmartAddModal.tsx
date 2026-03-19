@@ -479,7 +479,7 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
             onDragLeave={handleDragLeave}
             style={{
               padding: '16px',
-              margin: '0 16px 16px',
+              margin: '0 24px 24px',
               display: 'flex',
               flexDirection: 'column',
               gap: '0',
