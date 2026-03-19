@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import type { SkillDraft } from '@/types/supabase';
 
@@ -10,12 +9,10 @@ const EMOJI_OPTIONS = ['🔧','🛠️','⚙️','🧰','💻','🖥️','📦',
 
 interface SkillPreviewCardProps {
   draft: SkillDraft;
-  onConfirm: () => void;
   onDraftChange: (updated: SkillDraft) => void;
-  confirming?: boolean;
 }
 
-function SkillPreviewCard({ draft, onConfirm, onDraftChange, confirming }: SkillPreviewCardProps) {
+function SkillPreviewCard({ draft, onDraftChange }: SkillPreviewCardProps) {
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [titleHover, setTitleHover] = useState(false);
   const [titleFocus, setTitleFocus] = useState(false);
@@ -81,7 +78,6 @@ function SkillPreviewCard({ draft, onConfirm, onDraftChange, confirming }: Skill
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
-        marginTop: '12px',
       }}
     >
       {/* Header row: icon + name + description */}
@@ -110,29 +106,16 @@ function SkillPreviewCard({ draft, onConfirm, onDraftChange, confirming }: Skill
             </button>
           </PopoverTrigger>
           <PopoverContent align="start" className="w-auto p-2">
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(8, 1fr)',
-                gap: '4px',
-              }}
-            >
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: '4px' }}>
               {EMOJI_OPTIONS.map((emoji) => (
                 <button
                   key={emoji}
                   type="button"
-                  onClick={() => {
-                    onDraftChange({ ...draft, icon: emoji });
-                    setEmojiOpen(false);
-                  }}
+                  onClick={() => { onDraftChange({ ...draft, icon: emoji }); setEmojiOpen(false); }}
                   style={{
-                    fontSize: '22px',
-                    padding: '6px',
-                    borderRadius: '6px',
-                    border: 'none',
+                    fontSize: '22px', padding: '6px', borderRadius: '6px', border: 'none',
                     backgroundColor: draft.icon === emoji ? 'var(--surface-elevated)' : 'transparent',
-                    cursor: 'pointer',
-                    transition: 'background-color 100ms',
+                    cursor: 'pointer', transition: 'background-color 100ms',
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--surface-elevated)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = draft.icon === emoji ? 'var(--surface-elevated)' : 'transparent'; }}
@@ -178,14 +161,9 @@ function SkillPreviewCard({ draft, onConfirm, onDraftChange, confirming }: Skill
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              fontSize: '12px',
-              color: 'var(--accent)',
-              fontFamily: 'var(--font-mono)',
-              textDecoration: 'none',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              maxWidth: '280px',
+              fontSize: '12px', color: 'var(--accent)', fontFamily: 'var(--font-mono)',
+              textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap', maxWidth: '280px',
             }}
           >
             {draft.source_url}
@@ -219,13 +197,6 @@ function SkillPreviewCard({ draft, onConfirm, onDraftChange, confirming }: Skill
           onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; }}
         />
       )}
-
-      {/* Action row — only Confirm & Register */}
-      <div style={{ display: 'flex', flexDirection: 'row', gap: '8px', justifyContent: 'flex-end' }}>
-        <Button variant="primary" size="sm" onClick={onConfirm} disabled={confirming}>
-          {confirming ? 'Registrando...' : 'Confirm & Register'}
-        </Button>
-      </div>
     </div>
   );
 }
