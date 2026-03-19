@@ -193,7 +193,7 @@ export interface DiscoveredSkill {
   summary: string | null;
   version: string | null;
   updatedAt: number;     // Unix ms timestamp; 0 when unknown (GitHub tree fallback)
-  source: 'clawhub' | 'github_tree';
+  source: 'clawhub' | 'github_tree' | 'skills_sh';
 }
 
 // Helper type for Supabase Realtime postgres_changes events

@@ -3,6 +3,41 @@ import type { DiscoveredSkill } from '@/types/supabase'
 
 export const dynamic = 'force-dynamic'
 
+// --- skills.sh (primary) ---
+
+interface SkillsShSearchResponse {
+  skills?: Array<{
+    id: string;
+    name: string;
+    installs?: number;
+    source?: string;
+  }>;
+}
+
+async function searchSkillsSh(query: string): Promise<DiscoveredSkill[] | null> {
+  try {
+    const url = `https://skills.sh/api/search?q=${encodeURIComponent(query)}&limit=10`
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'openclaw-office/1.0' },
+      next: { revalidate: 60 },
+    })
+    if (!res.ok) return null
+    const data: SkillsShSearchResponse = await res.json()
+    return (data.skills ?? []).map((s) => ({
+      slug: s.id,
+      displayName: s.name,
+      summary: s.installs != null ? `${s.installs} installs` : null,
+      version: null,
+      updatedAt: 0,
+      source: 'skills_sh' as const,
+    }))
+  } catch {
+    return null
+  }
+}
+
+// --- ClawHub (secondary fallback) ---
+
 const CLAWHUB_BASE = 'https://clawhub.ai'
 
 interface ClawHubResult {
@@ -40,47 +75,7 @@ async function searchClawHub(query: string): Promise<DiscoveredSkill[] | null> {
   }
 }
 
-async function searchGitHubTree(query: string): Promise<DiscoveredSkill[]> {
-  try {
-    const token = process.env.GITHUB_TOKEN
-    const headers: Record<string, string> = {
-      'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'openclaw-office/1.0',
-    }
-    if (token) headers['Authorization'] = `Bearer ${token}`
-
-    const res = await fetch(
-      'https://api.github.com/repos/openclaw/skills/git/trees/main?recursive=1',
-      { headers, next: { revalidate: 300 } },
-    )
-    if (!res.ok) return []
-
-    const data = await res.json()
-    const lowerQuery = query.toLowerCase()
-    return ((data.tree ?? []) as Array<{ path: string; type: string }>)
-      .filter(
-        (item) =>
-          item.type === 'blob' &&
-          item.path.endsWith('.md') &&
-          item.path.toLowerCase().includes(lowerQuery),
-      )
-      .slice(0, 12)
-      .map((item) => {
-        const parts = item.path.replace('.md', '').split('/')
-        const slug = parts.slice(0, 2).join('/')
-        return {
-          slug,
-          displayName: parts[parts.length - 1].replace(/-/g, ' '),
-          summary: null,
-          version: null,
-          updatedAt: 0,
-          source: 'github_tree' as const,
-        }
-      })
-  } catch {
-    return []
-  }
-}
+// --- GET handler ---
 
 export async function GET(request: NextRequest) {
   const q = new URL(request.url).searchParams.get('q')?.trim() ?? ''
@@ -89,14 +84,20 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ results: [] })
   }
 
-  // Try ClawHub first
+  // Primary: skills.sh
+  const skillsShResults = await searchSkillsSh(q)
+  if (skillsShResults !== null) {
+    return NextResponse.json({ results: skillsShResults })
+  }
+
+  // Secondary fallback: ClawHub
+  console.warn('[discover] skills.sh unavailable — falling back to ClawHub')
   const clawhubResults = await searchClawHub(q)
   if (clawhubResults !== null) {
     return NextResponse.json({ results: clawhubResults })
   }
 
-  // Fallback to GitHub tree
-  console.warn('[discover] ClawHub unavailable — using GitHub tree fallback')
-  const fallbackResults = await searchGitHubTree(q)
-  return NextResponse.json({ results: fallbackResults })
+  // No results from any source
+  console.warn('[discover] ClawHub also unavailable — returning empty results')
+  return NextResponse.json({ results: [] })
 }
