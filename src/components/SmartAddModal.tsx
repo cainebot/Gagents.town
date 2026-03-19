@@ -157,6 +157,7 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const historyRef = useRef<HTMLDivElement>(null);
 
   // Edit field state
   const [editName, setEditName] = useState('');
@@ -182,6 +183,13 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
     }
   }, [inputValue]);
 
+  // Auto-scroll history to bottom on new message
+  useEffect(() => {
+    if (historyRef.current) {
+      historyRef.current.scrollTop = historyRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   function appendMessage(role: 'user' | 'caine', text: string) {
     setMessages(prev => [...prev, {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -200,6 +208,7 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
   }
 
   const handleDetect = async (raw: string) => {
+    appendMessage('user', raw);
     setInlineError(null);
     const syncDraft = detectInput(raw);
 
@@ -213,10 +222,23 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
     try {
       const enriched = await enrichDraft(syncDraft);
       dispatch({ type: 'PREVIEW', payload: enriched });
+
+      // Compute Caine response text for the enriched draft
+      const caineText = (() => {
+        const d = enriched;
+        if (d.type === 'github_url') return 'Got it — GitHub repo detected. Aqui esta la preview.';
+        if (d.type === 'command') return 'Perfecto, skill del registro. Lista para registrar.';
+        if (d.type === 'file') return 'Archivo procesado. Revisa los datos antes de confirmar.';
+        if (d.type === 'text' && d.intent === 'skill_description') return 'Detecto que quieres registrar tu propia skill. Te prepare una preview.';
+        if (d.type === 'text' && d.intent === 'discovery_intent') return 'Buscando skills relevantes en ClawHub...';
+        return '';
+      })();
+      if (caineText) appendMessage('caine', caineText);
     } catch {
       setInlineError('No se pudo obtener metadata. ¿Reintentar?');
       setLastInput(raw);
       dispatch({ type: 'ERROR' });
+      appendMessage('caine', 'No pude obtener los datos. Puedes reintentar o rellenar el formulario manualmente.');
     }
   };
 
@@ -336,6 +358,55 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-xl p-0 overflow-visible">
+        {/* Conversation history */}
+        {messages.length > 0 && (
+          <div ref={historyRef} style={{
+            maxHeight: '200px',
+            overflowY: 'auto',
+            padding: '12px 16px 0',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px',
+          }}>
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                }}
+              >
+                {msg.role === 'caine' && (
+                  <span style={{
+                    fontSize: '10px',
+                    fontFamily: 'var(--font-body)',
+                    color: 'var(--accent)',
+                    fontWeight: 600,
+                    marginBottom: '2px',
+                    letterSpacing: '0.05em',
+                    textTransform: 'uppercase',
+                  }}>
+                    Caine
+                  </span>
+                )}
+                <div style={{
+                  maxWidth: '85%',
+                  padding: '6px 10px',
+                  borderRadius: msg.role === 'user' ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
+                  backgroundColor: msg.role === 'user' ? 'var(--text-primary)' : 'var(--surface-elevated)',
+                  color: msg.role === 'user' ? 'var(--surface)' : 'var(--text-secondary)',
+                  fontSize: '13px',
+                  fontFamily: 'var(--font-body)',
+                  lineHeight: '1.4',
+                }}>
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Chat-style input container */}
         <div style={{
           padding: '16px',
