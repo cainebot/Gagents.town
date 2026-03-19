@@ -32,7 +32,7 @@ type ModalAction =
 function modalReducer(state: ModalState, action: ModalAction): ModalState {
   switch (action.type) {
     case 'DETECT':
-      if (state.phase === 'idle') return { phase: 'detecting', draft: action.payload };
+      if (state.phase === 'idle' || state.phase === 'preview') return { phase: 'detecting', draft: action.payload };
       return state;
     case 'PREVIEW':
       if (state.phase === 'detecting') return { phase: 'preview', draft: action.payload };
