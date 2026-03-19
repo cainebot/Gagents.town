@@ -9,6 +9,7 @@ import { detectInput } from '@/lib/input-detector';
 import { SkillPreviewCard } from '@/components/SkillPreviewCard';
 import type { SkillDraft, DiscoveredSkill } from '@/types/supabase';
 import { DiscoveryPanel } from '@/components/DiscoveryPanel';
+import { motion, AnimatePresence } from 'motion/react';
 
 // --- State machine types ---
 
@@ -576,10 +577,39 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
             {/* Detection badge + IA interpretation */}
             {(detectionBadge || interpretationText) && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                {detectionBadge && (
-                  <Badge variant={detectionBadge.variant}>
-                    Detected: {detectionBadge.label}
-                  </Badge>
+                <AnimatePresence>
+                  {detectionBadge && (
+                    <motion.div
+                      key={detectionBadge.label}
+                      initial={{ scale: 0.7, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.7, opacity: 0 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      style={{ display: 'inline-flex' }}
+                    >
+                      <Badge variant={detectionBadge.variant}>
+                        Detected: {detectionBadge.label}
+                      </Badge>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                {state.phase === 'detecting' && (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', marginRight: '6px' }}>
+                    {[0, 1, 2].map((i) => (
+                      <motion.span
+                        key={i}
+                        style={{
+                          width: '4px',
+                          height: '4px',
+                          borderRadius: '50%',
+                          backgroundColor: 'var(--text-muted)',
+                          display: 'inline-block',
+                        }}
+                        animate={{ scale: [1, 1.5, 1], opacity: [0.4, 1, 0.4] }}
+                        transition={{ repeat: Infinity, duration: 0.7, delay: i * 0.15, ease: 'easeInOut' }}
+                      />
+                    ))}
+                  </span>
                 )}
                 {interpretationText && (
                   <p style={{
@@ -644,16 +674,26 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
             )}
 
             {/* Preview card */}
-            {(state.phase === 'preview' || state.phase === 'editing' || state.phase === 'submitting') &&
-              'draft' in state &&
-              (state.draft.intent !== 'discovery_intent' || state.draft.source_url) && (
-              <SkillPreviewCard
-                draft={state.phase === 'editing' ? buildEditedDraft() : state.draft}
-                onConfirm={handleConfirm}
-                onEdit={() => dispatch({ type: 'EDIT' })}
-                confirming={state.phase === 'submitting'}
-              />
-            )}
+            <AnimatePresence>
+              {(state.phase === 'preview' || state.phase === 'editing' || state.phase === 'submitting') &&
+                'draft' in state &&
+                (state.draft.intent !== 'discovery_intent' || state.draft.source_url) && (
+                <motion.div
+                  key="preview-card"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.22, ease: 'easeOut' }}
+                >
+                  <SkillPreviewCard
+                    draft={state.phase === 'editing' ? buildEditedDraft() : state.draft}
+                    onConfirm={handleConfirm}
+                    onEdit={() => dispatch({ type: 'EDIT' })}
+                    confirming={state.phase === 'submitting'}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Edit form */}
             {state.phase === 'editing' && (
