@@ -453,15 +453,13 @@ code, pre, .font-mono {
   color: var(--warning);
 }
 
-/* Custom textarea resize handle — dark theme grip dots */
-textarea {
-  resize: vertical;
-  position: relative;
-}
+/* Custom textarea resize handle — dark theme diagonal grip lines */
+textarea { resize: vertical; }
 textarea::-webkit-resizer {
-  background-color: transparent;
+  background: transparent;
   border: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Ccircle cx='9' cy='9' r='1.2' fill='%23555'/%3E%3Ccircle cx='5' cy='9' r='1.2' fill='%23555'/%3E%3Ccircle cx='9' cy='5' r='1.2' fill='%23555'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cline x1='14' y1='4' x2='4' y2='14' stroke='%23666' stroke-width='1.5' stroke-linecap='round'/%3E%3Cline x1='14' y1='8' x2='8' y2='14' stroke='%23666' stroke-width='1.5' stroke-linecap='round'/%3E%3Cline x1='14' y1='12' x2='12' y2='14' stroke='%23666' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: 16px 16px;
   background-repeat: no-repeat;
   background-position: bottom right;
   cursor: ns-resize;
