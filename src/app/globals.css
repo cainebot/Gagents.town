@@ -453,6 +453,13 @@ code, pre, .font-mono {
   color: var(--warning);
 }
 
+/* Dark theme scrollbar — no white track */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+::-webkit-scrollbar-corner { background: transparent; }
+
 /* Custom textarea resize handle — dark theme diagonal grip lines */
 textarea { resize: vertical; }
 textarea::-webkit-resizer {
