@@ -5,7 +5,7 @@ import { Plus, ArrowUp, Upload, Link, Terminal, X } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+
 import { detectInput } from '@/lib/input-detector';
 import { SkillPreviewCard } from '@/components/SkillPreviewCard';
 import type { SkillDraft, DiscoveredSkill } from '@/types/supabase';
@@ -416,6 +416,9 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
                     <SkillPreviewCard
                       draft={state.draft}
                       onDraftChange={handleDraftChange}
+                      onConfirm={handleConfirm}
+                      onCancel={handleCancel}
+                      confirming={state.phase === 'submitting'}
                     />
                   )}
                 </motion.div>
@@ -446,28 +449,7 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
                   </div>
                 )}
 
-                {/* Action buttons */}
-                <div style={{
-                  display: 'flex',
-                  gap: '16px',
-                  justifyContent: 'center',
-                  padding: '8px 24px 24px',
-                }}>
-                  <Button
-                    variant="outline"
-                    onClick={handleCancel}
-                    disabled={state.phase === 'submitting'}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    variant="primary"
-                    onClick={handleConfirm}
-                    disabled={state.phase === 'submitting'}
-                  >
-                    {state.phase === 'submitting' ? 'Registrando...' : 'Confirm & Register'}
-                  </Button>
-                </div>
+                {/* Action buttons are inside SkillPreviewCard */}
               </motion.div>
             )}
           </AnimatePresence>

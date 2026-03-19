@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import type { SkillDraft } from '@/types/supabase';
 
@@ -10,9 +11,12 @@ const EMOJI_OPTIONS = ['🔧','🛠️','⚙️','🧰','💻','🖥️','📦',
 interface SkillPreviewCardProps {
   draft: SkillDraft;
   onDraftChange: (updated: SkillDraft) => void;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+  confirming?: boolean;
 }
 
-function SkillPreviewCard({ draft, onDraftChange }: SkillPreviewCardProps) {
+function SkillPreviewCard({ draft, onDraftChange, onConfirm, onCancel, confirming }: SkillPreviewCardProps) {
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [titleHover, setTitleHover] = useState(false);
   const [titleFocus, setTitleFocus] = useState(false);
@@ -196,6 +200,20 @@ function SkillPreviewCard({ draft, onDraftChange }: SkillPreviewCardProps) {
           onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
           onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; }}
         />
+      )}
+
+      {/* Action buttons — right-aligned inside card */}
+      {onConfirm && (
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+          {onCancel && (
+            <Button variant="outline" size="sm" onClick={onCancel} disabled={confirming}>
+              Cancelar
+            </Button>
+          )}
+          <Button variant="primary" size="sm" onClick={onConfirm} disabled={confirming}>
+            {confirming ? 'Registrando...' : 'Confirm & Register'}
+          </Button>
+        </div>
       )}
     </div>
   );
