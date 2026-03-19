@@ -105,13 +105,40 @@ export async function POST(request: NextRequest) {
     .eq('agent_id', agent_id)
 
   // Clean up fully removed rows (desired_state=absent, status=removed)
+  // v1.5.3: Also check if any skills now have zero assignments and can be hard deleted
+  const deletedSkillIds: string[] = []
   if (converged) {
+    // Get skill_ids of removed assignments before deleting them
+    const { data: removedAssignments } = await supabase
+      .from('agent_skills')
+      .select('skill_id')
+      .eq('agent_id', agent_id)
+      .eq('desired_state', 'absent')
+      .eq('status', 'removed')
+
+    const affectedSkillIds = [...new Set((removedAssignments ?? []).map(a => a.skill_id))]
+
+    // Delete the removed assignment rows
     await supabase
       .from('agent_skills')
       .delete()
       .eq('agent_id', agent_id)
       .eq('desired_state', 'absent')
       .eq('status', 'removed')
+
+    // Check if any affected skills now have zero remaining assignments
+    for (const skillId of affectedSkillIds) {
+      const { count } = await supabase
+        .from('agent_skills')
+        .select('id', { count: 'exact', head: true })
+        .eq('skill_id', skillId)
+
+      if (count === 0) {
+        // No agents use this skill anymore — safe to hard delete
+        await supabase.from('skills').delete().eq('id', skillId)
+        deletedSkillIds.push(skillId)
+      }
+    }
   }
 
   return NextResponse.json({
@@ -120,5 +147,6 @@ export async function POST(request: NextRequest) {
     converged,
     soul_dirty_cleared: converged,
     results_processed: results.length,
+    skills_deleted: deletedSkillIds,
   })
 }

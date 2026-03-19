@@ -65,7 +65,51 @@ export async function DELETE(
   const { id } = await params
   const supabase = createServiceRoleClient()
 
-  // CASCADE handles skill_versions and agent_skills cleanup
+  // v1.5.3: Safe deletion — check for assigned agents first
+  const { data: assignments } = await supabase
+    .from('agent_skills')
+    .select('id, agent_id, status, desired_state')
+    .eq('skill_id', id)
+
+  const activeAssignments = (assignments ?? []).filter(
+    a => a.status !== 'removed' && a.desired_state !== 'absent'
+  )
+
+  if (activeAssignments.length > 0) {
+    // Mark all active assignments as desired_state=absent to trigger uninstall
+    for (const assignment of activeAssignments) {
+      await supabase
+        .from('agent_skills')
+        .update({ desired_state: 'absent', status: 'uninstalling' })
+        .eq('id', assignment.id)
+    }
+
+    // Set soul_dirty on all affected agents so bridge recomposes TOOLS.md
+    const agentIds = [...new Set(activeAssignments.map(a => a.agent_id))]
+    for (const agentId of agentIds) {
+      await supabase
+        .from('agents')
+        .update({ soul_dirty: true })
+        .eq('agent_id', agentId)
+    }
+
+    // Mark skill as pending deletion (don't hard delete yet)
+    // The skill stays in DB until bridge confirms all uninstalls
+    return NextResponse.json({
+      pending_deletion: true,
+      skill_id: id,
+      uninstalling_from: agentIds,
+      message: 'Skill marked for deletion. Bridge will uninstall from all agents, then skill will be removed.',
+    })
+  }
+
+  // No active assignments — safe to hard delete immediately
+  // Check for any remaining rows (removed/absent) and clean them
+  await supabase
+    .from('agent_skills')
+    .delete()
+    .eq('skill_id', id)
+
   const { error } = await supabase
     .from('skills')
     .delete()
