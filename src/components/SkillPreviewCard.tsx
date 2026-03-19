@@ -206,11 +206,11 @@ function SkillPreviewCard({ draft, onDraftChange, onConfirm, onCancel, confirmin
       {onConfirm && (
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
           {onCancel && (
-            <Button variant="outline" size="sm" onClick={onCancel} disabled={confirming}>
+            <Button variant="outline" onClick={onCancel} disabled={confirming} className="h-12 px-6">
               Cancelar
             </Button>
           )}
-          <Button variant="primary" size="sm" onClick={onConfirm} disabled={confirming}>
+          <Button variant="primary" onClick={onConfirm} disabled={confirming} className="h-12 px-6">
             {confirming ? 'Registrando...' : 'Confirm & Register'}
           </Button>
         </div>
