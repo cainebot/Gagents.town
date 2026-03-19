@@ -182,8 +182,8 @@ function SkillPreviewCard({ draft, onDraftChange, onConfirm, onCancel, confirmin
           onChange={(e) => onDraftChange({ ...draft, content: e.target.value })}
           style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: '11px',
-            color: 'var(--text-muted)',
+            fontSize: '13px',
+            color: '#8B8B8B',
             backgroundColor: 'var(--surface)',
             borderRadius: '6px',
             padding: '8px 10px',
