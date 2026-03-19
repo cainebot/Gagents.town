@@ -7,7 +7,8 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { Badge } from '@/components/ui/badge';
 import { detectInput } from '@/lib/input-detector';
 import { SkillPreviewCard } from '@/components/SkillPreviewCard';
-import type { SkillDraft } from '@/types/supabase';
+import type { SkillDraft, DiscoveredSkill } from '@/types/supabase';
+import { DiscoveryPanel } from '@/components/DiscoveryPanel';
 
 // --- State machine types ---
 
@@ -24,7 +25,8 @@ type ModalAction =
   | { type: 'EDIT' }
   | { type: 'SUBMIT' }
   | { type: 'RESET' }
-  | { type: 'ERROR' };
+  | { type: 'ERROR' }
+  | { type: 'DISCOVERY_SELECT'; payload: SkillDraft };
 
 function modalReducer(state: ModalState, action: ModalAction): ModalState {
   switch (action.type) {
@@ -44,6 +46,9 @@ function modalReducer(state: ModalState, action: ModalAction): ModalState {
       return { phase: 'idle' };
     case 'ERROR':
       if (state.phase === 'detecting') return { phase: 'idle' };
+      return state;
+    case 'DISCOVERY_SELECT':
+      if (state.phase === 'preview') return { phase: 'preview', draft: action.payload };
       return state;
     default:
       return state;
@@ -102,7 +107,7 @@ function getInterpretationText(state: ModalState): string {
     if (draft.type === 'file') return 'Interpreto que quieres registrar una skill desde un archivo. Aquí está la preview.';
     if (draft.type === 'text') {
       if (draft.intent === 'skill_description') return 'Interpreto que quieres registrar una skill propia. Te preparo una preview.';
-      if (draft.intent === 'discovery_intent') return 'Interpreto que buscas una skill existente. Discovery disponible en próxima versión.';
+      if (draft.intent === 'discovery_intent') return 'Interpreto que buscas una skill existente. Buscando en ClawHub...';
     }
     return '';
   }
@@ -231,6 +236,36 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
       dispatch({ type: 'RESET' });
     }
   };
+
+  const handleDiscoverySelect = async (skill: DiscoveredSkill) => {
+    // Fetch SKILL.md content via proxy (never directly from ClawHub on client)
+    let content: string | undefined
+    try {
+      const res = await fetch(`/api/skills/discover/content?slug=${encodeURIComponent(skill.slug)}`)
+      if (res.ok) {
+        const data = await res.json()
+        if (typeof data.content === 'string') content = data.content
+      }
+    } catch {
+      // content remains undefined — SkillPreviewCard renders without content
+    }
+
+    const draft: SkillDraft = {
+      type: 'text',
+      confidence: 'HIGH',
+      intent: 'discovery_intent',
+      name: skill.displayName,
+      description: skill.summary ?? '',
+      icon: '🔧',
+      origin: 'skills_sh',
+      source_url: `https://clawhub.ai/${skill.slug}`,
+      content,
+      version: skill.version ?? '1.0.0',
+      raw_input: `discovery:${skill.slug}`,
+    }
+
+    dispatch({ type: 'DISCOVERY_SELECT', payload: draft })
+  }
 
   function handleSubmit() {
     if (inputValue.trim()) {
@@ -509,25 +544,19 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
               </p>
             )}
 
-            {/* Discovery intent stub */}
+            {/* Discovery panel — replaces stub from Phase 43 */}
             {(state.phase === 'preview' || state.phase === 'editing' || state.phase === 'submitting') &&
-              'draft' in state && state.draft.intent === 'discovery_intent' && (
-              <div style={{
-                padding: '14px 16px',
-                borderRadius: '10px',
-                border: '1px solid var(--border)',
-                backgroundColor: 'var(--surface-elevated)',
-                color: 'var(--text-secondary)',
-                fontSize: '13px',
-                fontFamily: 'var(--font-body)',
-              }}>
-                Discovery de skills disponible en la próxima versión. Puedes registrar la skill manualmente usando el formulario.
-              </div>
+              'draft' in state && state.draft.intent === 'discovery_intent' && !state.draft.source_url && (
+              <DiscoveryPanel
+                initialQuery={state.draft.raw_input?.replace('discovery:', '') ?? ''}
+                onSelect={handleDiscoverySelect}
+              />
             )}
 
             {/* Preview card */}
             {(state.phase === 'preview' || state.phase === 'editing' || state.phase === 'submitting') &&
-              'draft' in state && state.draft.intent !== 'discovery_intent' && (
+              'draft' in state &&
+              (state.draft.intent !== 'discovery_intent' || state.draft.source_url) && (
               <SkillPreviewCard
                 draft={state.phase === 'editing' ? buildEditedDraft() : state.draft}
                 onConfirm={handleConfirm}
