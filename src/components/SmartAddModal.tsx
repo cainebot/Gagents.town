@@ -349,54 +349,48 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.25, ease: 'easeOut' }}
               >
-                {/* Review header: CAINE message + source chip */}
+                {/* Review header: chat-style message + source chip */}
                 <div style={{
                   padding: '24px 24px 0',
                   display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  gap: '12px',
+                  flexDirection: 'column',
+                  gap: '8px',
+                  opacity: 0.6,
                 }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <span style={{
-                      fontSize: '9px',
-                      fontFamily: 'var(--font-body)',
-                      color: 'var(--accent)',
-                      fontWeight: 600,
-                      letterSpacing: '0.05em',
-                      textTransform: 'uppercase' as const,
-                      opacity: 0.7,
-                    }}>
-                      Caine
-                    </span>
-                    <p style={{
-                      fontSize: '14px',
-                      fontFamily: 'var(--font-body)',
-                      color: 'var(--text-muted)',
-                      margin: '4px 0 0',
-                      lineHeight: '1.4',
-                    }}>
-                      {getReviewMessage(state.draft)}
-                    </p>
-                  </div>
-
+                  {/* Source chip — right-aligned like a user message */}
                   {sourceChip && (
-                    <span style={{
-                      fontSize: '12px',
-                      fontFamily: 'var(--font-mono)',
-                      color: 'var(--text-muted)',
-                      backgroundColor: 'var(--surface-elevated)',
-                      padding: '4px 10px',
-                      borderRadius: '16px',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      flexShrink: 0,
-                      whiteSpace: 'nowrap' as const,
-                    }}>
-                      {sourceChip.icon} {sourceChip.label}
-                    </span>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <span style={{
+                        fontSize: '12px',
+                        fontFamily: 'var(--font-mono)',
+                        backgroundColor: 'var(--text-primary)',
+                        color: 'var(--surface)',
+                        padding: '6px 12px',
+                        borderRadius: '12px 12px 2px 12px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        flexShrink: 0,
+                        whiteSpace: 'nowrap' as const,
+                      }}>
+                        {sourceChip.icon} {sourceChip.label}
+                      </span>
+                    </div>
                   )}
+
+                  {/* Assistant message bubble */}
+                  <div style={{
+                    maxWidth: '85%',
+                    padding: '8px 12px',
+                    borderRadius: '12px 12px 12px 2px',
+                    backgroundColor: 'var(--surface-elevated)',
+                    fontSize: '13px',
+                    fontFamily: 'var(--font-body)',
+                    color: 'var(--text-secondary)',
+                    lineHeight: '1.4',
+                  }}>
+                    {getReviewMessage(state.draft)}
+                  </div>
                 </div>
 
                 {/* Skill card */}
