@@ -486,7 +486,7 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
               border: dragOver ? '2px dashed var(--accent)' : '1px solid #393939',
               borderRadius: '12px',
               transition: 'border-color 150ms ease, opacity 200ms ease',
-              opacity: isReviewMode ? 0.5 : 1,
+              opacity: 1,
             }}
           >
             {/* Textarea */}
