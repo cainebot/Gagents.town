@@ -114,16 +114,17 @@ export interface AgentMessageRow {
   created_at: string;       // ISO timestamp
 }
 
-// Phase 31: Skill marketplace types
-export type SkillSource = 'upload' | 'github';
-export type AgentSkillStatus = 'pending' | 'installed' | 'failed';
+// Phase 31+35: Skill marketplace types
+export type SkillOrigin = 'local' | 'github' | 'skills_sh';
+export type AgentSkillStatus = 'pending' | 'installing' | 'installed' | 'failed' | 'uninstalling' | 'uninstall_failed' | 'removed';
+export type AgentSkillDesiredState = 'present' | 'absent';
 
 export interface SkillRow {
   id: string;
   name: string;
   description: string;
   icon: string;
-  source: SkillSource;
+  origin: SkillOrigin;
   source_url: string | null;
   created_at: string;
   updated_at: string;
@@ -144,7 +145,10 @@ export interface AgentSkillRow {
   skill_id: string;
   skill_version_id: string | null;
   status: AgentSkillStatus;
+  desired_state: AgentSkillDesiredState;
   installed_at: string | null;
+  last_error: string | null;
+  last_attempted_at: string | null;
   created_at: string;
 }
 
