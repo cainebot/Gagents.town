@@ -479,10 +479,11 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
             onDragLeave={handleDragLeave}
             style={{
               padding: '16px',
+              margin: '0 16px 16px',
               display: 'flex',
               flexDirection: 'column',
               gap: '0',
-              border: dragOver ? '2px dashed var(--accent)' : '1px solid var(--border)',
+              border: dragOver ? '2px dashed var(--accent)' : '1px solid #393939',
               borderRadius: '12px',
               transition: 'border-color 150ms ease, opacity 200ms ease',
               opacity: isReviewMode ? 0.5 : 1,
