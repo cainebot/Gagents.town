@@ -453,9 +453,19 @@ code, pre, .font-mono {
   color: var(--warning);
 }
 
-/* Hide default textarea resize handle (white on dark = ugly) */
-textarea::-webkit-resizer { display: none; }
-textarea { resize: none; }
+/* Custom textarea resize handle — dark theme grip dots */
+textarea {
+  resize: vertical;
+  position: relative;
+}
+textarea::-webkit-resizer {
+  background-color: transparent;
+  border: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Ccircle cx='9' cy='9' r='1.2' fill='%23555'/%3E%3Ccircle cx='5' cy='9' r='1.2' fill='%23555'/%3E%3Ccircle cx='9' cy='5' r='1.2' fill='%23555'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  cursor: ns-resize;
+}
 
 /* Sidebar */
 .sidebar-width { width: 240px; min-width: 240px; }
