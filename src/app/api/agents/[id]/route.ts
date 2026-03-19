@@ -5,7 +5,8 @@ import { validateAgentKey } from '@/lib/agent-auth'
 export const dynamic = 'force-dynamic'
 
 // Fields the UI is allowed to update — bridge-managed fields are excluded
-const EDITABLE_FIELDS = ['name', 'emoji', 'node_id', 'about', 'skills', 'department_id', 'soul_config', 'badge', 'role'] as const
+// skills removed — now read-only snapshot managed by confirm-install endpoint
+const EDITABLE_FIELDS = ['name', 'emoji', 'node_id', 'about', 'department_id', 'soul_config', 'badge', 'role'] as const
 type EditableField = typeof EDITABLE_FIELDS[number]
 
 export async function GET(
@@ -71,7 +72,8 @@ export async function PUT(
 
   // Auto-flag soul_dirty when soul-relevant fields change
   const finalUpdates: Record<string, unknown> = { ...updates }
-  if ('about' in updates || 'soul_config' in updates) {
+  const soulFields = ['about', 'soul_config', 'role', 'badge', 'department_id', 'name']
+  if (soulFields.some(f => f in updates)) {
     finalUpdates.soul_dirty = true
   }
 
