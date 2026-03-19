@@ -11,7 +11,6 @@ import {
   Tag,
   CheckSquare,
   SlidersHorizontal,
-  Store,
   Package,
   Building2,
   Zap,
@@ -97,12 +96,6 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       {
         label: "Marketplace",
-        href: "/marketplace",
-        icon: Store,
-        isActive: (p) => p.startsWith("/marketplace"),
-      },
-      {
-        label: "Packs",
         href: "/skills",
         icon: Package,
         isActive: (p) => p.startsWith("/skills"),
