@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useReducer, useRef } from 'react';
+import { useState, useReducer, useRef, useEffect } from 'react';
 import { Plus, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { detectInput } from '@/lib/input-detector';
+import { SkillPreviewCard } from '@/components/SkillPreviewCard';
 import type { SkillDraft } from '@/types/supabase';
 
 // --- State machine types ---
@@ -64,6 +65,40 @@ function modalReducer(state: ModalState, action: ModalAction): ModalState {
   }
 }
 
+// --- Async enrichment ---
+
+async function enrichDraft(draft: SkillDraft): Promise<SkillDraft> {
+  // GitHub URL: fetch metadata
+  if (draft.type === 'github_url' && draft.source_url) {
+    const res = await fetch(`/api/skills/metadata?url=${encodeURIComponent(draft.source_url)}`);
+    if (!res.ok) throw new Error('metadata_fetch_failed');
+    const meta = await res.json();
+    return {
+      ...draft,
+      name: meta.name ?? draft.name,
+      description: meta.description ?? draft.description,
+      content: meta.skill_md ?? meta.readme ?? draft.content,
+      icon: draft.icon ?? '🔧',
+      version: '1.0.0',
+    };
+  }
+
+  // Text: call /api/skills/detect for LLM enrichment
+  if (draft.type === 'text') {
+    const res = await fetch('/api/skills/detect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input: draft.raw_input }),
+    });
+    if (!res.ok) throw new Error('detect_failed');
+    const enriched: SkillDraft = await res.json();
+    return { ...enriched, icon: enriched.icon ?? '🔧', version: '1.0.0' };
+  }
+
+  // Command, file, unknown: use draft as-is, fill defaults
+  return { ...draft, icon: draft.icon ?? '🔧', version: draft.version ?? '1.0.0' };
+}
+
 // --- IA interpretation text derivation ---
 
 function getInterpretationText(state: ModalState): string {
@@ -101,32 +136,103 @@ interface SmartAddModalProps {
   onToast?: (msg: string) => void;
 }
 
-function SmartAddModal({ onClose, onCreated: _onCreated, onToast: _onToast }: SmartAddModalProps) {
+function SmartAddModal({ onClose, onCreated, onToast }: SmartAddModalProps) {
   const [state, dispatch] = useReducer(modalReducer, { phase: 'idle' });
   const [inputValue, setInputValue] = useState('');
   const [inlineError, setInlineError] = useState<string | null>(null);
+  const [lastInput, setLastInput] = useState<string | null>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mainInputRef = useRef<HTMLInputElement>(null);
 
+  // Edit field state — pre-populated when transitioning to editing
+  const [editName, setEditName] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editIcon, setEditIcon] = useState('');
+  const [editContent, setEditContent] = useState('');
+
+  // Populate edit fields when transitioning to editing phase
+  useEffect(() => {
+    if (state.phase === 'editing') {
+      setEditName(state.draft.name ?? '');
+      setEditDescription(state.draft.description ?? '');
+      setEditIcon(state.draft.icon ?? '🔧');
+      setEditContent(state.draft.content ?? '');
+    }
+  }, [state.phase]);
+
   const interpretationText = getInterpretationText(state);
 
-  function handleDetect(raw: string) {
-    setInlineError(null);
-    const result = detectInput(raw);
+  // Build edited draft from edit field state
+  function buildEditedDraft(): SkillDraft {
+    if (state.phase !== 'editing') {
+      throw new Error('buildEditedDraft called outside editing phase');
+    }
+    return {
+      ...state.draft,
+      name: editName,
+      description: editDescription,
+      icon: editIcon,
+      content: editContent,
+    };
+  }
 
-    if (result.size_error === true) {
+  const handleDetect = async (raw: string) => {
+    setInlineError(null);
+    const syncDraft = detectInput(raw);
+
+    if (syncDraft.size_error) {
       setInlineError('El archivo supera el límite de 500KB. Usa el formulario manual.');
-      dispatch({ type: 'ERROR' });
       return;
     }
 
-    dispatch({ type: 'DETECT', payload: result });
+    dispatch({ type: 'DETECT', payload: syncDraft });
 
-    // TODO Plan 02: call /api/skills/detect and /api/skills/metadata for enrichment
-    // For now, immediately transition to preview with sync detection result
-    dispatch({ type: 'PREVIEW', payload: result });
-  }
+    try {
+      const enriched = await enrichDraft(syncDraft);
+      dispatch({ type: 'PREVIEW', payload: enriched });
+    } catch {
+      setInlineError('No se pudo obtener metadata. ¿Reintentar?');
+      setLastInput(raw);
+      dispatch({ type: 'ERROR' });
+    }
+  };
+
+  const handleConfirm = async () => {
+    const draft = state.phase === 'editing' ? buildEditedDraft() : (state as { phase: 'preview' | 'submitting'; draft: SkillDraft }).draft;
+    if (!draft.name?.trim()) {
+      setInlineError('El nombre de la skill es obligatorio.');
+      return;
+    }
+    dispatch({ type: 'SUBMIT' });
+    try {
+      const res = await fetch('/api/skills', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: draft.name.trim(),
+          description: draft.description ?? '',
+          icon: draft.icon ?? '🔧',
+          origin: draft.origin ?? 'local',
+          source_url: draft.source_url ?? null,
+          content: draft.content ?? null,
+          version: draft.version ?? '1.0.0',
+        }),
+      });
+      if (res.ok) {
+        onToast?.('Skill registered successfully');
+        onCreated();
+        onClose();
+      } else {
+        const err = await res.json().catch(() => ({ error: 'unknown' }));
+        setInlineError(`Error al registrar: ${err.error ?? 'unknown'}`);
+        dispatch({ type: 'RESET' });
+      }
+    } catch {
+      setInlineError('Error de red. Inténtalo de nuevo.');
+      dispatch({ type: 'RESET' });
+    }
+  };
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === 'Enter' && inputValue.trim()) {
@@ -160,6 +266,17 @@ function SmartAddModal({ onClose, onCreated: _onCreated, onToast: _onToast }: Sm
   }
 
   const isInputDisabled = state.phase === 'detecting' || state.phase === 'submitting';
+
+  // Input style reused in edit form
+  const inputStyle: React.CSSProperties = {
+    padding: '8px 10px',
+    borderRadius: '6px',
+    backgroundColor: 'var(--surface-elevated)',
+    border: '1px solid var(--border)',
+    color: 'var(--text-primary)',
+    fontFamily: 'var(--font-body)',
+    fontSize: '13px',
+  };
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
@@ -341,27 +458,106 @@ function SmartAddModal({ onClose, onCreated: _onCreated, onToast: _onToast }: Sm
         {inlineError && (
           <p style={{ fontSize: '12px', color: 'var(--negative)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             {inlineError}
-            <button
-              type="button"
-              onClick={() => setInlineError(null)}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--negative)',
-                padding: 0,
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <X size={12} />
-            </button>
+            {inlineError.includes('Reintentar') ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setInlineError(null);
+                  if (lastInput) handleDetect(lastInput);
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--accent)',
+                  padding: 0,
+                  fontSize: '12px',
+                  fontFamily: 'var(--font-body)',
+                  textDecoration: 'underline',
+                }}
+              >
+                Reintentar
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setInlineError(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--negative)',
+                  padding: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <X size={12} />
+              </button>
+            )}
           </p>
         )}
 
-        {/* Preview placeholder — Plan 02 fills this */}
-        <div style={{ marginTop: '16px', minHeight: '120px' }}>
-          {/* Plan 02: SkillPreviewCard renders here when state.phase === 'preview' || state.phase === 'editing' */}
+        {/* Preview area */}
+        <div style={{ marginTop: '16px' }}>
+          {/* discovery_intent: show stub instead of SkillPreviewCard */}
+          {(state.phase === 'preview' || state.phase === 'editing' || state.phase === 'submitting') &&
+            'draft' in state &&
+            state.draft.intent === 'discovery_intent' ? (
+            <div
+              style={{
+                marginTop: '12px',
+                padding: '16px',
+                borderRadius: '8px',
+                border: '1px solid var(--border)',
+                backgroundColor: 'var(--surface-elevated)',
+                color: 'var(--text-secondary)',
+                fontSize: '13px',
+                fontFamily: 'var(--font-body)',
+              }}
+            >
+              Discovery de skills disponible en la próxima versión. Puedes registrar la skill manualmente usando el formulario.
+            </div>
+          ) : (state.phase === 'preview' || state.phase === 'editing' || state.phase === 'submitting') && 'draft' in state ? (
+            <SkillPreviewCard
+              draft={state.phase === 'editing' ? buildEditedDraft() : state.draft}
+              onConfirm={handleConfirm}
+              onEdit={() => dispatch({ type: 'EDIT' })}
+              confirming={state.phase === 'submitting'}
+            />
+          ) : null}
+
+          {/* Edit form — shown when in editing phase */}
+          {state.phase === 'editing' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  value={editIcon}
+                  onChange={(e) => setEditIcon(e.target.value)}
+                  style={{ width: '52px', ...inputStyle, textAlign: 'center', fontSize: '20px' }}
+                />
+                <input
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  placeholder="Skill name"
+                  style={{ flex: 1, ...inputStyle }}
+                />
+              </div>
+              <input
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+                placeholder="Description"
+                style={{ ...inputStyle }}
+              />
+              <textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                placeholder="Skill content (Markdown)"
+                rows={6}
+                style={{ ...inputStyle, fontFamily: 'var(--font-mono)', fontSize: '12px', resize: 'vertical' }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Fill in manually escape hatch */}
