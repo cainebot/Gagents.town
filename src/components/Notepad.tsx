@@ -50,9 +50,9 @@ export function Notepad() {
   return (
     <div style={{
       display: "flex", flexDirection: "column",
-      backgroundColor: "var(--card)",
+      backgroundColor: "var(--bg-secondary)",
       borderRadius: "0.75rem",
-      border: "1px solid var(--border)",
+      border: "1px solid var(--border-primary)",
       overflow: "hidden",
       height: "100%",
     }}>
@@ -60,25 +60,25 @@ export function Notepad() {
       <div style={{
         display: "flex", alignItems: "center", gap: "0.5rem",
         padding: "0.625rem 0.875rem",
-        borderBottom: "1px solid var(--border)",
+        borderBottom: "1px solid var(--border-primary)",
         flexShrink: 0,
       }}>
         <StickyNote className="w-3.5 h-3.5" style={{ color: "#fbbf24", flexShrink: 0 }} />
-        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", flex: 1, fontWeight: 500 }}>
+        <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary-600)", flex: 1, fontWeight: 500 }}>
           Notepad
         </span>
         {!saved && (
-          <span style={{ fontSize: "0.65rem", color: "var(--text-muted)" }}>saving...</span>
+          <span style={{ fontSize: "0.65rem", color: "var(--text-quaternary-500)" }}>saving...</span>
         )}
         {saved && lastSaved && (
-          <span style={{ fontSize: "0.65rem", color: "var(--text-muted)" }}>
+          <span style={{ fontSize: "0.65rem", color: "var(--text-quaternary-500)" }}>
             saved {lastSaved.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </span>
         )}
         <button
           onClick={clear}
           title="Clear"
-          style={{ padding: "0.2rem", borderRadius: "0.25rem", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}
+          style={{ padding: "0.2rem", borderRadius: "0.25rem", background: "none", border: "none", cursor: "pointer", color: "var(--text-quaternary-500)" }}
         >
           <Trash2 className="w-3 h-3" />
         </button>
@@ -96,7 +96,7 @@ export function Notepad() {
           outline: "none",
           padding: "0.75rem",
           backgroundColor: "transparent",
-          color: "var(--text-primary)",
+          color: "var(--text-primary-900)",
           fontSize: "0.8rem",
           lineHeight: 1.6,
           fontFamily: "var(--font-body, sans-serif)",

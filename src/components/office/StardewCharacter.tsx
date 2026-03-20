@@ -101,7 +101,7 @@ export function StardewCharacter({ agent, position }: CharacterProps) {
             <div
               style={{
                 fontSize: "9px",
-                fontFamily: "var(--font-body)",
+                fontFamily: "var(--font-inter), system-ui, sans-serif",
                 color: "#2A2A2A",
                 padding: "4px",
                 lineHeight: "1.3",
@@ -357,7 +357,7 @@ export function StardewCharacter({ agent, position }: CharacterProps) {
           strokeWidth="2"
           paintOrder="stroke"
           textAnchor="middle"
-          fontFamily="var(--font-body)"
+          fontFamily="var(--font-inter), system-ui, sans-serif"
           fontWeight="bold"
         >
           {agent.name}

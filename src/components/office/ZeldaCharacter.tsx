@@ -225,7 +225,7 @@ export function ZeldaCharacter({ agent, position }: ZeldaCharacterProps) {
           padding: "3px 8px",
           borderRadius: "4px",
           fontSize: "11px",
-          fontFamily: "var(--font-body)",
+          fontFamily: "var(--font-inter), system-ui, sans-serif",
           whiteSpace: "nowrap",
           border: `2px solid ${agent.color}`,
           pointerEvents: "none",

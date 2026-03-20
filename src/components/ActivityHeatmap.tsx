@@ -40,8 +40,8 @@ export function ActivityHeatmap() {
 
   if (loading) {
     return (
-      <div style={{ padding: "1.5rem", backgroundColor: "var(--card)", borderRadius: "0.75rem", border: "1px solid var(--border)" }}>
-        <div style={{ height: "100px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "0.875rem" }}>
+      <div style={{ padding: "1.5rem", backgroundColor: "var(--bg-secondary)", borderRadius: "0.75rem", border: "1px solid var(--border-primary)" }}>
+        <div style={{ height: "100px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-quaternary-500)", fontSize: "0.875rem" }}>
           Loading heatmap...
         </div>
       </div>
@@ -85,14 +85,14 @@ export function ActivityHeatmap() {
   const topTypes = Object.entries(stats.byType).sort(([, a], [, b]) => b - a).slice(0, 5);
 
   return (
-    <div style={{ padding: "1.5rem", backgroundColor: "var(--card)", borderRadius: "0.75rem", border: "1px solid var(--border)" }}>
+    <div style={{ padding: "1.5rem", backgroundColor: "var(--bg-secondary)", borderRadius: "0.75rem", border: "1px solid var(--border-primary)" }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
         <div>
-          <h3 style={{ color: "var(--text-primary)", fontWeight: 600, fontSize: "1rem", marginBottom: "0.125rem" }}>
+          <h3 style={{ color: "var(--text-primary-900)", fontWeight: 600, fontSize: "1rem", marginBottom: "0.125rem" }}>
             Activity Timeline
           </h3>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>
+          <p style={{ color: "var(--text-quaternary-500)", fontSize: "0.8rem" }}>
             {totalActivities} activities in the last 52 weeks · {stats.today} today
           </p>
         </div>
@@ -129,7 +129,7 @@ export function ActivityHeatmap() {
                       width: "11px", height: "11px",
                       borderRadius: "2px",
                       backgroundColor: isFuture ? "transparent" : getColor(day.count, maxCount),
-                      border: isToday ? "1px solid var(--accent)" : "none",
+                      border: isToday ? "1px solid var(--brand-600)" : "none",
                       cursor: day.count > 0 ? "pointer" : "default",
                       transition: "transform 0.1s",
                     }}
@@ -154,20 +154,20 @@ export function ActivityHeatmap() {
 
       {/* Legend */}
       <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", marginTop: "0.75rem" }}>
-        <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>Less</span>
+        <span style={{ fontSize: "0.7rem", color: "var(--text-quaternary-500)" }}>Less</span>
         {[0, 0.25, 0.5, 0.75, 1].map((ratio) => (
           <div key={ratio} style={{ width: "10px", height: "10px", borderRadius: "2px", backgroundColor: getColor(Math.round(ratio * maxCount), maxCount) }} />
         ))}
-        <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>More</span>
+        <span style={{ fontSize: "0.7rem", color: "var(--text-quaternary-500)" }}>More</span>
       </div>
 
       {/* Top activity types */}
       {topTypes.length > 0 && (
         <div style={{ marginTop: "1.25rem", display: "flex", flexWrap: "wrap", gap: "0.625rem" }}>
           {topTypes.map(([type, count]) => (
-            <div key={type} style={{ display: "flex", alignItems: "center", gap: "0.375rem", padding: "0.25rem 0.625rem", backgroundColor: "var(--card-elevated)", borderRadius: "9999px" }}>
-              <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", textTransform: "capitalize" }}>{type}</span>
-              <span style={{ fontSize: "0.75rem", color: "var(--accent)", fontWeight: 700 }}>{count}</span>
+            <div key={type} style={{ display: "flex", alignItems: "center", gap: "0.375rem", padding: "0.25rem 0.625rem", backgroundColor: "var(--bg-tertiary)", borderRadius: "9999px" }}>
+              <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary-600)", textTransform: "capitalize" }}>{type}</span>
+              <span style={{ fontSize: "0.75rem", color: "var(--brand-600)", fontWeight: 700 }}>{count}</span>
             </div>
           ))}
         </div>
@@ -180,12 +180,12 @@ export function ActivityHeatmap() {
           top: tooltip.y - 40,
           left: tooltip.x,
           transform: "translateX(-50%)",
-          backgroundColor: "var(--card-elevated)",
-          border: "1px solid var(--border)",
+          backgroundColor: "var(--bg-tertiary)",
+          border: "1px solid var(--border-primary)",
           borderRadius: "0.5rem",
           padding: "0.375rem 0.75rem",
           fontSize: "0.75rem",
-          color: "var(--text-primary)",
+          color: "var(--text-primary-900)",
           pointerEvents: "none",
           zIndex: 100,
           whiteSpace: "nowrap",

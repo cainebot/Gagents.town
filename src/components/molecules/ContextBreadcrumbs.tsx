@@ -27,7 +27,7 @@ const sectionLabelStyle: React.CSSProperties = {
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.8px',
-  color: 'var(--text-muted)',
+  color: 'var(--text-quaternary-500)',
 }
 
 export function ContextBreadcrumbs({ events }: ContextBreadcrumbsProps) {
@@ -36,7 +36,7 @@ export function ContextBreadcrumbs({ events }: ContextBreadcrumbsProps) {
   const ChevronIcon = expanded ? ChevronUp : ChevronDown
 
   return (
-    <div style={{ borderTop: '1px solid var(--border)', padding: '16px' }}>
+    <div style={{ borderTop: '1px solid var(--border-primary)', padding: '16px' }}>
       <button
         onClick={() => setExpanded(!expanded)}
         aria-label={expanded ? 'Collapse system events' : 'Expand system events'}
@@ -53,13 +53,13 @@ export function ContextBreadcrumbs({ events }: ContextBreadcrumbsProps) {
         }}
       >
         <span style={sectionLabelStyle}>SYSTEM EVENTS</span>
-        <ChevronIcon size={14} style={{ color: 'var(--text-muted)' }} />
+        <ChevronIcon size={14} style={{ color: 'var(--text-quaternary-500)' }} />
       </button>
 
       {expanded && (
         <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {events.length === 0 ? (
-            <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+            <div style={{ fontSize: '13px', color: 'var(--text-quaternary-500)', fontStyle: 'italic' }}>
               No system events recorded.
             </div>
           ) : (
@@ -69,8 +69,8 @@ export function ContextBreadcrumbs({ events }: ContextBreadcrumbsProps) {
                   fontSize: '13px',
                   fontWeight: 500,
                   fontStyle: 'italic',
-                  color: 'var(--text-secondary)',
-                  fontFamily: 'var(--font-body)',
+                  color: 'var(--text-tertiary-600)',
+                  fontFamily: 'var(--font-inter), system-ui, sans-serif',
                   lineHeight: 1.4,
                 }}>
                   [System: {event.description}]
@@ -78,8 +78,8 @@ export function ContextBreadcrumbs({ events }: ContextBreadcrumbsProps) {
                 <span style={{
                   fontSize: '13px',
                   fontWeight: 500,
-                  color: 'var(--text-muted)',
-                  fontFamily: 'var(--font-body)',
+                  color: 'var(--text-quaternary-500)',
+                  fontFamily: 'var(--font-inter), system-ui, sans-serif',
                   flexShrink: 0,
                 }}>
                   {relativeTime(event.created_at)}

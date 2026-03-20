@@ -44,7 +44,7 @@ function accentBarColor(status: string): string {
     case 'error':
       return 'var(--negative, #FF453A)'
     default:
-      return 'var(--border)'
+      return 'var(--border-primary)'
   }
 }
 
@@ -58,7 +58,7 @@ function badgeColors(badge?: string): { bg: string; color: string } {
     case 'INT':
       return { bg: 'rgba(10,132,255,0.12)', color: '#0A84FF' }
     default:
-      return { bg: 'rgba(82,82,82,0.12)', color: 'var(--text-muted)' }
+      return { bg: 'rgba(82,82,82,0.12)', color: 'var(--text-quaternary-500)' }
   }
 }
 
@@ -140,8 +140,8 @@ export function AgentListPanel() {
         top: 0,
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: 'var(--surface)',
-        borderRight: '1px solid var(--border)',
+        backgroundColor: 'var(--bg-secondary)',
+        borderRight: '1px solid var(--border-primary)',
         transition: 'width 0.2s ease, min-width 0.2s ease',
         overflow: 'hidden',
       }}
@@ -158,10 +158,10 @@ export function AgentListPanel() {
         >
           <span
             style={{
-              fontFamily: 'var(--font-heading)',
+              fontFamily: 'var(--font-sora), system-ui, sans-serif',
               fontSize: '11px',
               fontWeight: 700,
-              color: 'var(--text-muted)',
+              color: 'var(--text-quaternary-500)',
               letterSpacing: '0.08em',
             }}
           >
@@ -169,10 +169,10 @@ export function AgentListPanel() {
           </span>
           <span
             style={{
-              fontFamily: 'var(--font-body)',
+              fontFamily: 'var(--font-inter), system-ui, sans-serif',
               fontSize: '11px',
               fontWeight: 500,
-              color: 'var(--text-muted)',
+              color: 'var(--text-quaternary-500)',
               background: 'rgba(82,82,82,0.15)',
               borderRadius: '9999px',
               padding: '1px 7px',
@@ -190,7 +190,7 @@ export function AgentListPanel() {
             justifyContent: 'center',
           }}
         >
-          <Users size={16} style={{ color: 'var(--text-muted)' }} />
+          <Users size={16} style={{ color: 'var(--text-quaternary-500)' }} />
         </div>
       )}
 
@@ -208,7 +208,7 @@ export function AgentListPanel() {
             border: 'none',
             cursor: 'pointer',
             textAlign: 'left',
-            borderLeft: selectedAgentId === null ? '3px solid var(--accent)' : '3px solid transparent',
+            borderLeft: selectedAgentId === null ? '3px solid var(--brand-600)' : '3px solid transparent',
             transition: 'background 0.1s',
           }}
           onMouseEnter={(e) => {
@@ -231,25 +231,25 @@ export function AgentListPanel() {
               flexShrink: 0,
             }}
           >
-            <Users size={16} style={{ color: 'var(--text-secondary)' }} />
+            <Users size={16} style={{ color: 'var(--text-tertiary-600)' }} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div
               style={{
-                fontFamily: 'var(--font-body)',
+                fontFamily: 'var(--font-inter), system-ui, sans-serif',
                 fontSize: '13px',
                 fontWeight: 600,
-                color: 'var(--text-primary)',
+                color: 'var(--text-primary-900)',
               }}
             >
               All Agents
             </div>
             <div
               style={{
-                fontFamily: 'var(--font-body)',
+                fontFamily: 'var(--font-inter), system-ui, sans-serif',
                 fontSize: '10px',
                 fontWeight: 500,
-                color: 'var(--text-muted)',
+                color: 'var(--text-quaternary-500)',
                 marginTop: '1px',
               }}
             >
@@ -260,7 +260,7 @@ export function AgentListPanel() {
             style={{
               fontSize: '10px',
               fontWeight: 600,
-              fontFamily: 'var(--font-body)',
+              fontFamily: 'var(--font-inter), system-ui, sans-serif',
               color: 'var(--positive, #32D74B)',
             }}
           >
@@ -270,7 +270,7 @@ export function AgentListPanel() {
       )}
 
       {/* Divider */}
-      <div style={{ height: '1px', backgroundColor: 'var(--border)', margin: collapsed ? '4px 4px' : '4px 0' }} />
+      <div style={{ height: '1px', backgroundColor: 'var(--border-primary)', margin: collapsed ? '4px 4px' : '4px 0' }} />
 
       {/* Agent list */}
       <div style={{ flex: 1, overflowY: 'auto' }}>
@@ -336,10 +336,10 @@ export function AgentListPanel() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span
                       style={{
-                        fontFamily: 'var(--font-body)',
+                        fontFamily: 'var(--font-inter), system-ui, sans-serif',
                         fontSize: '13px',
                         fontWeight: 600,
-                        color: isSelected ? 'var(--accent)' : 'var(--text-primary)',
+                        color: isSelected ? 'var(--brand-600)' : 'var(--text-primary-900)',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
@@ -353,7 +353,7 @@ export function AgentListPanel() {
                         style={{
                           fontSize: '9px',
                           fontWeight: 700,
-                          fontFamily: 'var(--font-body)',
+                          fontFamily: 'var(--font-inter), system-ui, sans-serif',
                           textTransform: 'uppercase',
                           letterSpacing: '0.03em',
                           background: agent.agent_id === scrumMasterAgentId
@@ -375,10 +375,10 @@ export function AgentListPanel() {
                   {/* Line 2: Role */}
                   <div
                     style={{
-                      fontFamily: 'var(--font-body)',
+                      fontFamily: 'var(--font-inter), system-ui, sans-serif',
                       fontSize: '10px',
                       fontWeight: 500,
-                      color: 'var(--text-muted)',
+                      color: 'var(--text-quaternary-500)',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
@@ -405,7 +405,7 @@ export function AgentListPanel() {
                     style={{
                       fontSize: '10px',
                       fontWeight: 600,
-                      fontFamily: 'var(--font-body)',
+                      fontFamily: 'var(--font-inter), system-ui, sans-serif',
                       color: accentBarColor(agent.status),
                     }}
                   >
@@ -433,7 +433,7 @@ export function AgentListPanel() {
       </div>
 
       {/* Collapse toggle */}
-      <div style={{ borderTop: '1px solid var(--border)', padding: '4px 6px' }}>
+      <div style={{ borderTop: '1px solid var(--border-primary)', padding: '4px 6px' }}>
         <button
           onClick={() => setCollapsed(!collapsed)}
           title={collapsed ? 'Expand agents' : 'Collapse agents'}
@@ -447,19 +447,19 @@ export function AgentListPanel() {
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            color: 'var(--text-muted)',
+            color: 'var(--text-quaternary-500)',
             fontSize: '12px',
-            fontFamily: 'var(--font-body)',
+            fontFamily: 'var(--font-inter), system-ui, sans-serif',
             borderRadius: '6px',
             transition: 'background 0.1s, color 0.1s',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'var(--surface-hover, #2E2E2E)'
-            e.currentTarget.style.color = 'var(--text-primary)'
+            e.currentTarget.style.color = 'var(--text-primary-900)'
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'none'
-            e.currentTarget.style.color = 'var(--text-muted)'
+            e.currentTarget.style.color = 'var(--text-quaternary-500)'
           }}
         >
           {collapsed ? <PanelLeftOpen size={14} /> : <PanelLeftClose size={14} />}

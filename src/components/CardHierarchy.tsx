@@ -39,7 +39,7 @@ function CardTypeBadge({ type }: { type: CardType }) {
         borderRadius: '3px',
         padding: '1px 5px',
         fontSize: '10px',
-        fontFamily: 'var(--font-body)',
+        fontFamily: 'var(--font-inter), system-ui, sans-serif',
         fontWeight: 500,
         flexShrink: 0,
         lineHeight: 1.4,
@@ -65,8 +65,8 @@ export function CardHierarchy({
     alignItems: 'center',
     gap: '4px',
     cursor: 'pointer',
-    color: 'var(--text-secondary)',
-    fontFamily: 'var(--font-body)',
+    color: 'var(--text-tertiary-600)',
+    fontFamily: 'var(--font-inter), system-ui, sans-serif',
     fontSize: '12px',
     textDecoration: 'none',
     background: 'none',
@@ -76,22 +76,22 @@ export function CardHierarchy({
 
   const linkHoverStyle = (e: React.MouseEvent<HTMLButtonElement>, enter: boolean) => {
     ;(e.currentTarget as HTMLButtonElement).style.color = enter
-      ? 'var(--text-primary)'
-      : 'var(--text-secondary)'
+      ? 'var(--text-primary-900)'
+      : 'var(--text-tertiary-600)'
   }
 
   const sectionStyle: React.CSSProperties = {
     marginBottom: '12px',
     padding: '8px 10px',
-    background: 'var(--surface)',
-    border: '1px solid var(--border)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-primary)',
     borderRadius: '6px',
   }
 
   const labelStyle: React.CSSProperties = {
-    fontFamily: 'var(--font-body)',
+    fontFamily: 'var(--font-inter), system-ui, sans-serif',
     fontSize: '11px',
-    color: 'var(--text-muted)',
+    color: 'var(--text-quaternary-500)',
     fontWeight: 600,
     textTransform: 'uppercase' as const,
     letterSpacing: '0.04em',
@@ -108,7 +108,7 @@ export function CardHierarchy({
             {breadcrumb.map((entry, idx) => (
               <span key={entry.card_id} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                 {idx > 0 && (
-                  <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>›</span>
+                  <span style={{ color: 'var(--text-quaternary-500)', fontSize: '11px' }}>›</span>
                 )}
                 <button
                   style={linkStyle}

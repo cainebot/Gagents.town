@@ -77,32 +77,32 @@ function renderMarkdown(text: string): string {
       // Headers
       .replace(
         /^### (.*$)/gm,
-        '<h3 style="font-size: 1.125rem; font-weight: bold; color: var(--text-primary); margin-top: 1rem; margin-bottom: 0.5rem;">$1</h3>'
+        '<h3 style="font-size: 1.125rem; font-weight: bold; color: var(--text-primary-900); margin-top: 1rem; margin-bottom: 0.5rem;">$1</h3>'
       )
       .replace(
         /^## (.*$)/gm,
-        '<h2 style="font-size: 1.25rem; font-weight: bold; color: var(--text-primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">$1</h2>'
+        '<h2 style="font-size: 1.25rem; font-weight: bold; color: var(--text-primary-900); margin-top: 1.5rem; margin-bottom: 0.75rem;">$1</h2>'
       )
       .replace(
         /^# (.*$)/gm,
-        '<h1 style="font-size: 1.5rem; font-weight: bold; color: var(--text-primary); margin-top: 1.5rem; margin-bottom: 1rem;">$1</h1>'
+        '<h1 style="font-size: 1.5rem; font-weight: bold; color: var(--text-primary-900); margin-top: 1.5rem; margin-bottom: 1rem;">$1</h1>'
       )
       // Bold and italic
       .replace(/\*\*\*(.*?)\*\*\*/g, "<strong><em>$1</em></strong>")
       .replace(
         /\*\*(.*?)\*\*/g,
-        '<strong style="color: var(--text-primary);">$1</strong>'
+        '<strong style="color: var(--text-primary-900);">$1</strong>'
       )
       .replace(/\*(.*?)\*/g, "<em>$1</em>")
       // Code blocks
       .replace(
         /```(\w+)?\n([\s\S]*?)```/g,
-        '<pre style="background-color: var(--background); padding: 1rem; border-radius: 0.5rem; margin: 1rem 0; overflow-x: auto;"><code style="color: var(--accent);">$2</code></pre>'
+        '<pre style="background-color: var(--bg-primary); padding: 1rem; border-radius: 0.5rem; margin: 1rem 0; overflow-x: auto;"><code style="color: var(--brand-600);">$2</code></pre>'
       )
       // Inline code
       .replace(
         /`([^`]+)`/g,
-        '<code style="background-color: var(--background); padding: 0.125rem 0.375rem; border-radius: 0.25rem; color: var(--accent);">$1</code>'
+        '<code style="background-color: var(--bg-primary); padding: 0.125rem 0.375rem; border-radius: 0.25rem; color: var(--brand-600);">$1</code>'
       )
       // Links
       .replace(
@@ -117,7 +117,7 @@ function renderMarkdown(text: string): string {
       // Blockquotes
       .replace(
         /^> (.*$)/gm,
-        '<blockquote style="border-left: 4px solid var(--border); padding-left: 1rem; font-style: italic; color: var(--text-secondary);">$1</blockquote>'
+        '<blockquote style="border-left: 4px solid var(--border-primary); padding-left: 1rem; font-style: italic; color: var(--text-tertiary-600);">$1</blockquote>'
       )
       // Line breaks
       .replace(/\n\n/g, '</p><p style="margin-bottom: 1rem;">')
@@ -183,31 +183,31 @@ export function FilePreview({ workspace, path, name, onClose }: FilePreviewProps
       <div
         className="rounded-xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl"
         style={{
-          backgroundColor: "var(--card)",
-          border: "1px solid var(--border)",
+          backgroundColor: "var(--bg-secondary)",
+          border: "1px solid var(--border-primary)",
         }}
       >
         {/* Header */}
         <div
           className="flex items-center justify-between px-6 py-4"
-          style={{ borderBottom: "1px solid var(--border)" }}
+          style={{ borderBottom: "1px solid var(--border-primary)" }}
         >
           <div className="flex items-center gap-3">
             <FileText
               className="w-5 h-5"
-              style={{ color: "var(--text-secondary)" }}
+              style={{ color: "var(--text-tertiary-600)" }}
             />
             <span
               className="font-medium"
-              style={{ color: "var(--text-primary)" }}
+              style={{ color: "var(--text-primary-900)" }}
             >
               {name}
             </span>
             <span
               className="text-xs px-2 py-1 rounded"
               style={{
-                backgroundColor: "var(--background)",
-                color: "var(--text-muted)",
+                backgroundColor: "var(--bg-primary)",
+                color: "var(--text-quaternary-500)",
               }}
             >
               {ext.toUpperCase() || "FILE"}
@@ -219,21 +219,21 @@ export function FilePreview({ workspace, path, name, onClose }: FilePreviewProps
                 <button
                   onClick={handleCopy}
                   className="p-2 rounded-lg transition-colors"
-                  style={{ color: "var(--text-secondary)" }}
+                  style={{ color: "var(--text-tertiary-600)" }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "var(--border)";
-                    e.currentTarget.style.color = "var(--text-primary)";
+                    e.currentTarget.style.backgroundColor = "var(--border-primary)";
+                    e.currentTarget.style.color = "var(--text-primary-900)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color = "var(--text-secondary)";
+                    e.currentTarget.style.color = "var(--text-tertiary-600)";
                   }}
                   title="Copy content"
                 >
                   {copied ? (
                     <Check
                       className="w-5 h-5"
-                      style={{ color: "var(--accent)" }}
+                      style={{ color: "var(--brand-600)" }}
                     />
                   ) : (
                     <Copy className="w-5 h-5" />
@@ -242,14 +242,14 @@ export function FilePreview({ workspace, path, name, onClose }: FilePreviewProps
                 <button
                   onClick={handleDownload}
                   className="p-2 rounded-lg transition-colors"
-                  style={{ color: "var(--text-secondary)" }}
+                  style={{ color: "var(--text-tertiary-600)" }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "var(--border)";
-                    e.currentTarget.style.color = "var(--text-primary)";
+                    e.currentTarget.style.backgroundColor = "var(--border-primary)";
+                    e.currentTarget.style.color = "var(--text-primary-900)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color = "var(--text-secondary)";
+                    e.currentTarget.style.color = "var(--text-tertiary-600)";
                   }}
                   title="Download file"
                 >
@@ -260,14 +260,14 @@ export function FilePreview({ workspace, path, name, onClose }: FilePreviewProps
             <button
               onClick={onClose}
               className="p-2 rounded-lg transition-colors"
-              style={{ color: "var(--text-secondary)" }}
+              style={{ color: "var(--text-tertiary-600)" }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "var(--border)";
-                e.currentTarget.style.color = "var(--text-primary)";
+                e.currentTarget.style.backgroundColor = "var(--border-primary)";
+                e.currentTarget.style.color = "var(--text-primary-900)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = "var(--text-secondary)";
+                e.currentTarget.style.color = "var(--text-tertiary-600)";
               }}
             >
               <X className="w-5 h-5" />
@@ -281,7 +281,7 @@ export function FilePreview({ workspace, path, name, onClose }: FilePreviewProps
             <div className="flex items-center justify-center h-full">
               <Loader2
                 className="w-8 h-8 animate-spin"
-                style={{ color: "var(--accent)" }}
+                style={{ color: "var(--brand-600)" }}
               />
             </div>
           )}
@@ -289,7 +289,7 @@ export function FilePreview({ workspace, path, name, onClose }: FilePreviewProps
           {error && (
             <div
               className="flex flex-col items-center justify-center h-full"
-              style={{ color: "var(--accent)" }}
+              style={{ color: "var(--brand-600)" }}
             >
               <AlertCircle className="w-12 h-12 mb-4" />
               <p>{error}</p>
@@ -310,7 +310,7 @@ export function FilePreview({ workspace, path, name, onClose }: FilePreviewProps
           {!loading && !error && isMd && content && (
             <div
               className="prose prose-invert max-w-none"
-              style={{ color: "var(--text-secondary)" }}
+              style={{ color: "var(--text-tertiary-600)" }}
               dangerouslySetInnerHTML={{
                 __html: `<p style="margin-bottom: 1rem;">${renderMarkdown(content)}</p>`,
               }}
@@ -320,11 +320,11 @@ export function FilePreview({ workspace, path, name, onClose }: FilePreviewProps
           {!loading && !error && isCode && content && (
             <pre
               className="p-4 rounded-lg overflow-x-auto"
-              style={{ backgroundColor: "var(--background)" }}
+              style={{ backgroundColor: "var(--bg-primary)" }}
             >
               <code
                 className={`language-${getLanguage(ext)} text-sm`}
-                style={{ color: "var(--text-secondary)" }}
+                style={{ color: "var(--text-tertiary-600)" }}
               >
                 {content}
               </code>
@@ -335,8 +335,8 @@ export function FilePreview({ workspace, path, name, onClose }: FilePreviewProps
             <pre
               className="p-4 rounded-lg overflow-x-auto text-sm whitespace-pre-wrap"
               style={{
-                backgroundColor: "var(--background)",
-                color: "var(--text-secondary)",
+                backgroundColor: "var(--bg-primary)",
+                color: "var(--text-tertiary-600)",
               }}
             >
               {content}

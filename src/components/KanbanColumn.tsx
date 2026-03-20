@@ -90,21 +90,21 @@ export function KanbanColumn({
           marginBottom: '8px',
           background: column.only_humans
             ? 'linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(251, 191, 36, 0.04))'
-            : 'var(--surface)',
-          border: '1px solid var(--border)',
+            : 'var(--bg-secondary)',
+          border: '1px solid var(--border-primary)',
           borderLeft: column.only_humans
             ? '3px solid rgba(251, 191, 36, 0.5)'
-            : '1px solid var(--border)',
+            : '1px solid var(--border-primary)',
           borderRadius: '6px',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span
             style={{
-              fontFamily: 'var(--font-heading)',
+              fontFamily: 'var(--font-sora), system-ui, sans-serif',
               fontSize: '13px',
               fontWeight: 600,
-              color: 'var(--text-primary)',
+              color: 'var(--text-primary-900)',
             }}
           >
             {column.name}
@@ -129,12 +129,12 @@ export function KanbanColumn({
           {/* Card count badge */}
           <span
             style={{
-              fontFamily: 'var(--font-body)',
+              fontFamily: 'var(--font-inter), system-ui, sans-serif',
               fontSize: '11px',
               fontWeight: 600,
-              color: 'var(--text-secondary)',
+              color: 'var(--text-tertiary-600)',
               background: 'var(--surface-alt, rgba(255,255,255,0.06))',
-              border: '1px solid var(--border)',
+              border: '1px solid var(--border-primary)',
               borderRadius: '10px',
               padding: '1px 6px',
               minWidth: '20px',
@@ -155,7 +155,7 @@ export function KanbanColumn({
               : 'none',
             border: 'none',
             cursor: 'pointer',
-            color: showInlineCreate ? 'var(--text-primary)' : 'var(--text-secondary)',
+            color: showInlineCreate ? 'var(--text-primary-900)' : 'var(--text-tertiary-600)',
             fontSize: '18px',
             lineHeight: 1,
             padding: '0 2px',
@@ -167,15 +167,15 @@ export function KanbanColumn({
           onMouseEnter={(e) => {
             ;(e.currentTarget as HTMLButtonElement).style.background =
               'var(--surface-alt, rgba(255,255,255,0.08))'
-            ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--text-primary)'
+            ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--text-primary-900)'
           }}
           onMouseLeave={(e) => {
             ;(e.currentTarget as HTMLButtonElement).style.background = showInlineCreate
               ? 'var(--surface-alt, rgba(255,255,255,0.08))'
               : 'none'
             ;(e.currentTarget as HTMLButtonElement).style.color = showInlineCreate
-              ? 'var(--text-primary)'
-              : 'var(--text-secondary)'
+              ? 'var(--text-primary-900)'
+              : 'var(--text-tertiary-600)'
           }}
         >
           +
@@ -221,8 +221,8 @@ export function KanbanColumn({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'var(--text-secondary)',
-              fontFamily: 'var(--font-body)',
+              color: 'var(--text-tertiary-600)',
+              fontFamily: 'var(--font-inter), system-ui, sans-serif',
               fontSize: '12px',
               opacity: 0.5,
               minHeight: '60px',

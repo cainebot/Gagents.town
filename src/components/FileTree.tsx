@@ -71,19 +71,19 @@ function TreeNode({
         className="w-full flex items-center gap-1.5 md:gap-2 px-2 md:px-3 py-1.5 md:py-2 text-xs md:text-sm rounded-lg transition-colors"
         style={{
           paddingLeft: `${8 + depth * 12}px`,
-          backgroundColor: isSelected ? "var(--accent)" : "transparent",
-          color: isSelected ? "var(--text-primary)" : "var(--text-secondary)",
+          backgroundColor: isSelected ? "var(--brand-600)" : "transparent",
+          color: isSelected ? "var(--text-primary-900)" : "var(--text-tertiary-600)",
         }}
         onMouseEnter={(e) => {
           if (!isSelected) {
-            e.currentTarget.style.backgroundColor = "var(--border)";
-            e.currentTarget.style.color = "var(--text-primary)";
+            e.currentTarget.style.backgroundColor = "var(--border-primary)";
+            e.currentTarget.style.color = "var(--text-primary-900)";
           }
         }}
         onMouseLeave={(e) => {
           if (!isSelected) {
             e.currentTarget.style.backgroundColor = "transparent";
-            e.currentTarget.style.color = "var(--text-secondary)";
+            e.currentTarget.style.color = "var(--text-tertiary-600)";
           }
         }}
       >
@@ -103,7 +103,7 @@ function TreeNode({
             color: isFolder
               ? "#F59E0B"
               : isSelected
-              ? "var(--text-primary)"
+              ? "var(--text-primary-900)"
               : "#60A5FA",
           }}
         />

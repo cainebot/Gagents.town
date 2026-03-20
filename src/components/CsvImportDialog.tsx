@@ -206,8 +206,8 @@ export function CsvImportDialog({
     >
       <div
         style={{
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
+          background: 'var(--bg-secondary)',
+          border: '1px solid var(--border-primary)',
           borderRadius: '10px',
           width: '100%',
           maxWidth: '600px',
@@ -223,10 +223,10 @@ export function CsvImportDialog({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h2
             style={{
-              fontFamily: 'var(--font-heading)',
+              fontFamily: 'var(--font-sora), system-ui, sans-serif',
               fontSize: '16px',
               fontWeight: 700,
-              color: 'var(--text-primary)',
+              color: 'var(--text-primary-900)',
               margin: 0,
             }}
           >
@@ -238,7 +238,7 @@ export function CsvImportDialog({
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              color: 'var(--text-secondary)',
+              color: 'var(--text-tertiary-600)',
               fontSize: '18px',
               lineHeight: 1,
               padding: '2px 6px',
@@ -257,7 +257,7 @@ export function CsvImportDialog({
             onDragLeave={handleDragLeave}
             onClick={() => fileInputRef.current?.click()}
             style={{
-              border: `2px dashed ${isDragOver ? 'var(--accent, #6366f1)' : 'var(--border)'}`,
+              border: `2px dashed ${isDragOver ? 'var(--accent, #6366f1)' : 'var(--border-primary)'}`,
               borderRadius: '8px',
               padding: '48px 24px',
               textAlign: 'center',
@@ -268,9 +268,9 @@ export function CsvImportDialog({
           >
             <div
               style={{
-                fontFamily: 'var(--font-body)',
+                fontFamily: 'var(--font-inter), system-ui, sans-serif',
                 fontSize: '14px',
-                color: 'var(--text-secondary)',
+                color: 'var(--text-tertiary-600)',
                 marginBottom: '8px',
               }}
             >
@@ -278,9 +278,9 @@ export function CsvImportDialog({
             </div>
             <div
               style={{
-                fontFamily: 'var(--font-body)',
+                fontFamily: 'var(--font-inter), system-ui, sans-serif',
                 fontSize: '12px',
-                color: 'var(--text-secondary)',
+                color: 'var(--text-tertiary-600)',
                 opacity: 0.6,
               }}
             >
@@ -302,12 +302,12 @@ export function CsvImportDialog({
             {/* File info */}
             <div
               style={{
-                fontFamily: 'var(--font-body)',
+                fontFamily: 'var(--font-inter), system-ui, sans-serif',
                 fontSize: '13px',
-                color: 'var(--text-secondary)',
+                color: 'var(--text-tertiary-600)',
               }}
             >
-              <strong style={{ color: 'var(--text-primary)' }}>{file.name}</strong> — {rows.length}{' '}
+              <strong style={{ color: 'var(--text-primary-900)' }}>{file.name}</strong> — {rows.length}{' '}
               rows detected
             </div>
 
@@ -319,16 +319,16 @@ export function CsvImportDialog({
                 gap: '8px',
                 padding: '10px 12px',
                 background: 'var(--surface-alt, rgba(255,255,255,0.04))',
-                border: '1px solid var(--border)',
+                border: '1px solid var(--border-primary)',
                 borderRadius: '6px',
               }}
             >
               <div>
                 <span
                   style={{
-                    fontFamily: 'var(--font-body)',
+                    fontFamily: 'var(--font-inter), system-ui, sans-serif',
                     fontSize: '11px',
-                    color: 'var(--text-secondary)',
+                    color: 'var(--text-tertiary-600)',
                     display: 'block',
                     marginBottom: '2px',
                   }}
@@ -337,9 +337,9 @@ export function CsvImportDialog({
                 </span>
                 <span
                   style={{
-                    fontFamily: 'var(--font-body)',
+                    fontFamily: 'var(--font-inter), system-ui, sans-serif',
                     fontSize: '13px',
-                    color: 'var(--text-primary)',
+                    color: 'var(--text-primary-900)',
                   }}
                 >
                   {defaultCardType}
@@ -351,10 +351,10 @@ export function CsvImportDialog({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div
                 style={{
-                  fontFamily: 'var(--font-heading)',
+                  fontFamily: 'var(--font-sora), system-ui, sans-serif',
                   fontSize: '13px',
                   fontWeight: 600,
-                  color: 'var(--text-primary)',
+                  color: 'var(--text-primary-900)',
                 }}
               >
                 Column Mapping
@@ -376,9 +376,9 @@ export function CsvImportDialog({
                 >
                   <label
                     style={{
-                      fontFamily: 'var(--font-body)',
+                      fontFamily: 'var(--font-inter), system-ui, sans-serif',
                       fontSize: '12px',
-                      color: 'var(--text-secondary)',
+                      color: 'var(--text-tertiary-600)',
                       width: '160px',
                       flexShrink: 0,
                     }}
@@ -392,12 +392,12 @@ export function CsvImportDialog({
                     }
                     style={{
                       flex: 1,
-                      fontFamily: 'var(--font-body)',
+                      fontFamily: 'var(--font-inter), system-ui, sans-serif',
                       fontSize: '12px',
-                      background: 'var(--surface)',
-                      border: '1px solid var(--border)',
+                      background: 'var(--bg-secondary)',
+                      border: '1px solid var(--border-primary)',
                       borderRadius: '4px',
-                      color: 'var(--text-primary)',
+                      color: 'var(--text-primary-900)',
                       padding: '4px 8px',
                     }}
                   >
@@ -417,10 +417,10 @@ export function CsvImportDialog({
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <div
                   style={{
-                    fontFamily: 'var(--font-heading)',
+                    fontFamily: 'var(--font-sora), system-ui, sans-serif',
                     fontSize: '13px',
                     fontWeight: 600,
-                    color: 'var(--text-primary)',
+                    color: 'var(--text-primary-900)',
                   }}
                 >
                   Preview (first {previewRows.length} rows)
@@ -430,7 +430,7 @@ export function CsvImportDialog({
                     style={{
                       width: '100%',
                       borderCollapse: 'collapse',
-                      fontFamily: 'var(--font-body)',
+                      fontFamily: 'var(--font-inter), system-ui, sans-serif',
                       fontSize: '12px',
                     }}
                   >
@@ -440,8 +440,8 @@ export function CsvImportDialog({
                           style={{
                             textAlign: 'left',
                             padding: '4px 8px',
-                            borderBottom: '1px solid var(--border)',
-                            color: 'var(--text-secondary)',
+                            borderBottom: '1px solid var(--border-primary)',
+                            color: 'var(--text-tertiary-600)',
                             fontWeight: 600,
                           }}
                         >
@@ -452,8 +452,8 @@ export function CsvImportDialog({
                             style={{
                               textAlign: 'left',
                               padding: '4px 8px',
-                              borderBottom: '1px solid var(--border)',
-                              color: 'var(--text-secondary)',
+                              borderBottom: '1px solid var(--border-primary)',
+                              color: 'var(--text-tertiary-600)',
                               fontWeight: 600,
                             }}
                           >
@@ -465,8 +465,8 @@ export function CsvImportDialog({
                             style={{
                               textAlign: 'left',
                               padding: '4px 8px',
-                              borderBottom: '1px solid var(--border)',
-                              color: 'var(--text-secondary)',
+                              borderBottom: '1px solid var(--border-primary)',
+                              color: 'var(--text-tertiary-600)',
                               fontWeight: 600,
                             }}
                           >
@@ -481,8 +481,8 @@ export function CsvImportDialog({
                           <td
                             style={{
                               padding: '4px 8px',
-                              borderBottom: '1px solid var(--border)',
-                              color: 'var(--text-primary)',
+                              borderBottom: '1px solid var(--border-primary)',
+                              color: 'var(--text-primary-900)',
                               maxWidth: '200px',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
@@ -495,8 +495,8 @@ export function CsvImportDialog({
                             <td
                               style={{
                                 padding: '4px 8px',
-                                borderBottom: '1px solid var(--border)',
-                                color: 'var(--text-secondary)',
+                                borderBottom: '1px solid var(--border-primary)',
+                                color: 'var(--text-tertiary-600)',
                                 maxWidth: '200px',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
@@ -510,8 +510,8 @@ export function CsvImportDialog({
                             <td
                               style={{
                                 padding: '4px 8px',
-                                borderBottom: '1px solid var(--border)',
-                                color: 'var(--text-secondary)',
+                                borderBottom: '1px solid var(--border-primary)',
+                                color: 'var(--text-tertiary-600)',
                               }}
                             >
                               {getColumnValue(row, mapping.priority)}
@@ -529,7 +529,7 @@ export function CsvImportDialog({
             {importError && (
               <div
                 style={{
-                  fontFamily: 'var(--font-body)',
+                  fontFamily: 'var(--font-inter), system-ui, sans-serif',
                   fontSize: '13px',
                   color: 'var(--error, #ef4444)',
                   padding: '8px 12px',
@@ -547,12 +547,12 @@ export function CsvImportDialog({
               <button
                 onClick={() => setStep('select')}
                 style={{
-                  fontFamily: 'var(--font-body)',
+                  fontFamily: 'var(--font-inter), system-ui, sans-serif',
                   fontSize: '13px',
                   background: 'none',
-                  border: '1px solid var(--border)',
+                  border: '1px solid var(--border-primary)',
                   borderRadius: '6px',
-                  color: 'var(--text-secondary)',
+                  color: 'var(--text-tertiary-600)',
                   padding: '6px 16px',
                   cursor: 'pointer',
                 }}
@@ -563,12 +563,12 @@ export function CsvImportDialog({
                 onClick={() => void handleImport()}
                 disabled={!mapping.title || isImporting}
                 style={{
-                  fontFamily: 'var(--font-body)',
+                  fontFamily: 'var(--font-inter), system-ui, sans-serif',
                   fontSize: '13px',
                   background: mapping.title && !isImporting ? 'var(--accent, #6366f1)' : 'var(--surface-alt, rgba(255,255,255,0.08))',
                   border: 'none',
                   borderRadius: '6px',
-                  color: mapping.title && !isImporting ? 'white' : 'var(--text-secondary)',
+                  color: mapping.title && !isImporting ? 'white' : 'var(--text-tertiary-600)',
                   padding: '6px 16px',
                   cursor: mapping.title && !isImporting ? 'pointer' : 'not-allowed',
                   display: 'flex',
@@ -591,9 +591,9 @@ export function CsvImportDialog({
                 background: 'rgba(34,197,94,0.08)',
                 border: '1px solid rgba(34,197,94,0.2)',
                 borderRadius: '6px',
-                fontFamily: 'var(--font-body)',
+                fontFamily: 'var(--font-inter), system-ui, sans-serif',
                 fontSize: '14px',
-                color: 'var(--text-primary)',
+                color: 'var(--text-primary-900)',
               }}
             >
               {result.imported} card{result.imported !== 1 ? 's' : ''} imported successfully
@@ -604,10 +604,10 @@ export function CsvImportDialog({
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <div
                   style={{
-                    fontFamily: 'var(--font-heading)',
+                    fontFamily: 'var(--font-sora), system-ui, sans-serif',
                     fontSize: '13px',
                     fontWeight: 600,
-                    color: 'var(--text-primary)',
+                    color: 'var(--text-primary-900)',
                   }}
                 >
                   Errors
@@ -616,7 +616,7 @@ export function CsvImportDialog({
                   style={{
                     maxHeight: '200px',
                     overflowY: 'auto',
-                    border: '1px solid var(--border)',
+                    border: '1px solid var(--border-primary)',
                     borderRadius: '6px',
                   }}
                 >
@@ -625,10 +625,10 @@ export function CsvImportDialog({
                       key={i}
                       style={{
                         padding: '6px 12px',
-                        borderBottom: i < result.errors.length - 1 ? '1px solid var(--border)' : 'none',
-                        fontFamily: 'var(--font-body)',
+                        borderBottom: i < result.errors.length - 1 ? '1px solid var(--border-primary)' : 'none',
+                        fontFamily: 'var(--font-inter), system-ui, sans-serif',
                         fontSize: '12px',
-                        color: 'var(--text-secondary)',
+                        color: 'var(--text-tertiary-600)',
                       }}
                     >
                       <span style={{ color: 'var(--error, #ef4444)' }}>Row {err.row}:</span>{' '}
@@ -643,7 +643,7 @@ export function CsvImportDialog({
               <button
                 onClick={handleClose}
                 style={{
-                  fontFamily: 'var(--font-body)',
+                  fontFamily: 'var(--font-inter), system-ui, sans-serif',
                   fontSize: '13px',
                   background: 'var(--accent, #6366f1)',
                   border: 'none',

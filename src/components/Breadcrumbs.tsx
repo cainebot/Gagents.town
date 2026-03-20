@@ -26,16 +26,16 @@ export function Breadcrumbs({ path, onNavigate, prefix = "workspace" }: Breadcru
           gap: "4px",
           padding: "4px 8px",
           borderRadius: "4px",
-          color: "var(--text-secondary)",
+          color: "var(--text-tertiary-600)",
           transition: "all 150ms ease",
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "var(--surface-hover)";
-          e.currentTarget.style.color = "var(--text-primary)";
+          e.currentTarget.style.backgroundColor = "var(--bg-quaternary)";
+          e.currentTarget.style.color = "var(--text-primary-900)";
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.backgroundColor = "transparent";
-          e.currentTarget.style.color = "var(--text-secondary)";
+          e.currentTarget.style.color = "var(--text-tertiary-600)";
         }}
         title="Go to root"
       >
@@ -45,26 +45,26 @@ export function Breadcrumbs({ path, onNavigate, prefix = "workspace" }: Breadcru
 
       {segments.map((segment, index) => (
         <div key={index} className="flex items-center gap-1 shrink-0">
-          <ChevronRight className="w-4 h-4" style={{ color: "var(--text-muted)" }} />
+          <ChevronRight className="w-4 h-4" style={{ color: "var(--text-quaternary-500)" }} />
           <button
             onClick={() => handleClick(index)}
             style={{
               padding: "4px 8px",
               borderRadius: "4px",
-              color: index === segments.length - 1 ? "var(--text-primary)" : "var(--text-secondary)",
+              color: index === segments.length - 1 ? "var(--text-primary-900)" : "var(--text-tertiary-600)",
               fontWeight: index === segments.length - 1 ? 600 : 400,
               transition: "all 150ms ease",
             }}
             onMouseEnter={(e) => {
               if (index !== segments.length - 1) {
-                e.currentTarget.style.backgroundColor = "var(--surface-hover)";
-                e.currentTarget.style.color = "var(--text-primary)";
+                e.currentTarget.style.backgroundColor = "var(--bg-quaternary)";
+                e.currentTarget.style.color = "var(--text-primary-900)";
               }
             }}
             onMouseLeave={(e) => {
               if (index !== segments.length - 1) {
                 e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = "var(--text-secondary)";
+                e.currentTarget.style.color = "var(--text-tertiary-600)";
               }
             }}
           >

@@ -180,10 +180,10 @@ export function MentionInput({
         rows={rows}
         style={{
           width: '100%',
-          fontFamily: 'var(--font-body)',
+          fontFamily: 'var(--font-inter), system-ui, sans-serif',
           fontSize: '13px',
           background: 'var(--surface, #1e1e2e)',
-          color: 'var(--text-primary)',
+          color: 'var(--text-primary-900)',
           border: '1px solid var(--border, #333)',
           borderRadius: '6px',
           padding: '8px 10px',
@@ -203,7 +203,7 @@ export function MentionInput({
             right: 0,
             marginBottom: '4px',
             background: 'var(--surface-elevated, #2a2a3e)',
-            border: '1px solid var(--border)',
+            border: '1px solid var(--border-primary)',
             borderRadius: '6px',
             boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
             maxHeight: '200px',
@@ -227,9 +227,9 @@ export function MentionInput({
                   padding: '6px 10px',
                   cursor: 'pointer',
                   fontSize: '13px',
-                  fontFamily: 'var(--font-body)',
+                  fontFamily: 'var(--font-inter), system-ui, sans-serif',
                   background: isActive ? 'var(--accent, #6366f1)' : 'transparent',
-                  color: isActive ? 'white' : 'var(--text-primary)',
+                  color: isActive ? 'white' : 'var(--text-primary-900)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
@@ -243,7 +243,7 @@ export function MentionInput({
                   style={{
                     fontSize: '11px',
                     opacity: 0.6,
-                    color: isActive ? 'rgba(255,255,255,0.8)' : 'var(--text-secondary)',
+                    color: isActive ? 'rgba(255,255,255,0.8)' : 'var(--text-tertiary-600)',
                   }}
                 >
                   @{agent.agent_id}

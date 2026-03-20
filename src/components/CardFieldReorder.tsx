@@ -105,7 +105,7 @@ export function CardFieldReorder({ fields, onReorder, children, editMode }: Fiel
                   display: 'flex',
                   alignItems: 'center',
                   paddingTop: '5px',
-                  color: 'var(--text-muted)',
+                  color: 'var(--text-quaternary-500)',
                   cursor: 'grab',
                   flexShrink: 0,
                   userSelect: 'none',

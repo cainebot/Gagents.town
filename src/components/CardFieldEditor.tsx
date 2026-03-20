@@ -103,9 +103,9 @@ export function CardFieldEditor({
   }
 
   const labelStyle: React.CSSProperties = {
-    fontFamily: 'var(--font-body)',
+    fontFamily: 'var(--font-inter), system-ui, sans-serif',
     fontSize: '12px',
-    color: 'var(--text-muted)',
+    color: 'var(--text-quaternary-500)',
     width: '120px',
     flexShrink: 0,
     paddingTop: '3px',
@@ -113,9 +113,9 @@ export function CardFieldEditor({
   }
 
   const displayStyle: React.CSSProperties = {
-    fontFamily: 'var(--font-body)',
+    fontFamily: 'var(--font-inter), system-ui, sans-serif',
     fontSize: '13px',
-    color: value ? 'var(--text-primary)' : 'var(--text-muted)',
+    color: value ? 'var(--text-primary-900)' : 'var(--text-quaternary-500)',
     cursor: 'pointer',
     padding: '2px 4px',
     borderRadius: '4px',
@@ -125,10 +125,10 @@ export function CardFieldEditor({
   }
 
   const inputStyle: React.CSSProperties = {
-    fontFamily: 'var(--font-body)',
+    fontFamily: 'var(--font-inter), system-ui, sans-serif',
     fontSize: '13px',
-    color: 'var(--text-primary)',
-    background: 'var(--surface)',
+    color: 'var(--text-primary-900)',
+    background: 'var(--bg-secondary)',
     border: '1px solid var(--accent, #6366f1)',
     borderRadius: '4px',
     padding: '2px 6px',
@@ -196,7 +196,7 @@ export function CardFieldEditor({
         )}
         <button
           onClick={enterEdit}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '11px', padding: '2px' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-quaternary-500)', fontSize: '11px', padding: '2px' }}
         >
           Edit
         </button>
@@ -224,7 +224,7 @@ export function CardFieldEditor({
         )}
         <button
           onClick={enterEdit}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '11px', padding: '2px' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-quaternary-500)', fontSize: '11px', padding: '2px' }}
         >
           Edit
         </button>
@@ -254,10 +254,10 @@ export function CardFieldEditor({
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
-                background: priorityColors[priorityVal] ?? 'var(--text-muted)',
+                background: priorityColors[priorityVal] ?? 'var(--text-quaternary-500)',
               }}
             />
-            <span style={{ color: priorityColors[priorityVal] ?? 'var(--text-primary)', fontWeight: 500 }}>
+            <span style={{ color: priorityColors[priorityVal] ?? 'var(--text-primary-900)', fontWeight: 500 }}>
               {priorityVal}
             </span>
           </span>
@@ -318,13 +318,13 @@ export function CardFieldEditor({
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '3px',
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
+                background: 'var(--bg-secondary)',
+                border: '1px solid var(--border-primary)',
                 borderRadius: '10px',
                 padding: '1px 6px',
                 fontSize: '11px',
-                color: 'var(--text-primary)',
-                fontFamily: 'var(--font-body)',
+                color: 'var(--text-primary-900)',
+                fontFamily: 'var(--font-inter), system-ui, sans-serif',
               }}
             >
               {l}
@@ -334,7 +334,7 @@ export function CardFieldEditor({
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  color: 'var(--text-muted)',
+                  color: 'var(--text-quaternary-500)',
                   fontSize: '11px',
                   padding: '0',
                   lineHeight: 1,
@@ -395,9 +395,9 @@ export function CardFieldEditor({
                       border: 'none',
                       padding: '5px 10px',
                       fontSize: '12px',
-                      color: 'var(--text-primary)',
+                      color: 'var(--text-primary-900)',
                       cursor: 'pointer',
-                      fontFamily: 'var(--font-body)',
+                      fontFamily: 'var(--font-inter), system-ui, sans-serif',
                     }}
                     onMouseEnter={(e) => { (e.target as HTMLElement).style.background = 'var(--accent, #6366f1)' }}
                     onMouseLeave={(e) => { (e.target as HTMLElement).style.background = 'none' }}
@@ -418,7 +418,7 @@ export function CardFieldEditor({
                       fontSize: '12px',
                       color: 'var(--accent, #6366f1)',
                       cursor: 'pointer',
-                      fontFamily: 'var(--font-body)',
+                      fontFamily: 'var(--font-inter), system-ui, sans-serif',
                       borderTop: filteredSuggestions.length > 0 ? '1px solid var(--border, #333)' : 'none',
                     }}
                     onMouseEnter={(e) => { (e.target as HTMLElement).style.background = 'var(--surface, #2a2a3e)' }}
@@ -459,7 +459,7 @@ export function CardFieldEditor({
                 borderRadius: '10px',
                 padding: '1px 8px',
                 fontSize: '11px',
-                fontFamily: 'var(--font-body)',
+                fontFamily: 'var(--font-inter), system-ui, sans-serif',
               }}
             >
               {s}
@@ -535,8 +535,8 @@ export function CardFieldEditor({
               ...displayStyle,
               whiteSpace: 'pre-wrap',
               minHeight: '60px',
-              background: value ? 'transparent' : 'var(--surface)',
-              border: value ? 'none' : '1px dashed var(--border)',
+              background: value ? 'transparent' : 'var(--bg-secondary)',
+              border: value ? 'none' : '1px dashed var(--border-primary)',
               borderRadius: '4px',
               padding: '6px 8px',
             }}
