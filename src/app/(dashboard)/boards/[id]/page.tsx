@@ -19,7 +19,7 @@ import { ColumnManager } from '@/components/ColumnManager'
 import { ChevronDown, Check } from 'lucide-react'
 import { AgentFilterProvider, useAgentFilter, type AgentListItem } from '@/contexts/AgentFilterContext'
 import { AgentSidePanel } from '@/components/organisms/AgentSidePanel'
-import { cx, ConfirmActionDialog } from '@openclaw/ui'
+import { cx, Button, ConfirmActionDialog } from '@openclaw/ui'
 
 // Loading skeleton for the Kanban board
 function KanbanSkeleton() {
@@ -340,14 +340,11 @@ function BoardPageInner() {
       {/* Board selector dropdown */}
       {allBoards.length > 0 && (
         <div className="relative inline-block mt-3 mb-1 px-6">
-          <button
-            onClick={() => setShowBoardDropdown(!showBoardDropdown)}
-            className={cx(
-              'flex items-center gap-1.5 font-display text-[15px] font-semibold text-primary',
-              'bg-transparent border border-secondary rounded-[6px] px-3 py-1.5 cursor-pointer',
-              'transition-colors duration-150',
-              'hover:border-accent'
-            )}
+          <Button
+            variant="outline"
+            size="sm"
+            onPress={() => setShowBoardDropdown(!showBoardDropdown)}
+            className="font-display text-[15px] font-semibold"
           >
             {board?.name ?? 'Select Board'}
             <ChevronDown
@@ -357,7 +354,7 @@ function BoardPageInner() {
                 showBoardDropdown ? 'rotate-180' : 'rotate-0'
               )}
             />
-          </button>
+          </Button>
 
           {/* Dropdown overlay */}
           {showBoardDropdown && (
@@ -372,22 +369,24 @@ function BoardPageInner() {
                   {allBoards.map((b) => {
                     const isActive = b.board_id === boardId
                     return (
-                      <button
+                      <Button
                         key={b.board_id}
-                        onClick={() => {
+                        variant="ghost"
+                        size="xs"
+                        onPress={() => {
                           setShowBoardDropdown(false)
                           if (!isActive) router.push(`/boards/${b.board_id}`)
                         }}
                         className={cx(
-                          'flex items-center gap-2 w-full px-3 py-2 border-none cursor-pointer font-body text-[13px] text-left transition-colors duration-100',
+                          'flex items-center gap-2 w-full px-3 py-2 font-body text-[13px] text-left justify-start h-auto min-h-0 rounded-none',
                           isActive
-                            ? 'bg-brand-50/10 font-semibold text-brand-600'
-                            : 'bg-transparent font-normal text-primary hover:bg-white/[0.04]'
+                            ? 'bg-brand-600/10 font-semibold text-brand-600'
+                            : 'font-normal text-primary'
                         )}
                       >
                         {isActive && <span className="text-[11px]">&#10003;</span>}
                         {b.name}
-                      </button>
+                      </Button>
                     )
                   })}
                 </div>
@@ -430,8 +429,11 @@ function BoardPageInner() {
                         autoFocus
                         className="flex-1 font-body text-xs bg-secondary border border-secondary rounded px-2 py-1 text-primary outline-none min-w-0"
                       />
-                      <button
-                        onClick={async () => {
+                      <Button
+                        variant="primary"
+                        size="xs"
+                        isDisabled={!newBoardName.trim()}
+                        onPress={async () => {
                           if (!newBoardName.trim()) return
                           try {
                             const res = await fetch('/api/boards', {
@@ -451,28 +453,24 @@ function BoardPageInner() {
                             }
                           } catch { /* silent */ }
                         }}
-                        disabled={!newBoardName.trim()}
-                        className={cx(
-                          'font-body text-[11px] font-semibold border-none rounded px-2.5 py-1 shrink-0',
-                          newBoardName.trim()
-                            ? 'bg-brand-50 text-white cursor-pointer'
-                            : 'bg-secondary text-quaternary cursor-not-allowed'
-                        )}
+                        className="text-[11px] font-semibold shrink-0"
                       >
                         Create
-                      </button>
+                      </Button>
                     </div>
                   ) : (
-                    <button
-                      onClick={() => {
+                    <Button
+                      variant="ghost"
+                      size="xs"
+                      onPress={() => {
                         setCreatingBoard(true)
                         setTimeout(() => newBoardInputRef.current?.focus(), 50)
                       }}
-                      className="flex items-center gap-1.5 w-full px-3 py-2 bg-transparent border-none cursor-pointer font-body text-[13px] text-brand-600 text-left transition-colors duration-100 hover:bg-brand-50/[0.08]"
+                      className="flex items-center gap-1.5 w-full px-3 py-2 text-brand-600 text-[13px] text-left justify-start h-auto min-h-0 rounded-none hover:bg-brand-600/[0.08]"
                     >
                       <span className="text-sm font-bold">+</span>
                       New board
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -496,32 +494,30 @@ function BoardPageInner() {
             )}
           </div>
           {/* Manage Columns button */}
-          <button
-            onClick={() => setShowColumnManager(true)}
-            title="Manage Columns"
-            className="flex items-center gap-[5px] font-body text-xs text-secondary bg-transparent border border-secondary rounded-[6px] px-2.5 py-1 cursor-pointer shrink-0 transition-colors duration-100 hover:bg-secondary hover:text-primary"
+          <Button
+            variant="outline"
+            size="xs"
+            onPress={() => setShowColumnManager(true)}
+            aria-label="Manage Columns"
+            className="shrink-0"
+            iconLeading={
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" data-icon>
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+            }
           >
-            {/* Settings icon */}
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-            </svg>
             Manage Columns
-          </button>
+          </Button>
 
           {/* Scrum Master assignment */}
           <div className="relative shrink-0">
-            <button
-              onClick={() => setShowSMDropdown(!showSMDropdown)}
-              title="Set Scrum Master"
-              className="flex items-center gap-[5px] font-body text-xs text-secondary bg-transparent border border-secondary rounded-[6px] px-2.5 py-1 cursor-pointer transition-colors duration-100 max-w-[200px] hover:bg-secondary hover:text-primary"
+            <Button
+              variant="outline"
+              size="xs"
+              onPress={() => setShowSMDropdown(!showSMDropdown)}
+              aria-label="Set Scrum Master"
+              className="max-w-[200px]"
             >
               <span className="text-[10px] font-bold tracking-[0.5px] text-quaternary uppercase">
                 SCRUM MASTER
@@ -539,7 +535,7 @@ function BoardPageInner() {
                   showSMDropdown ? 'rotate-180' : 'rotate-0'
                 )}
               />
-            </button>
+            </Button>
 
             {smError && (
               <div className="absolute top-full left-0 mt-1 text-[11px] text-error-600 bg-tertiary border border-secondary rounded px-2 py-1 whitespace-nowrap z-[101]">
@@ -558,26 +554,28 @@ function BoardPageInner() {
                     {agents.map((agent) => {
                       const isCurrent = agent.agent_id === scrumMasterAgentId
                       return (
-                        <button
+                        <Button
                           key={agent.agent_id}
-                          onClick={() => {
+                          variant="ghost"
+                          size="xs"
+                          onPress={() => {
                             setShowSMDropdown(false)
                             setSMConfirmAgent(agent)
                           }}
                           className={cx(
-                            'flex items-center gap-2 w-full px-3 py-2 border-none cursor-pointer font-body text-[13px] text-left transition-colors duration-100',
+                            'flex items-center gap-2 w-full px-3 py-2 font-body text-[13px] text-left justify-start h-auto min-h-0 rounded-none',
                             isCurrent
-                              ? 'bg-[rgba(255,59,48,0.08)] font-semibold text-[#FF3B30]'
-                              : 'bg-transparent font-normal text-primary hover:bg-white/[0.04]'
+                              ? 'bg-brand-600/[0.08] font-semibold text-brand-600'
+                              : 'font-normal text-primary'
                           )}
                         >
-                          {isCurrent && <Check size={12} className="text-[#FF3B30] shrink-0" />}
+                          {isCurrent && <Check size={12} className="text-brand-600 shrink-0" />}
                           {!isCurrent && <span className="w-3 shrink-0" />}
                           <span className="overflow-hidden text-ellipsis whitespace-nowrap">
                             {agent.emoji && <span className="mr-1">{agent.emoji}</span>}
                             {agent.name}
                           </span>
-                        </button>
+                        </Button>
                       )
                     })}
                   </div>

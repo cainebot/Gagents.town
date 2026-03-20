@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { BoardWithColumns, CardRow, BoardColumnRow, CardType } from '@/types/workflow'
 import { KanbanColumn } from './KanbanColumn'
 import { CsvImportDialog } from './CsvImportDialog'
+import { Button } from '@openclaw/ui'
 
 interface BoardKanbanProps {
   board: BoardWithColumns
@@ -93,12 +94,13 @@ export function BoardKanban({
     <div className="flex flex-col gap-0">
       {/* Toolbar: Import CSV button */}
       <div className="flex justify-end items-center mb-2 px-6 gap-2">
-        <button
-          onClick={() => setShowCsvImport(true)}
-          className="font-body text-xs bg-transparent border border-secondary rounded-md text-secondary px-3 py-1 cursor-pointer flex items-center gap-[5px] hover:text-primary"
+        <Button
+          variant="outline"
+          size="xs"
+          onPress={() => setShowCsvImport(true)}
         >
           &#8679; Import CSV
-        </button>
+        </Button>
       </div>
 
       {/* Kanban columns */}

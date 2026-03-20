@@ -74,18 +74,7 @@ export function InlineCardCreate({
   }
 
   return (
-    <div
-      style={{
-        marginTop: '4px',
-        padding: '6px 8px',
-        background: 'var(--bg-secondary)',
-        border: '1px solid var(--brand-600)',
-        borderRadius: '6px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '4px',
-      }}
-    >
+    <div className="mt-1 px-2 py-1.5 bg-secondary border border-brand-600 rounded-[6px] flex flex-col gap-1">
       <input
         ref={inputRef}
         type="text"
@@ -94,44 +83,15 @@ export function InlineCardCreate({
         onKeyDown={handleKeyDown}
         placeholder="Card title..."
         disabled={isSubmitting}
-        style={{
-          background: 'transparent',
-          border: 'none',
-          outline: 'none',
-          fontFamily: 'var(--font-inter), system-ui, sans-serif',
-          fontSize: '13px',
-          color: "var(--text-primary-900)",
-          width: '100%',
-          padding: '2px 0',
-        }}
+        className="bg-transparent border-none outline-none font-body text-[13px] text-primary w-full py-0.5 px-0"
       />
       {error && (
-        <span
-          style={{
-            fontFamily: 'var(--font-inter), system-ui, sans-serif',
-            fontSize: '11px',
-            color: 'var(--error, #ef4444)',
-          }}
-        >
+        <span className="font-body text-[11px] text-error-600">
           {error}
         </span>
       )}
-      <div
-        style={{
-          display: 'flex',
-          gap: '6px',
-          alignItems: 'center',
-          marginTop: '2px',
-        }}
-      >
-        <span
-          style={{
-            fontFamily: 'var(--font-inter), system-ui, sans-serif',
-            fontSize: '11px',
-            color: "var(--text-tertiary-600)",
-            opacity: 0.6,
-          }}
-        >
+      <div className="flex gap-1.5 items-center mt-0.5">
+        <span className="font-body text-[11px] text-tertiary opacity-60">
           Enter to create · Esc to cancel
         </span>
       </div>

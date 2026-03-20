@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import type { BoardColumnRow, WorkflowStateRow } from '@/types/workflow'
-import { cx } from '@openclaw/ui'
+import { cx, Button, Checkbox } from '@openclaw/ui'
 
 interface ColumnManagerProps {
   boardId: string
@@ -154,53 +154,56 @@ function ColumnItem({
       </div>
 
       {/* Only humans toggle */}
-      <label
+      <div
         title="Only humans can move cards out of this column"
-        className="flex items-center gap-1 cursor-pointer shrink-0"
+        className="shrink-0"
       >
-        <input
-          type="checkbox"
-          checked={column.only_humans}
-          onChange={(e) => void onToggleHumans(column.column_id, e.target.checked)}
-          className="accent-accent cursor-pointer"
-        />
-        <span className="font-body text-[11px] text-secondary whitespace-nowrap">
+        <Checkbox
+          isSelected={column.only_humans}
+          onChange={(checked) => void onToggleHumans(column.column_id, checked)}
+          className="font-body text-[11px] text-secondary whitespace-nowrap"
+        >
           humans only
-        </span>
-      </label>
+        </Checkbox>
+      </div>
 
       {/* Delete button */}
       <div className="shrink-0">
         {confirmDelete ? (
           <div className="flex gap-1 items-center">
-            <span className="font-body text-[11px] text-[#f87171]">
+            <span className="font-body text-[11px] text-error-600">
               Delete?
             </span>
-            <button
-              onClick={() => void onDelete(column.column_id)}
-              className="font-body text-[11px] bg-[#f87171] border-0 rounded-[3px] text-white px-[6px] py-[2px] cursor-pointer"
+            <Button
+              variant="danger"
+              size="xs"
+              onPress={() => void onDelete(column.column_id)}
+              className="text-[11px] px-1.5 py-0.5 h-auto min-h-0"
             >
               Yes
-            </button>
-            <button
-              onClick={() => setConfirmDelete(false)}
-              className="font-body text-[11px] bg-transparent border border-secondary rounded-[3px] text-secondary px-[6px] py-[2px] cursor-pointer"
+            </Button>
+            <Button
+              variant="outline"
+              size="xs"
+              onPress={() => setConfirmDelete(false)}
+              className="text-[11px] px-1.5 py-0.5 h-auto min-h-0"
             >
               No
-            </button>
+            </Button>
           </div>
         ) : (
-          <button
-            onClick={() => setConfirmDelete(true)}
-            title="Delete column"
-            className="bg-transparent border-0 cursor-pointer text-secondary px-1 py-[2px] opacity-50 flex items-center justify-center rounded-[3px] transition-opacity duration-100 hover:opacity-100 hover:text-[#f87171]"
+          <Button
+            variant="ghost"
+            size="xs"
+            onPress={() => setConfirmDelete(true)}
+            aria-label="Delete column"
+            className="text-secondary px-1 py-0.5 h-auto min-h-0 opacity-50 hover:opacity-100 hover:text-error-600"
           >
-            {/* X icon */}
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
-          </button>
+          </Button>
         )}
       </div>
     </div>
@@ -463,15 +466,18 @@ export function ColumnManager({
           <h2 className="font-display text-base font-bold text-primary m-0">
             Manage Columns
           </h2>
-          <button
-            onClick={onClose}
-            className="bg-transparent border-0 cursor-pointer text-secondary p-1 flex items-center rounded hover:bg-secondary"
+          <Button
+            variant="ghost"
+            size="xs"
+            onPress={onClose}
+            aria-label="Close"
+            className="text-secondary p-1 h-auto min-h-0"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
-          </button>
+          </Button>
         </div>
 
         {/* Column list */}
@@ -532,17 +538,14 @@ export function ColumnManager({
 
             {/* State multi-select */}
             <div ref={stateDropdownRef} className="relative shrink-0">
-              <button
-                onClick={() => setShowStateDropdown((v) => !v)}
-                className={cx(
-                  'font-body text-xs border border-secondary rounded-md px-[10px] py-[6px] cursor-pointer whitespace-nowrap',
-                  newStateIds.length > 0
-                    ? 'text-white bg-brand-50'
-                    : 'text-secondary bg-secondary'
-                )}
+              <Button
+                variant={newStateIds.length > 0 ? 'primary' : 'outline'}
+                size="xs"
+                onPress={() => setShowStateDropdown((v) => !v)}
+                className="whitespace-nowrap"
               >
                 States {newStateIds.length > 0 ? `(${newStateIds.length})` : ''}
-              </button>
+              </Button>
               {showStateDropdown && (
                 <div className="absolute bottom-[calc(100%+4px)] right-0 z-50 bg-secondary border border-secondary rounded-md min-w-[200px] max-h-[200px] overflow-y-auto shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
                   {workflowStates.length === 0 ? (
@@ -551,22 +554,24 @@ export function ColumnManager({
                     </div>
                   ) : (
                     workflowStates.map((s) => (
-                      <label
+                      <div
                         key={s.state_id}
-                        className="flex items-center gap-2 px-3 py-[7px] cursor-pointer font-body text-[13px] text-primary border-b border-secondary hover:bg-secondary"
+                        className="flex items-center gap-2 px-3 py-[7px] border-b border-secondary hover:bg-secondary"
                       >
-                        <input
-                          type="checkbox"
-                          checked={newStateIds.includes(s.state_id)}
+                        <Checkbox
+                          isSelected={newStateIds.includes(s.state_id)}
                           onChange={() => toggleNewStateId(s.state_id)}
-                          className="accent-accent"
-                        />
-                        <span
-                          style={{ background: s.color || '#6b7280' }}
-                          className="w-2 h-2 rounded-full shrink-0"
-                        />
-                        {s.name}
-                      </label>
+                          className="font-body text-[13px] text-primary"
+                        >
+                          <span className="flex items-center gap-2">
+                            <span
+                              style={{ background: s.color || '#6b7280' }}
+                              className="w-2 h-2 rounded-full shrink-0"
+                            />
+                            {s.name}
+                          </span>
+                        </Checkbox>
+                      </div>
                     ))
                   )}
                 </div>
@@ -574,18 +579,15 @@ export function ColumnManager({
             </div>
 
             {/* Add button */}
-            <button
-              onClick={() => void handleAddColumn()}
-              disabled={adding}
-              className={cx(
-                'font-body text-[13px] font-semibold border-0 rounded-md px-4 py-[6px] shrink-0 transition-[background] duration-100',
-                adding
-                  ? 'bg-secondary text-secondary cursor-not-allowed'
-                  : 'bg-brand-50 text-white cursor-pointer'
-              )}
+            <Button
+              variant="primary"
+              size="xs"
+              onPress={() => void handleAddColumn()}
+              isDisabled={adding}
+              className="shrink-0 font-semibold"
             >
               {adding ? 'Adding...' : 'Add'}
-            </button>
+            </Button>
           </div>
 
           {/* Add error */}

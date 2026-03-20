@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { cx } from '@openclaw/ui'
+import { cx, Button, Checkbox } from '@openclaw/ui'
 import type {
   CardRow,
   CardType,
@@ -157,15 +157,15 @@ function CheckboxOption({
   onToggle: (value: string) => void
 }) {
   return (
-    <label className="flex items-center gap-2 py-[5px] px-3 cursor-pointer font-body text-[13px] text-primary hover:bg-secondary">
-      <input
-        type="checkbox"
-        checked={checked}
+    <div className="py-[5px] px-3 hover:bg-secondary">
+      <Checkbox
+        isSelected={checked}
         onChange={() => onToggle(value)}
-        className="accent-accent"
-      />
-      {label}
-    </label>
+        className="font-body text-[13px] text-primary"
+      >
+        {label}
+      </Checkbox>
+    </div>
   )
 }
 
@@ -388,13 +388,15 @@ function ActiveFilterChip({
   return (
     <div className="inline-flex items-center gap-1 py-0.5 pl-[10px] pr-2 rounded-full bg-brand-50 text-white font-body text-[11px] whitespace-nowrap shrink-0">
       {label}
-      <button
-        onClick={onClear}
-        title={`Clear ${label}`}
-        className="bg-transparent border-none cursor-pointer text-white/80 text-[10px] px-px leading-none flex items-center"
+      <Button
+        variant="link"
+        size="xs"
+        onPress={onClear}
+        aria-label={`Clear ${label}`}
+        className="text-white/80 text-[10px] px-0 h-auto min-h-0 no-underline hover:no-underline"
       >
         &#10005;
-      </button>
+      </Button>
     </div>
   )
 }
@@ -650,28 +652,19 @@ export function BoardFilterBar({
 
       {/* Unified Filter button + dropdown */}
       <div ref={filterButtonRef} className="relative shrink-0">
-        <button
-          onClick={() => setShowFilterDropdown((v) => !v)}
-          className={cx(
-            'flex items-center gap-[5px] px-[10px] py-1 rounded-md font-body text-xs cursor-pointer border border-secondary transition-[background,color] duration-100 ease-in whitespace-nowrap',
-            isActive
-              ? 'bg-brand-50 text-white'
-              : 'bg-secondary text-secondary hover:bg-secondary hover:text-primary'
-          )}
+        <Button
+          variant={isActive ? 'primary' : 'outline'}
+          size="xs"
+          onPress={() => setShowFilterDropdown((v) => !v)}
+          className="whitespace-nowrap"
+          iconLeading={
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" data-icon>
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+          }
         >
-          {/* Funnel icon */}
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-          </svg>
           Filter{activeCount > 0 ? ` (${activeCount})` : ''}
-        </button>
+        </Button>
 
         {showFilterDropdown && (
           <FilterDropdown
@@ -696,12 +689,14 @@ export function BoardFilterBar({
 
       {/* Clear all — only when filters active */}
       {isActive && (
-        <button
-          onClick={clearFilters}
-          className="font-body text-[11px] bg-transparent border border-secondary rounded px-[7px] py-0.5 text-secondary cursor-pointer shrink-0"
+        <Button
+          variant="outline"
+          size="xs"
+          onPress={clearFilters}
+          className="shrink-0 text-[11px]"
         >
           Clear all
-        </button>
+        </Button>
       )}
 
       {/* Spacer */}
@@ -709,12 +704,14 @@ export function BoardFilterBar({
 
       {/* Save filter button */}
       {isActive && !showSaveInput && (
-        <button
-          onClick={() => setShowSaveInput(true)}
-          className="font-body text-xs bg-transparent border border-secondary rounded-md text-secondary px-[10px] py-[3px] cursor-pointer shrink-0"
+        <Button
+          variant="outline"
+          size="xs"
+          onPress={() => setShowSaveInput(true)}
+          className="shrink-0"
         >
           Save filter
-        </button>
+        </Button>
       )}
 
       {/* Save filter input */}
@@ -735,33 +732,36 @@ export function BoardFilterBar({
             autoFocus
             className="font-body text-xs bg-secondary border border-accent rounded text-primary px-2 py-[3px] w-[120px] outline-none"
           />
-          <button
-            onClick={() => void handleSaveFilter()}
-            className="font-body text-xs bg-brand-50 border-none rounded text-white px-2 py-[3px] cursor-pointer"
+          <Button
+            variant="primary"
+            size="xs"
+            onPress={() => void handleSaveFilter()}
           >
             Save
-          </button>
-          <button
-            onClick={() => {
+          </Button>
+          <Button
+            variant="outline"
+            size="xs"
+            onPress={() => {
               setShowSaveInput(false)
               setSaveFilterName('')
             }}
-            className="font-body text-xs bg-transparent border border-secondary rounded text-secondary px-2 py-[3px] cursor-pointer"
           >
             Cancel
-          </button>
+          </Button>
         </div>
       )}
 
       {/* Saved filters dropdown */}
       {savedFilters.length > 0 && (
         <div ref={savedFiltersRef} className="relative shrink-0">
-          <button
-            onClick={() => setShowSavedFiltersDropdown((v) => !v)}
-            className="font-body text-xs bg-transparent border border-secondary rounded-md text-secondary px-[10px] py-[3px] cursor-pointer"
+          <Button
+            variant="outline"
+            size="xs"
+            onPress={() => setShowSavedFiltersDropdown((v) => !v)}
           >
             Saved ({savedFilters.length})
-          </button>
+          </Button>
           {showSavedFiltersDropdown && (
             <div className="absolute top-[calc(100%+4px)] right-0 z-50 bg-secondary border border-secondary rounded-md min-w-[180px] shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
               {savedFilters.map((sf) => (
@@ -775,13 +775,15 @@ export function BoardFilterBar({
                   >
                     {sf.name}
                   </span>
-                  <button
-                    onClick={() => void handleDeleteSavedFilter(sf.filter_id)}
-                    title="Delete saved filter"
-                    className="bg-transparent border-none cursor-pointer text-secondary text-[11px] px-0.5 opacity-60"
+                  <Button
+                    variant="link"
+                    size="xs"
+                    onPress={() => void handleDeleteSavedFilter(sf.filter_id)}
+                    aria-label="Delete saved filter"
+                    className="text-secondary text-[11px] px-0 h-auto min-h-0 opacity-60 no-underline hover:no-underline"
                   >
                     &#10005;
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>

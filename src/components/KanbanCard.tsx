@@ -2,6 +2,7 @@
 
 import type { CardRow, Priority } from '@/types/workflow'
 import { PriorityBadge } from '@/components/atoms/PriorityBadge'
+import { Badge, cx } from '@openclaw/ui'
 
 interface KanbanCardProps {
   card: CardRow
@@ -50,7 +51,6 @@ export function KanbanCard({ card, onDragStart, onCardClick, isNew = false }: Ka
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ priority: newPriority }),
       })
-      // Board page will receive realtime update — no local state needed
     } catch {
       // silent — board will revert on next realtime sync
     }
@@ -61,132 +61,78 @@ export function KanbanCard({ card, onDragStart, onCardClick, isNew = false }: Ka
       draggable={true}
       onDragStart={handleDragStart}
       onClick={() => onCardClick(card.card_id)}
-      style={{
-        background: 'var(--bg-secondary)',
-        border: "1px solid var(--border-primary)",
-        borderLeft: `3px solid ${PRIORITY_LEFT_BORDER[card.priority]}`,
-        borderRadius: 'var(--radius-md, 8px)',
-        padding: '10px 12px',
-        cursor: 'grab',
-        userSelect: 'none',
-        boxShadow: '0 1px 2px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.06)',
-        transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-        opacity: isNew ? 0 : 1,
-        animation: isNew ? 'fadeIn 0.3s ease forwards' : undefined,
-      }}
-      onMouseEnter={(e) => {
-        const el = e.currentTarget as HTMLDivElement
-        el.style.transform = 'translateY(-2px)'
-        el.style.boxShadow = '0 4px 12px rgba(15,23,42,0.12), 0 2px 8px rgba(15,23,42,0.08)'
-      }}
-      onMouseLeave={(e) => {
-        const el = e.currentTarget as HTMLDivElement
-        el.style.transform = 'translateY(0)'
-        el.style.boxShadow = '0 1px 2px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.06)'
-      }}
+      className={cx(
+        'bg-secondary border border-primary rounded-lg px-3 py-2.5 cursor-grab select-none',
+        'shadow-[0_1px_2px_rgba(15,23,42,0.08),0_2px_6px_rgba(15,23,42,0.06)]',
+        'transition-[transform,box-shadow] duration-150 ease-out',
+        'hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(15,23,42,0.12),0_2px_8px_rgba(15,23,42,0.08)]',
+        isNew && 'animate-kanban-fade-in'
+      )}
+      style={{ borderLeft: `3px solid ${PRIORITY_LEFT_BORDER[card.priority]}` }}
     >
       {/* Row 1 — Priority badge + code */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+      <div className="flex items-center justify-between mb-1.5">
         <PriorityBadge
           priority={card.priority}
           editable={true}
           onChange={handlePriorityChange}
         />
         {card.code && (
-          <span style={{
-            fontFamily: 'var(--font-inter), system-ui, sans-serif',
-            fontSize: '10px',
-            fontWeight: 700,
-            color: "var(--text-quaternary-500)",
-          }}>
+          <span className="font-body text-[10px] font-bold text-quaternary">
             {card.code}
           </span>
         )}
       </div>
 
       {/* Row 2 — Title */}
-      <p style={{
-        fontFamily: 'var(--font-inter), system-ui, sans-serif',
-        fontSize: '13px',
-        fontWeight: 500,
-        color: "var(--text-primary-900)",
-        margin: '0 0 6px 0',
-        display: '-webkit-box',
-        WebkitLineClamp: 2,
-        WebkitBoxOrient: 'vertical',
-        overflow: 'hidden',
-        lineHeight: '1.4',
-      }}>
+      <p className="font-body text-[13px] font-medium text-primary m-0 mb-1.5 line-clamp-2 leading-[1.4]">
         {card.title}
       </p>
 
-      {/* Row 3 — Labels (hidden if empty) */}
+      {/* Row 3 — Labels */}
       {card.labels.length > 0 && (
-        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '6px' }}>
+        <div className="flex gap-1 flex-wrap mb-1.5">
           {card.labels.slice(0, MAX_VISIBLE_LABELS).map((label) => (
-            <span key={label} style={{
-              fontFamily: 'var(--font-inter), system-ui, sans-serif',
-              fontSize: '10px',
-              fontWeight: 700,
-              textTransform: 'uppercase' as const,
-              letterSpacing: '0.4px',
-              color: "var(--text-tertiary-600)",
-              background: 'rgba(82,82,82,0.12)',
-              border: "1px solid var(--border-primary)",
-              borderRadius: '4px',
-              padding: '2px 6px',
-              maxWidth: '80px',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap' as const,
-            }}>
+            <Badge
+              key={label}
+              variant="gray"
+              size="sm"
+              className="max-w-[80px] truncate uppercase tracking-[0.4px] !text-[10px] !font-bold"
+            >
               {label}
-            </span>
+            </Badge>
           ))}
           {card.labels.length > MAX_VISIBLE_LABELS && (
-            <span style={{ fontFamily: 'var(--font-inter), system-ui, sans-serif', fontSize: '10px', color: "var(--text-tertiary-600)" }}>
+            <span className="font-body text-[10px] text-tertiary">
               +{card.labels.length - MAX_VISIBLE_LABELS}
             </span>
           )}
         </div>
       )}
 
-      {/* Row 4 — Assignee + Due date (hidden if both null) */}
+      {/* Row 4 — Assignee + Due date */}
       {(card.assigned_agent_id || card.due_date) && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
-          {/* Assignee — initial avatar circle */}
+        <div className="flex items-center justify-between gap-1">
           {card.assigned_agent_id && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <div style={{
-                width: '16px',
-                height: '16px',
-                borderRadius: '50%',
-                background: 'var(--bg-tertiary)',
-                border: "1px solid var(--border-primary)",
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}>
-                <span style={{ fontSize: '8px', fontWeight: 700, color: "var(--text-tertiary-600)" }}>
+            <div className="flex items-center gap-1">
+              <div className="size-4 rounded-full bg-tertiary border border-primary flex items-center justify-center shrink-0">
+                <span className="text-[8px] font-bold text-tertiary">
                   {card.assigned_agent_id.charAt(0).toUpperCase()}
                 </span>
               </div>
             </div>
           )}
-          {/* Due date */}
           {card.due_date && (
-            <span style={{
-              fontFamily: 'var(--font-inter), system-ui, sans-serif',
-              fontSize: '10px',
-              fontWeight: 500,
-              color: isDueOverdue(card.due_date)
-                ? 'var(--error-500)'
-                : isDueToday(card.due_date)
-                  ? 'var(--warning-500)'
-                  : 'var(--text-quaternary-500)',
-              marginLeft: 'auto',
-            }}>
+            <span
+              className={cx(
+                'font-body text-[10px] font-medium ml-auto',
+                isDueOverdue(card.due_date)
+                  ? 'text-error-600'
+                  : isDueToday(card.due_date)
+                    ? 'text-warning-600'
+                    : 'text-quaternary'
+              )}
+            >
               {formatDueDate(card.due_date)}
             </span>
           )}

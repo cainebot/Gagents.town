@@ -11,7 +11,7 @@ import { CardAttachments } from './CardAttachments'
 import { CardChildTasks } from './CardChildTasks'
 import { CustomFieldManager } from './CustomFieldManager'
 import { CardActivityTimeline } from './CardActivityTimeline'
-import { cx, ConfirmActionDialog } from '@openclaw/ui'
+import { cx, Button, ConfirmActionDialog } from '@openclaw/ui'
 
 interface CardDetailPanelProps {
   cardId: string
@@ -361,34 +361,41 @@ export function CardDetailPanel({
       <div className={panelClasses} style={{ width: `${width}px` }}>
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-secondary shrink-0">
-          <button
-            onClick={onClose}
-            className="bg-transparent border-0 cursor-pointer text-secondary flex items-center p-1 rounded"
-            title="Close (Esc)"
+          <Button
+            variant="ghost"
+            size="xs"
+            onPress={onClose}
+            aria-label="Close (Esc)"
+            className="text-secondary p-1 h-auto min-h-0"
           >
             <X size={16} />
-          </button>
+          </Button>
 
           <div className="relative">
-            <button
-              onClick={() => setShowOverflow(!showOverflow)}
-              className="bg-transparent border-0 cursor-pointer text-secondary flex items-center p-1 rounded"
+            <Button
+              variant="ghost"
+              size="xs"
+              onPress={() => setShowOverflow(!showOverflow)}
+              aria-label="More options"
+              className="text-secondary p-1 h-auto min-h-0"
             >
               <MoreHorizontal size={16} />
-            </button>
+            </Button>
 
             {showOverflow && (
               <div className="absolute right-0 top-7 bg-tertiary border border-secondary rounded-md shadow-[0_4px_16px_rgba(0,0,0,0.2)] min-w-[160px] z-[100]">
-                <button
-                  onClick={() => {
+                <Button
+                  variant="link"
+                  size="xs"
+                  onPress={() => {
                     setShowOverflow(false)
                     setShowDeleteConfirm(true)
                   }}
-                  className="flex items-center gap-2 w-full px-3 py-2 bg-transparent border-0 cursor-pointer text-[#ef4444] font-body text-[13px] text-left"
+                  className="flex items-center gap-2 w-full px-3 py-2 text-error-600 font-body text-[13px] text-left no-underline hover:no-underline h-auto min-h-0"
                 >
                   <Trash2 size={14} />
                   Delete card
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -432,13 +439,15 @@ export function CardDetailPanel({
                   const parentCode = bc.code || cardCodeMap[bc.card_id]
                   return (
                     <span key={bc.card_id} className="inline-flex items-center gap-1">
-                      <button
-                        onClick={() => onNavigateToCard?.(bc.card_id)}
-                        className="font-body text-xs font-semibold text-brand-600 tracking-wide cursor-pointer bg-transparent border-0 p-0 no-underline"
-                        title={bc.title}
+                      <Button
+                        variant="link"
+                        size="xs"
+                        onPress={() => onNavigateToCard?.(bc.card_id)}
+                        aria-label={bc.title}
+                        className="font-body text-xs font-semibold text-brand-600 tracking-wide h-auto min-h-0"
                       >
                         {parentCode || bc.card_type.toUpperCase()}
-                      </button>
+                      </Button>
                       <span style={badgeStyle(bc.card_type)}>{bc.card_type}</span>
                       <span className="text-quaternary text-[10px] mx-[2px]">/</span>
                     </span>
@@ -531,26 +540,25 @@ export function CardDetailPanel({
                 Fields
               </span>
               <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setShowFieldManager(true)}
-                  title="Manage custom field definitions"
-                  className="bg-transparent border border-secondary rounded cursor-pointer text-quaternary flex items-center px-[6px] py-[2px] gap-[3px] text-[11px] font-body"
+                <Button
+                  variant="outline"
+                  size="xs"
+                  onPress={() => setShowFieldManager(true)}
+                  aria-label="Manage custom field definitions"
+                  className="text-quaternary text-[11px] px-1.5 py-0.5 h-auto min-h-0"
                 >
                   Manage Fields
-                </button>
-                <button
-                  onClick={() => setReorderMode(!reorderMode)}
-                  title={reorderMode ? 'Done customizing' : 'Customize fields'}
-                  className={cx(
-                    'rounded cursor-pointer flex items-center px-1 py-[2px] gap-[3px] text-[11px] font-body',
-                    reorderMode
-                      ? 'bg-brand-50 border-0 text-white'
-                      : 'bg-transparent border border-secondary text-quaternary'
-                  )}
+                </Button>
+                <Button
+                  variant={reorderMode ? 'primary' : 'outline'}
+                  size="xs"
+                  onPress={() => setReorderMode(!reorderMode)}
+                  aria-label={reorderMode ? 'Done customizing' : 'Customize fields'}
+                  className="text-[11px] px-1 py-0.5 h-auto min-h-0"
                 >
                   <Settings size={12} />
                   {reorderMode ? 'Done' : 'Customize'}
-                </button>
+                </Button>
               </div>
             </div>
 
