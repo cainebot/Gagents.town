@@ -7,7 +7,7 @@ const variantStyles = {
   default:
     "bg-white/10 text-white border-white/10",
   brand:
-    "bg-[#FF3B30]/15 text-[#FF8A84] border-[#FF3B30]/20",
+    "bg-brand-600/15 text-brand-300 border-brand-600/20",
   success:
     "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
   warning:
@@ -17,7 +17,7 @@ const variantStyles = {
   info:
     "bg-blue-500/15 text-blue-400 border-blue-500/20",
   gray:
-    "bg-neutral-500/15 text-neutral-400 border-neutral-500/20",
+    "bg-gray-500/15 text-gray-400 border-gray-500/20",
 } as const
 
 const sizeStyles = {

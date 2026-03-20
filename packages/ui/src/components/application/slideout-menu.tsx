@@ -59,24 +59,24 @@ export function SlideoutMenu({
         >
           <Dialog
             className={cx(
-              "flex h-full flex-col border-l border-white/10 bg-[#1C1C1E] outline-none",
-              "text-white",
+              "flex h-full flex-col border-l border-secondary bg-secondary outline-none",
+              "text-primary",
               className
             )}
           >
             {({ close }) => (
               <>
                 {title && (
-                  <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
-                    <h2 className="text-lg font-semibold text-white">
+                  <div className="flex items-center justify-between border-b border-secondary px-6 py-4">
+                    <h2 className="text-lg font-semibold text-primary">
                       {title}
                     </h2>
                     <button
                       onClick={close}
                       className={cx(
                         "inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors",
-                        "text-white/50 hover:bg-white/10 hover:text-white",
-                        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FF3B30]"
+                        "text-quaternary hover:bg-tertiary hover:text-primary",
+                        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
                       )}
                       aria-label="Close"
                     >

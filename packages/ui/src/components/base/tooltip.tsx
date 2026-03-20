@@ -28,7 +28,7 @@ export function Tooltip({ children, className, ...props }: TooltipProps) {
     <AriaTooltip
       offset={8}
       className={cx(
-        "rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 text-sm text-white shadow-xl",
+        "rounded-lg bg-secondary border border-secondary px-3 py-2 text-sm text-primary shadow-xl",
         "entering:animate-in entering:fade-in entering:zoom-in-95",
         "exiting:animate-out exiting:fade-out exiting:zoom-out-95",
         "placement-top:slide-in-from-bottom-1",

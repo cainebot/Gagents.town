@@ -7,8 +7,6 @@ import {
   ModalFooter,
   ModalHeader,
 } from "../application";
-import { cx } from "../../utils/cx";
-
 type ConfirmActionDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;

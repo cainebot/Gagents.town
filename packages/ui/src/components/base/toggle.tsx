@@ -27,8 +27,8 @@ export function Toggle({ children, className, ...props }: ToggleProps) {
           <div
             className={cx(
               "relative w-9 h-5 rounded-full transition-colors duration-200 shrink-0",
-              isSelected ? "bg-[#FF3B30]" : "bg-white/15",
-              isFocusVisible && "ring-2 ring-[#FF3B30] ring-offset-2 ring-offset-neutral-950"
+              isSelected ? "bg-brand-600" : "bg-gray-400",
+              isFocusVisible && "ring-2 ring-brand-600 ring-offset-2 ring-offset-gray-50"
             )}
           >
             <div

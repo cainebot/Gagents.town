@@ -34,17 +34,17 @@ export function RadioGroup({
       {...props}
     >
       {label && (
-        <AriaLabel className="text-sm font-medium text-neutral-300">
+        <AriaLabel className="text-sm font-medium text-secondary">
           {label}
         </AriaLabel>
       )}
       <div className="flex flex-col gap-2">{children}</div>
       {description && (
-        <AriaText slot="description" className="text-xs text-neutral-500">
+        <AriaText slot="description" className="text-xs text-quaternary">
           {description}
         </AriaText>
       )}
-      <AriaFieldError className="text-xs text-red-400">
+      <AriaFieldError className="text-xs text-error-600">
         {errorMessage}
       </AriaFieldError>
     </AriaRadioGroup>
@@ -72,13 +72,13 @@ export function Radio({ children, className, ...props }: RadioProps) {
             className={cx(
               "flex items-center justify-center w-4 h-4 rounded-full border transition-colors duration-150 shrink-0",
               isSelected
-                ? "border-[#FF3B30]"
-                : "bg-white/5 border-white/20 group-hover:border-white/40",
-              isFocusVisible && "ring-2 ring-[#FF3B30] ring-offset-2 ring-offset-neutral-950"
+                ? "border-brand-600"
+                : "bg-secondary border-secondary group-hover:border-primary",
+              isFocusVisible && "ring-2 ring-brand-600 ring-offset-2 ring-offset-gray-50"
             )}
           >
             {isSelected && (
-              <div className="w-2 h-2 rounded-full bg-[#FF3B30]" />
+              <div className="w-2 h-2 rounded-full bg-brand-600" />
             )}
           </div>
           {children}

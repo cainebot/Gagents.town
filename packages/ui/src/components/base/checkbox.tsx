@@ -28,9 +28,9 @@ export function Checkbox({ children, className, ...props }: CheckboxProps) {
             className={cx(
               "flex items-center justify-center w-4 h-4 rounded border transition-colors duration-150 shrink-0",
               isSelected || isIndeterminate
-                ? "bg-[#FF3B30] border-[#FF3B30]"
-                : "bg-white/5 border-white/20 group-hover:border-white/40",
-              isFocusVisible && "ring-2 ring-[#FF3B30] ring-offset-2 ring-offset-neutral-950"
+                ? "bg-brand-600 border-brand-600"
+                : "bg-secondary border-secondary group-hover:border-primary",
+              isFocusVisible && "ring-2 ring-brand-600 ring-offset-2 ring-offset-gray-50"
             )}
           >
             {isIndeterminate ? (

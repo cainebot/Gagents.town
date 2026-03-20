@@ -9,7 +9,6 @@ import {
   type ModalSize,
 } from "../application/modal"
 import { Button } from "../base/button"
-import { cx } from "../../utils/cx"
 
 export interface ModalFormProps {
   isOpen?: boolean
