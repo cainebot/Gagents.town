@@ -123,9 +123,8 @@ export default function GitPage() {
           {[...dirtyRepos, ...cleanRepos].map((repo) => (
             <div
               key={repo.path}
-              className="rounded-xl overflow-hidden"
+              className="rounded-xl overflow-hidden bg-[var(--bg-secondary)]"
               style={{
-                backgroundColor: "var(--bg-secondary)",
                 border: `1px solid ${repo.isDirty ? "rgba(251,191,36,0.3)" : "var(--border-primary)"}`,
               }}
             >
