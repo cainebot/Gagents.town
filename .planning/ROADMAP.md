@@ -80,7 +80,7 @@ Plans:
   3. `next build` completes with zero TypeScript errors and zero build errors
   4. Boards kanban drag-and-drop and card detail panel function correctly end-to-end
   5. Agent create, edit, and delete operations complete successfully without console errors
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 Plans:
 - [ ] 04-01-PLAN.md — SmartAddModal animation migration + var(--*) token replacement
 - [ ] 04-02-PLAN.md — SkillPreviewCard + DiscoveryPanel token migration
@@ -96,4 +96,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Wave B Pages | 2/2 | Complete    | 2026-03-20 |
 | 2. Wave C Boards | 4/4 | Complete    | 2026-03-20 |
 | 3. Wave C Agents + Office | 4/4 | Complete    | 2026-03-20 |
-| 4. Animation Migration + Final Verification | 0/3 | Not started | - |
+| 4. Animation Migration + Final Verification | 1/3 | In Progress|  |

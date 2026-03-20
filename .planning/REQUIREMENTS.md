@@ -29,7 +29,7 @@ Requirements for M7 milestone. Each maps to roadmap phases.
 
 ### Verification
 
-- [ ] **VERF-01**: `grep -r "var(--"` across all Wave B+C files returns zero matches (excluding allowlisted internals)
+- [x] **VERF-01**: `grep -r "var(--"` across all Wave B+C files returns zero matches (excluding allowlisted internals)
 - [ ] **VERF-02**: `next build` succeeds with zero errors
 - [ ] **VERF-03**: Boards kanban drag-and-drop and card detail panel function correctly
 - [ ] **VERF-04**: Agent CRUD operations (create, edit, delete) work correctly
@@ -63,7 +63,7 @@ Requirements for M7 milestone. Each maps to roadmap phases.
 | WAVC-05 | Phase 3 | Complete |
 | WAVC-06 | Phase 3 | Complete |
 | ANIM-01 | Phase 4 | Pending |
-| VERF-01 | Phase 4 | Pending |
+| VERF-01 | Phase 4 | Complete |
 | VERF-02 | Phase 4 | Pending |
 | VERF-03 | Phase 4 | Pending |
 | VERF-04 | Phase 4 | Pending |
