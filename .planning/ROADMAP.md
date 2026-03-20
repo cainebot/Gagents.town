@@ -46,7 +46,7 @@ Plans:
   2. The boards/[id] page and its inline `<style>` block for keyframes are replaced — no legacy CSS vars remain in the file
   3. BoardKanban, BoardFilterBar, CardDetailPanel, and ColumnManager each use only UUI tokens — all ConfirmActionDialog imports come from @openclaw/ui, not @/components/ui/
   4. Boards kanban drag-and-drop and card detail panel open/close function correctly after migration
-**Plans:** 4 plans
+**Plans:** 3/4 plans executed
 Plans:
 - [ ] 02-01-PLAN.md — Migrate boards listing page to UUI tokens
 - [ ] 02-02-PLAN.md — Migrate BoardKanban and BoardFilterBar to UUI tokens
@@ -85,6 +85,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Wave B Pages | 2/2 | Complete    | 2026-03-20 |
-| 2. Wave C Boards | 0/4 | Planning complete | - |
+| 2. Wave C Boards | 3/4 | In Progress|  |
 | 3. Wave C Agents + Office | 0/TBD | Not started | - |
 | 4. Animation Migration + Final Verification | 0/TBD | Not started | - |
