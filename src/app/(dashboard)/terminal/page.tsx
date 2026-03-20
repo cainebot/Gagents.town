@@ -116,21 +116,27 @@ export default function TerminalPage() {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {/* Header */}
-      <div style={{ padding: "1.25rem 1.5rem 0.75rem", flexShrink: 0 }}>
+      <div className="px-6 pt-5 pb-3 shrink-0">
         <div className="flex items-center justify-between">
           <div>
-            <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "1.75rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.125rem" }}>
+            <h1 className="text-[1.75rem] font-bold mb-0.5 text-[var(--text-primary-900)] font-[family-name:var(--font-display)]">
               Browser Terminal
             </h1>
-            <p style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>
+            <p className="text-[0.8rem] text-[var(--text-quaternary-500)]">
               Read-only commands only (ls, cat, df, ps, git status, etc.)
             </p>
           </div>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button onClick={copyAll} style={{ padding: "0.375rem 0.75rem", borderRadius: "0.5rem", background: "var(--card)", border: "1px solid var(--border)", cursor: "pointer", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "0.8rem" }}>
+          <div className="flex gap-2">
+            <button
+              onClick={copyAll}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.8rem] bg-[var(--bg-secondary)] border border-[var(--border-primary)] cursor-pointer text-[var(--text-quaternary-500)]"
+            >
               <Copy className="w-3.5 h-3.5" /> Copy
             </button>
-            <button onClick={clearHistory} style={{ padding: "0.375rem 0.75rem", borderRadius: "0.5rem", background: "var(--card)", border: "1px solid var(--border)", cursor: "pointer", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "0.8rem" }}>
+            <button
+              onClick={clearHistory}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.8rem] bg-[var(--bg-secondary)] border border-[var(--border-primary)] cursor-pointer text-[var(--text-quaternary-500)]"
+            >
               <Trash2 className="w-3.5 h-3.5" /> Clear
             </button>
           </div>
@@ -138,20 +144,14 @@ export default function TerminalPage() {
       </div>
 
       {/* Quick commands */}
-      <div style={{ padding: "0.5rem 1.5rem", flexShrink: 0 }}>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
+      <div className="px-6 py-2 shrink-0">
+        <div className="flex flex-wrap gap-1.5">
           {QUICK_COMMANDS.map((cmd) => (
             <button
               key={cmd}
               onClick={() => runCommand(cmd)}
               disabled={loading}
-              style={{
-                padding: "0.25rem 0.625rem", borderRadius: "0.375rem",
-                fontSize: "0.72rem", fontFamily: "monospace",
-                backgroundColor: "var(--card-elevated)", color: "var(--text-secondary)",
-                border: "1px solid var(--border)", cursor: "pointer",
-                opacity: loading ? 0.5 : 1,
-              }}
+              className="px-2.5 py-1 rounded-md text-[0.72rem] font-mono bg-[var(--bg-tertiary)] text-[var(--text-secondary-700)] border border-[var(--border-primary)] cursor-pointer disabled:opacity-50"
             >
               {cmd.length > 30 ? cmd.slice(0, 28) + "…" : cmd}
             </button>
