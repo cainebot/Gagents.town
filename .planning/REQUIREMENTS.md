@@ -25,10 +25,10 @@ Requirements for M6: App Shell + Wave A migration.
 - [x] **WAVE-06**: git page uses UUI components and tokens exclusively
 - [x] **WAVE-07**: logs page uses UUI components and tokens exclusively
 - [x] **WAVE-08**: memory page uses UUI components and tokens exclusively
-- [ ] **WAVE-09**: organization page uses UUI components and tokens exclusively
-- [ ] **WAVE-10**: reports page uses UUI components and tokens exclusively
+- [x] **WAVE-09**: organization page uses UUI components and tokens exclusively
+- [x] **WAVE-10**: reports page uses UUI components and tokens exclusively
 - [x] **WAVE-11**: search page uses UUI components and tokens exclusively
-- [ ] **WAVE-12**: sessions page uses UUI components and tokens exclusively
+- [x] **WAVE-12**: sessions page uses UUI components and tokens exclusively
 - [x] **WAVE-13**: settings page uses UUI components and tokens exclusively
 - [x] **WAVE-14**: terminal page uses UUI components and tokens exclusively
 - [ ] **WAVE-15**: workflows page uses UUI components and tokens exclusively
@@ -71,10 +71,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WAVE-06 | Phase 2 | Complete |
 | WAVE-07 | Phase 2 | Complete |
 | WAVE-08 | Phase 2 | Complete |
-| WAVE-09 | Phase 3 | Pending |
-| WAVE-10 | Phase 3 | Pending |
+| WAVE-09 | Phase 3 | Complete |
+| WAVE-10 | Phase 3 | Complete |
 | WAVE-11 | Phase 3 | Complete |
-| WAVE-12 | Phase 3 | Pending |
+| WAVE-12 | Phase 3 | Complete |
 | WAVE-13 | Phase 3 | Complete |
 | WAVE-14 | Phase 3 | Complete |
 | WAVE-15 | Phase 3 | Pending |

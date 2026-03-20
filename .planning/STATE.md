@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-03-20T18:17:33.159Z"
+stopped_at: Completed 03-wave-a-batch-2-+-verify-03-01-PLAN.md
+last_updated: "2026-03-20T18:18:04.346Z"
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 12
-  completed_plans: 8
+  completed_plans: 10
 ---
 
 # Project State
@@ -52,6 +52,8 @@ Plan: 1 of 5
 | Phase 02-wave-a-batch-1 P01 | 165s | 2 tasks | 2 files |
 | Phase 02-wave-a-batch-1 P04 | 167s | 2 tasks | 2 files |
 | Phase 03-wave-a-batch-2-+-verify P02 | 3min | 2 tasks | 3 files |
+| Phase 03-wave-a-batch-2-+-verify P01 | 132s | 2 tasks | 2 files |
+| Phase 03-wave-a-batch-2-+-verify P03 | 5min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -75,6 +77,10 @@ Recent decisions affecting current work:
 - [Phase 02-wave-a-batch-1]: Dynamic style={} blocks retained for streaming indicator and log line colors (computed from state/function)
 - [Phase 03-wave-a-batch-2-+-verify]: Terminal page header/quick-commands converted to Tailwind; fixed GitHub dark palette retained as allowlisted inline styles
 - [Phase 03-wave-a-batch-2-+-verify]: Settings footer rgba(26,26,26,0.5) replaced with bg-[var(--bg-secondary)]
+- [Phase 03-wave-a-batch-2-+-verify]: Dynamic dept.color-derived styles retained as inline style — data-driven from DB, not expressible as static Tailwind class
+- [Phase 03-wave-a-batch-2-+-verify]: Conditional selected/unselected report button bg+border kept as inline style with UUI token values — state-driven toggling
+- [Phase 03-wave-a-batch-2-+-verify]: typeColor() updated to return UUI tokens directly (var(--brand-600), var(--text-quaternary-500)); dynamic color-mix() kept as inline style
+- [Phase 03-wave-a-batch-2-+-verify]: Sessions page: rgba() modal backdrop overlay retained as allowlisted inline style; conditional bubble borders kept as inline template literal
 
 ### Pending Todos
 
@@ -86,6 +92,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T18:17:33.157Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-03-20T18:18:04.344Z
+Stopped at: Completed 03-wave-a-batch-2-+-verify-03-01-PLAN.md
 Resume file: None
