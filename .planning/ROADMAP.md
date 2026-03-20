@@ -1,77 +1,82 @@
-# Roadmap: OpenClaw UUI Migration — M6 App Shell + Wave A
+# Roadmap: UUI Migration — Waves B+C (Terminal D)
 
 ## Overview
 
-Three-phase migration of the app shell and 16 simple dashboard pages from the Digital Circus design system to @openclaw/ui. Phase 1 establishes the shell (ThemeProvider, RouterProvider, navigation) that all pages inherit. Phases 2 and 3 process the 16 Wave A pages in two batches, finishing with a full verification sweep to confirm zero legacy tokens and a clean build.
+Migrate all medium-complexity (Wave B) and high-complexity (Wave C) pages in the OpenClaw control panel from the legacy Digital Circus design system to UUI PRO. Work proceeds from simpler Wave B pages as a warmup, through the most complex board/kanban page cluster, into agents and office, and closes with SmartAddModal animation migration and full-surface verification. The milestone ends when zero legacy tokens remain across all Wave B+C files and next build succeeds cleanly.
+
+## Milestone
+
+**v1.0 M7 — Waves B+C Page Migration**
 
 ## Phases
 
 **Phase Numbering:**
 - Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (1.1, 2.1): Urgent insertions if needed
+- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: App Shell** - Migrate root layout, dashboard layout, login, sidebar, and headers to UUI
-- [x] **Phase 2: Wave A Batch 1** - Migrate first 8 simple pages (about through memory) to 100% UUI (completed 2026-03-20)
-- [x] **Phase 3: Wave A Batch 2 + Verify** - Migrate remaining 8 simple pages then verify zero legacy tokens across all migrated files (completed 2026-03-20)
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [ ] **Phase 1: Wave B Pages** - Migrate skills, costs, system, and analytics pages to UUI tokens
+- [ ] **Phase 2: Wave C Boards** - Migrate boards listing, board detail, and all board sub-components
+- [ ] **Phase 3: Wave C Agents + Office** - Migrate agents, board-groups, and office React chrome
+- [ ] **Phase 4: Animation Migration + Final Verification** - Replace motion imports in SmartAddModal and verify zero legacy tokens across all files
 
 ## Phase Details
 
-### Phase 1: App Shell
-**Goal**: The app shell provides ThemeProvider and RouterProvider to every page and contains zero legacy tokens in layouts, login, sidebar, and headers
+### Phase 1: Wave B Pages
+**Goal**: All four Wave B pages use exclusively UUI tokens and @openclaw/ui components with no var(--*) inline styles
 **Depends on**: Nothing (first phase)
-**Requirements**: SHELL-01, SHELL-02, SHELL-03, SHELL-04, SHELL-05
+**Requirements**: WAVB-01, WAVB-02, WAVB-03, WAVB-04
 **Success Criteria** (what must be TRUE):
-  1. Root layout wraps every page in ThemeProvider + RouterProvider from @openclaw/ui with no legacy wrappers
-  2. Dashboard layout renders using only UUI tokens — grep for var(--) in the layout file returns 0 matches
-  3. Login page renders entirely with @openclaw/ui components; no legacy component imports remain
-  4. DashboardSidebar renders navigation using the UUI AppNavigation pattern with no legacy sidebar code
-  5. All header and global nav elements use UUI tokens and components exclusively
-**Plans:** 2/3 plans executed
-Plans:
-- [ ] 01-01-PLAN.md — Providers wrapper + root/dashboard layout migration
-- [ ] 01-02-PLAN.md — Login page + BrandMark migration
-- [ ] 01-03-PLAN.md — DashboardSidebar + NodeStatusStrip migration
+  1. The skills and skills/[id] pages render with no inline style={{}} using var(--*) CSS vars — all colors, spacing, and typography come from Tailwind UUI utilities
+  2. The costs page chart containers use UUI tokens for layout and chrome — Recharts component internals remain as-is (allowlisted)
+  3. The system page renders with no var(--*) inline styles and all interactive controls use @openclaw/ui components
+  4. The analytics page chart wrappers use UUI tokens for layout — chart component internals remain as-is (allowlisted)
+**Plans**: TBD
 
-### Phase 2: Wave A Batch 1
-**Goal**: Eight simple pages (about, actions, activity, calendar, files, git, logs, memory) each use only @openclaw/ui components and UUI tokens
+### Phase 2: Wave C Boards
+**Goal**: The boards listing page, board detail page, and all four board sub-components (BoardKanban, BoardFilterBar, CardDetailPanel, ColumnManager) use exclusively UUI tokens
 **Depends on**: Phase 1
-**Requirements**: WAVE-01, WAVE-02, WAVE-03, WAVE-04, WAVE-05, WAVE-06, WAVE-07, WAVE-08
+**Requirements**: WAVC-01, WAVC-02
 **Success Criteria** (what must be TRUE):
-  1. Each of the 8 pages renders without legacy component imports from src/components/ui/
-  2. grep for var(--) in any of these 8 page files returns 0 matches
-  3. Files page renders correctly with Monaco editor internals excluded via the allowlist
-  4. next build passes with zero errors after all 8 pages are migrated
-**Plans:** 4/4 plans complete
-Plans:
-- [ ] 02-01-PLAN.md — Migrate about + actions pages to UUI tokens
-- [ ] 02-02-PLAN.md — Migrate activity page + verify calendar page
-- [ ] 02-03-PLAN.md — Migrate files (Monaco allowlisted) + git pages to UUI tokens
-- [ ] 02-04-PLAN.md — Migrate logs + memory pages to UUI tokens
+  1. The boards listing page renders with no var(--*) inline styles and all components are from @openclaw/ui
+  2. The boards/[id] page and its inline `<style>` block for keyframes are replaced — no legacy CSS vars remain in the file
+  3. BoardKanban, BoardFilterBar, CardDetailPanel, and ColumnManager each use only UUI tokens — all ConfirmActionDialog imports come from @openclaw/ui, not @/components/ui/
+  4. Boards kanban drag-and-drop and card detail panel open/close function correctly after migration
+**Plans**: TBD
 
-### Phase 3: Wave A Batch 2 + Verify
-**Goal**: Remaining 8 simple pages (organization, reports, search, sessions, settings, terminal, workflows, workspaces) are fully migrated and all 24 requirements are verified clean
+### Phase 3: Wave C Agents + Office
+**Goal**: All agents pages, board-groups pages, and office React chrome use exclusively UUI tokens and @openclaw/ui components
 **Depends on**: Phase 2
-**Requirements**: WAVE-09, WAVE-10, WAVE-11, WAVE-12, WAVE-13, WAVE-14, WAVE-15, WAVE-16, VRFY-01, VRFY-02, VRFY-03
+**Requirements**: WAVC-03, WAVC-04, WAVC-05, WAVC-06
 **Success Criteria** (what must be TRUE):
-  1. Each of the 8 remaining pages renders without legacy component imports from src/components/ui/
-  2. grep for var(--) across all migrated files (shell + 16 pages) returns 0 matches
-  3. next build succeeds with zero errors on the complete migrated codebase
-  4. No imports from src/components/ui/ legacy path exist in any migrated file
-**Plans:** 5/5 plans complete
-Plans:
-- [ ] 03-01-PLAN.md — Migrate organization + reports pages to UUI tokens
-- [ ] 03-02-PLAN.md — Migrate search + settings + terminal pages to UUI tokens
-- [ ] 03-03-PLAN.md — Migrate sessions page to UUI tokens (largest page)
-- [ ] 03-04-PLAN.md — Migrate workflows + workspaces pages to UUI tokens
-- [ ] 03-05-PLAN.md — Full verification sweep (legacy tokens, build, imports)
+  1. The agents listing page and AgentOrganigrama render with no var(--*) inline styles
+  2. The agents/[id] page and AgentFormPanel (backed by useAgentForm hook) use only UUI tokens — agent CRUD (create, edit, delete) works correctly
+  3. All four board-groups pages (listing, detail, edit, new) use only UUI tokens and @openclaw/ui components
+  4. The office page React chrome (layout, controls, sidebar) uses only UUI tokens — Phaser canvas internals remain allowlisted
+  5. AgentSidePanel and AgentFormPanel imports for ConfirmActionDialog come from @openclaw/ui
+**Plans**: TBD
+
+### Phase 4: Animation Migration + Final Verification
+**Goal**: SmartAddModal uses tailwindcss-animate with zero motion imports, and a full grep sweep confirms zero legacy tokens across all Wave B+C files with a clean build
+**Depends on**: Phase 3
+**Requirements**: ANIM-01, VERF-01, VERF-02, VERF-03, VERF-04
+**Success Criteria** (what must be TRUE):
+  1. SmartAddModal contains no `motion.div`, `motion.span`, or `AnimatePresence` — entry/exit animations use tailwindcss-animate classes
+  2. `grep -r "var(--"` across all Wave B+C files returns zero matches (excluding allowlisted Recharts, Office2D, and Monaco internals)
+  3. `next build` completes with zero TypeScript errors and zero build errors
+  4. Boards kanban drag-and-drop and card detail panel function correctly end-to-end
+  5. Agent create, edit, and delete operations complete successfully without console errors
+**Plans**: TBD
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3
+Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. App Shell | 2/3 | In Progress|  |
-| 2. Wave A Batch 1 | 4/4 | Complete   | 2026-03-20 |
-| 3. Wave A Batch 2 + Verify | 5/5 | Complete   | 2026-03-20 |
+| 1. Wave B Pages | 0/TBD | Not started | - |
+| 2. Wave C Boards | 0/TBD | Not started | - |
+| 3. Wave C Agents + Office | 0/TBD | Not started | - |
+| 4. Animation Migration + Final Verification | 0/TBD | Not started | - |

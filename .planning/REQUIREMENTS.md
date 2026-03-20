@@ -29,7 +29,7 @@ Requirements for M7 milestone. Each maps to roadmap phases.
 
 ### Verification
 
-- [ ] **VERF-01**: `grep -r "var(--" ` across all Wave B+C files returns zero matches (excluding allowlisted internals)
+- [ ] **VERF-01**: `grep -r "var(--"` across all Wave B+C files returns zero matches (excluding allowlisted internals)
 - [ ] **VERF-02**: `next build` succeeds with zero errors
 - [ ] **VERF-03**: Boards kanban drag-and-drop and card detail panel function correctly
 - [ ] **VERF-04**: Agent CRUD operations (create, edit, delete) work correctly
@@ -75,4 +75,4 @@ Requirements for M7 milestone. Each maps to roadmap phases.
 
 ---
 *Requirements defined: 2026-03-20*
-*Last updated: 2026-03-20 after initial definition*
+*Last updated: 2026-03-20 — traceability confirmed after roadmap creation*
