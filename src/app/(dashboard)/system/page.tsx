@@ -559,24 +559,22 @@ export default function SystemMonitorPage() {
       {logsModal && (
         <div className="fixed inset-0 z-[1000] bg-black/85 flex items-center justify-center p-4">
           <div
-            className="w-[95vw] max-w-[900px] h-[80vh] rounded-2xl border border-border flex flex-col overflow-hidden"
-            style={{ backgroundColor: "#0d1117" }}
+            className="w-[95vw] max-w-[900px] h-[80vh] rounded-2xl border border-border bg-surface flex flex-col overflow-hidden"
           >
             {/* Log header */}
             <div
               className="flex items-center gap-3 px-4 py-3.5 border-b border-border shrink-0"
             >
               <Terminal className="w-4 h-4 text-accent" />
-              <span style={{ color: "#c9d1d9", fontFamily: "monospace", fontSize: "0.9rem" }}>
+              <span className="text-primary font-mono text-sm">
                 {logsModal.name} logs
               </span>
-              <span style={{ fontSize: "0.75rem", color: "#8b949e", marginLeft: "0.5rem" }}>
+              <span className="text-xs text-muted ml-2">
                 ({logsModal.backend})
               </span>
               <button
                 onClick={() => setLogsModal(null)}
-                className="ml-auto p-1.5 rounded-md bg-transparent border-0 cursor-pointer"
-                style={{ color: "#8b949e" }}
+                className="ml-auto p-1.5 rounded-md bg-transparent border-0 cursor-pointer text-muted"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -589,11 +587,7 @@ export default function SystemMonitorPage() {
                   <Loader2 className="w-8 h-8 animate-spin text-accent" />
                 </div>
               ) : (
-                <pre style={{
-                  fontFamily: "monospace", fontSize: "0.8rem",
-                  color: "#c9d1d9", whiteSpace: "pre-wrap", wordBreak: "break-all",
-                  lineHeight: 1.6,
-                }}>
+                <pre className="font-mono text-xs text-primary whitespace-pre-wrap break-all leading-relaxed">
                   {logsModal.content || "No log output"}
                 </pre>
               )}
