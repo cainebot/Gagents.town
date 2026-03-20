@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback, type CSSProperties } from "react";
+import { useEffect, useState, useCallback } from "react";
 import SmartAddModal from '@/components/SmartAddModal';
+import { cx } from "@openclaw/ui";
 import {
   Search,
   RefreshCw,
@@ -83,48 +84,48 @@ function RegisterSkillModal({ onClose, onCreated }: { onClose: () => void; onCre
 
   return (
     <div
-      style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px", zIndex: 100 }}
+      className="fixed inset-0 bg-black/80 flex items-center justify-center p-6 z-[100]"
       onClick={onClose}
     >
       <div
-        style={{ backgroundColor: "var(--surface)", borderRadius: "12px", maxWidth: "600px", width: "100%", maxHeight: "90vh", overflow: "auto", border: "1px solid var(--border)" }}
+        className="bg-surface rounded-xl max-w-[600px] w-full max-h-[90vh] overflow-auto border border-border"
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ padding: "24px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "18px", fontWeight: 700, color: "var(--text-primary)" }}>Register Skill</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "4px" }}><X style={{ width: "20px", height: "20px" }} /></button>
+        <div className="p-6 border-b border-border flex justify-between items-center">
+          <h2 className="font-heading text-lg font-bold text-primary">Register Skill</h2>
+          <button onClick={onClose} className="bg-transparent border-0 cursor-pointer text-muted p-1"><X className="w-5 h-5" /></button>
         </div>
-        <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
-          <div style={{ display: "flex", gap: "12px" }}>
-            <div style={{ flex: "0 0 60px" }}>
-              <label style={{ fontFamily: "var(--font-body)", fontSize: "11px", color: "var(--text-secondary)", marginBottom: "4px", display: "block" }}>Icon</label>
-              <input value={icon} onChange={(e) => setIcon(e.target.value)} style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "var(--surface-elevated)", border: "1px solid var(--border)", color: "var(--text-primary)", fontSize: "20px", textAlign: "center" }} />
+        <div className="p-6 flex flex-col gap-4">
+          <div className="flex gap-3">
+            <div className="flex-[0_0_60px]">
+              <label className="font-body text-[11px] text-secondary mb-1 block">Icon</label>
+              <input value={icon} onChange={(e) => setIcon(e.target.value)} className="w-full p-[10px] rounded-md bg-surface-elevated border border-border text-primary text-xl text-center" />
             </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ fontFamily: "var(--font-body)", fontSize: "11px", color: "var(--text-secondary)", marginBottom: "4px", display: "block" }}>Name *</label>
-              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. hubspot-prospecting" style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "var(--surface-elevated)", border: "1px solid var(--border)", color: "var(--text-primary)", fontFamily: "var(--font-body)", fontSize: "13px" }} />
+            <div className="flex-1">
+              <label className="font-body text-[11px] text-secondary mb-1 block">Name *</label>
+              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. hubspot-prospecting" className="w-full p-[10px] rounded-md bg-surface-elevated border border-border text-primary font-body text-[13px]" />
             </div>
           </div>
           <div>
-            <label style={{ fontFamily: "var(--font-body)", fontSize: "11px", color: "var(--text-secondary)", marginBottom: "4px", display: "block" }}>Description</label>
-            <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What does this skill enable?" style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "var(--surface-elevated)", border: "1px solid var(--border)", color: "var(--text-primary)", fontFamily: "var(--font-body)", fontSize: "13px" }} />
+            <label className="font-body text-[11px] text-secondary mb-1 block">Description</label>
+            <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What does this skill enable?" className="w-full p-[10px] rounded-md bg-surface-elevated border border-border text-primary font-body text-[13px]" />
           </div>
-          <div style={{ display: "flex", gap: "8px" }}>
-            <button onClick={() => setOrigin("local")} style={{ flex: 1, padding: "10px", borderRadius: "6px", backgroundColor: origin === "local" ? "var(--accent-soft)" : "var(--surface-elevated)", color: origin === "local" ? "var(--accent)" : "var(--text-secondary)", border: "1px solid var(--border)", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: "12px", fontWeight: 600 }}>Local</button>
-            <button onClick={() => setOrigin("github")} style={{ flex: 1, padding: "10px", borderRadius: "6px", backgroundColor: origin === "github" ? "var(--accent-soft)" : "var(--surface-elevated)", color: origin === "github" ? "var(--accent)" : "var(--text-secondary)", border: "1px solid var(--border)", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: "12px", fontWeight: 600 }}>GitHub</button>
-            <button onClick={() => setOrigin("skills_sh")} style={{ flex: 1, padding: "10px", borderRadius: "6px", backgroundColor: origin === "skills_sh" ? "var(--accent-soft)" : "var(--surface-elevated)", color: origin === "skills_sh" ? "var(--accent)" : "var(--text-secondary)", border: "1px solid var(--border)", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: "12px", fontWeight: 600 }}>skills.sh</button>
+          <div className="flex gap-2">
+            <button onClick={() => setOrigin("local")} className={cx("flex-1 p-[10px] rounded-md border border-border cursor-pointer font-body text-xs font-semibold", origin === "local" ? "bg-accent-soft text-accent" : "bg-surface-elevated text-secondary")}>Local</button>
+            <button onClick={() => setOrigin("github")} className={cx("flex-1 p-[10px] rounded-md border border-border cursor-pointer font-body text-xs font-semibold", origin === "github" ? "bg-accent-soft text-accent" : "bg-surface-elevated text-secondary")}>GitHub</button>
+            <button onClick={() => setOrigin("skills_sh")} className={cx("flex-1 p-[10px] rounded-md border border-border cursor-pointer font-body text-xs font-semibold", origin === "skills_sh" ? "bg-accent-soft text-accent" : "bg-surface-elevated text-secondary")}>skills.sh</button>
           </div>
           {origin !== "local" && (
             <div>
-              <label style={{ fontFamily: "var(--font-body)", fontSize: "11px", color: "var(--text-secondary)", marginBottom: "4px", display: "block" }}>GitHub URL</label>
-              <input value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} placeholder="https://github.com/org/repo/skill.md" style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "var(--surface-elevated)", border: "1px solid var(--border)", color: "var(--text-primary)", fontFamily: "var(--font-mono)", fontSize: "12px" }} />
+              <label className="font-body text-[11px] text-secondary mb-1 block">GitHub URL</label>
+              <input value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} placeholder="https://github.com/org/repo/skill.md" className="w-full p-[10px] rounded-md bg-surface-elevated border border-border text-primary font-mono text-xs" />
             </div>
           )}
           <div>
-            <label style={{ fontFamily: "var(--font-body)", fontSize: "11px", color: "var(--text-secondary)", marginBottom: "4px", display: "block" }}>Skill Content (Markdown)</label>
-            <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="# Skill instructions&#10;&#10;Paste your .md or .skill content here..." rows={10} style={{ "--textarea-surface": "var(--surface-elevated)", width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "var(--surface-elevated)", border: "1px solid var(--border)", color: "var(--text-primary)", fontFamily: "var(--font-mono)", fontSize: "12px", resize: "vertical" } as CSSProperties} />
+            <label className="font-body text-[11px] text-secondary mb-1 block">Skill Content (Markdown)</label>
+            <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="# Skill instructions&#10;&#10;Paste your .md or .skill content here..." rows={10} className="w-full p-[10px] rounded-md bg-surface-elevated border border-border text-primary font-mono text-xs resize-y" />
           </div>
-          <button onClick={handleSubmit} disabled={!name.trim() || saving} style={{ padding: "12px 24px", borderRadius: "6px", backgroundColor: "var(--accent)", color: "white", border: "none", cursor: name.trim() && !saving ? "pointer" : "not-allowed", fontFamily: "var(--font-body)", fontSize: "13px", fontWeight: 600, opacity: name.trim() && !saving ? 1 : 0.5 }}>
+          <button onClick={handleSubmit} disabled={!name.trim() || saving} className={cx("px-6 py-3 rounded-md bg-accent text-white border-0 font-body text-[13px] font-semibold", name.trim() && !saving ? "cursor-pointer opacity-100" : "cursor-not-allowed opacity-50")}>
             {saving ? "Registering..." : "Register Skill"}
           </button>
         </div>
@@ -136,15 +137,15 @@ function RegisterSkillModal({ onClose, onCreated }: { onClose: () => void; onCre
 // -- Status Badge --
 function StatusBadge({ status }: { status: string }) {
   const config = {
-    installed: { icon: CheckCircle, color: "var(--positive)", bg: "rgba(34,197,94,0.1)", label: "Installed" },
-    pending: { icon: Clock, color: "var(--warning)", bg: "rgba(234,179,8,0.1)", label: "Pending" },
-    failed: { icon: AlertCircle, color: "var(--negative)", bg: "rgba(239,68,68,0.1)", label: "Failed" },
-  }[status] ?? { icon: Clock, color: "var(--text-muted)", bg: "var(--surface-elevated)", label: status };
+    installed: { icon: CheckCircle, colorClass: "text-success", bgClass: "bg-success/10", label: "Installed" },
+    pending: { icon: Clock, colorClass: "text-warning", bgClass: "bg-warning/10", label: "Pending" },
+    failed: { icon: AlertCircle, colorClass: "text-error", bgClass: "bg-error/10", label: "Failed" },
+  }[status] ?? { icon: Clock, colorClass: "text-muted", bgClass: "bg-surface-elevated", label: status };
 
   const Icon = config.icon;
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "2px 8px", borderRadius: "4px", backgroundColor: config.bg, color: config.color, fontSize: "10px", fontWeight: 600, fontFamily: "var(--font-body)" }}>
-      <Icon style={{ width: "10px", height: "10px" }} />
+    <span className={cx("inline-flex items-center gap-1 px-2 py-0.5 rounded font-body text-[10px] font-semibold", config.bgClass, config.colorClass)}>
+      <Icon className="w-[10px] h-[10px]" />
       {config.label}
     </span>
   );
@@ -154,29 +155,27 @@ function StatusBadge({ status }: { status: string }) {
 function SkillCard({ skill, onClick }: { skill: Skill; onClick: () => void }) {
   return (
     <div
-      style={{ backgroundColor: "var(--surface)", borderRadius: "8px", padding: "16px", border: "1px solid var(--border)", cursor: "pointer", transition: "all 150ms ease" }}
-      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--surface-hover)"; e.currentTarget.style.borderColor = "var(--border-strong)"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--surface)"; e.currentTarget.style.borderColor = "var(--border)"; }}
+      className="bg-surface rounded-lg p-4 border border-border cursor-pointer transition-all duration-150 hover:bg-surface-hover hover:border-border-strong"
       onClick={onClick}
     >
-      <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
-        <span style={{ fontSize: "24px", flexShrink: 0 }}>{skill.icon}</span>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "14px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "4px" }}>{skill.name}</h3>
-          <p style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: "var(--text-secondary)", lineHeight: "1.5", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{skill.description || "No description"}</p>
+      <div className="flex items-start gap-3 mb-3">
+        <span className="text-2xl shrink-0">{skill.icon}</span>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-heading text-sm font-semibold text-primary mb-1">{skill.name}</h3>
+          <p className="font-body text-xs text-secondary leading-[1.5] line-clamp-2">{skill.description || "No description"}</p>
         </div>
       </div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "12px", borderTop: "1px solid var(--border)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ backgroundColor: skill.origin === "local" ? "var(--accent-soft)" : "var(--surface-elevated)", color: skill.origin === "local" ? "var(--accent)" : "var(--text-muted)", padding: "3px 8px", borderRadius: "4px", fontFamily: "var(--font-body)", fontSize: "9px", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase" as const }}>{{ local: "Local", github: "GitHub", skills_sh: "skills.sh" }[skill.origin] ?? skill.origin}</span>
+      <div className="flex items-center justify-between pt-3 border-t border-border">
+        <div className="flex items-center gap-2">
+          <span className={cx("px-2 py-[3px] rounded font-body text-[9px] font-bold tracking-widest uppercase", skill.origin === "local" ? "bg-accent-soft text-accent" : "bg-surface-elevated text-muted")}>{{ local: "Local", github: "GitHub", skills_sh: "skills.sh" }[skill.origin] ?? skill.origin}</span>
           {skill.latest_version && (
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)" }}>v{skill.latest_version.version}</span>
+            <span className="font-mono text-[10px] text-muted">v{skill.latest_version.version}</span>
           )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          <Users style={{ width: "12px", height: "12px", color: "var(--text-muted)" }} />
-          <span style={{ fontFamily: "var(--font-body)", fontSize: "10px", color: "var(--text-muted)" }}>{skill.agent_count}</span>
-          {skill.source_url && <ExternalLink style={{ width: "12px", height: "12px", color: "var(--text-muted)", marginLeft: "4px" }} />}
+        <div className="flex items-center gap-1">
+          <Users className="w-3 h-3 text-muted" />
+          <span className="font-body text-[10px] text-muted">{skill.agent_count}</span>
+          {skill.source_url && <ExternalLink className="w-3 h-3 text-muted ml-1" />}
         </div>
       </div>
     </div>
@@ -214,16 +213,16 @@ function SkillDetailModal({ skill, onClose, onDeleted, onToast }: { skill: Skill
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px", zIndex: 100 }} onClick={onClose}>
-      <div style={{ backgroundColor: "var(--surface)", borderRadius: "12px", maxWidth: "700px", width: "100%", maxHeight: "90vh", overflow: "auto", border: "1px solid var(--border)" }} onClick={(e) => e.stopPropagation()}>
-        <div style={{ padding: "24px", borderBottom: "1px solid var(--border)", position: "relative" }}>
-          <button onClick={onClose} style={{ position: "absolute", top: "24px", right: "24px", padding: "8px", borderRadius: "6px", backgroundColor: "transparent", border: "none", cursor: "pointer", color: "var(--text-muted)" }}><X style={{ width: "20px", height: "20px" }} /></button>
-          <div style={{ display: "flex", alignItems: "flex-start", gap: "16px", paddingRight: "40px" }}>
-            <span style={{ fontSize: "48px" }}>{skill.icon}</span>
-            <div style={{ flex: 1 }}>
-              <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "24px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "8px" }}>{skill.name}</h2>
-              <p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", marginBottom: "12px" }}>{skill.description || "No description"}</p>
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-6 z-[100]" onClick={onClose}>
+      <div className="bg-surface rounded-xl max-w-[700px] w-full max-h-[90vh] overflow-auto border border-border" onClick={(e) => e.stopPropagation()}>
+        <div className="p-6 border-b border-border relative">
+          <button onClick={onClose} className="absolute top-6 right-6 p-2 rounded-md bg-transparent border-0 cursor-pointer text-muted"><X className="w-5 h-5" /></button>
+          <div className="flex items-start gap-4 pr-10">
+            <span className="text-5xl">{skill.icon}</span>
+            <div className="flex-1">
+              <h2 className="font-heading text-2xl font-bold text-primary mb-2">{skill.name}</h2>
+              <p className="font-body text-sm text-secondary mb-3">{skill.description || "No description"}</p>
+              <div className="flex gap-2 flex-wrap">
                 <span className="badge-positive">{skill.origin}</span>
                 <span className="badge-info">{skill.version_count} version{skill.version_count !== 1 ? "s" : ""}</span>
                 <span className="badge-info">{skill.agent_count} agent{skill.agent_count !== 1 ? "s" : ""}</span>
@@ -231,72 +230,72 @@ function SkillDetailModal({ skill, onClose, onDeleted, onToast }: { skill: Skill
             </div>
           </div>
         </div>
-        <div style={{ padding: "24px" }}>
+        <div className="p-6">
           {/* Versions */}
-          <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "14px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "12px" }}>Versions ({skill.skill_versions?.length ?? 0})</h3>
+          <h3 className="font-heading text-sm font-semibold text-primary mb-3">Versions ({skill.skill_versions?.length ?? 0})</h3>
           {skill.skill_versions && skill.skill_versions.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "24px" }}>
+            <div className="flex flex-col gap-2 mb-6">
               {skill.skill_versions.map((v) => (
-                <div key={v.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", backgroundColor: "var(--surface-elevated)", borderRadius: "6px", border: "1px solid var(--border)" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--text-primary)" }}>v{v.version}</span>
-                  <span style={{ fontFamily: "var(--font-body)", fontSize: "11px", color: "var(--text-muted)" }}>{new Date(v.created_at).toLocaleDateString()}</span>
+                <div key={v.id} className="flex justify-between px-3 py-2 bg-surface-elevated rounded-md border border-border">
+                  <span className="font-mono text-xs text-primary">v{v.version}</span>
+                  <span className="font-body text-[11px] text-muted">{new Date(v.created_at).toLocaleDateString()}</span>
                 </div>
               ))}
             </div>
           ) : (
-            <p style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: "var(--text-muted)", marginBottom: "24px" }}>No versions yet</p>
+            <p className="font-body text-xs text-muted mb-6">No versions yet</p>
           )}
 
           {/* Agents */}
-          <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "14px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "12px" }}>Assigned Agents ({skill.agent_skills?.length ?? 0})</h3>
+          <h3 className="font-heading text-sm font-semibold text-primary mb-3">Assigned Agents ({skill.agent_skills?.length ?? 0})</h3>
           {skill.agent_skills && skill.agent_skills.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div className="flex flex-col gap-2">
               {skill.agent_skills.map((as) => (
-                <div key={as.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", backgroundColor: "var(--surface-elevated)", borderRadius: "6px", border: "1px solid var(--border)" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--text-primary)" }}>@{as.agent_id}</span>
+                <div key={as.id} className="flex justify-between items-center px-3 py-2 bg-surface-elevated rounded-md border border-border">
+                  <span className="font-mono text-xs text-primary">@{as.agent_id}</span>
                   <StatusBadge status={as.status} />
                 </div>
               ))}
             </div>
           ) : (
-            <p style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: "var(--text-muted)" }}>Not assigned to any agents</p>
+            <p className="font-body text-xs text-muted">Not assigned to any agents</p>
           )}
 
           {/* Delete Section */}
-          <div style={{ marginTop: "24px", paddingTop: "24px", borderTop: "1px solid var(--border)" }}>
+          <div className="mt-6 pt-6 border-t border-border">
             {!showDeleteConfirm ? (
               <button
                 onClick={() => setShowDeleteConfirm(true)}
-                style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 16px", borderRadius: "6px", backgroundColor: "rgba(239,68,68,0.1)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.2)", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: "12px", fontWeight: 600 }}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-md bg-error/10 text-error border border-error/20 cursor-pointer font-body text-xs font-semibold"
               >
-                <Trash2 style={{ width: "14px", height: "14px" }} /> Delete Skill
+                <Trash2 className="w-3.5 h-3.5" /> Delete Skill
               </button>
             ) : (
-              <div style={{ backgroundColor: "rgba(239,68,68,0.05)", borderRadius: "8px", padding: "16px", border: "1px solid rgba(239,68,68,0.2)" }}>
-                <p style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "#ef4444", fontWeight: 600, marginBottom: "8px" }}>
+              <div className="bg-error/5 rounded-lg p-4 border border-error/20">
+                <p className="font-body text-[13px] text-error font-semibold mb-2">
                   Delete "{skill.name}"?
                 </p>
                 {skill.agent_count > 0 && (
-                  <p style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: "var(--text-secondary)", marginBottom: "12px" }}>
+                  <p className="font-body text-xs text-secondary mb-3">
                     This skill is assigned to {skill.agent_count} agent{skill.agent_count !== 1 ? "s" : ""}. It will be uninstalled from all agents before deletion.
                   </p>
                 )}
                 {deleteResult && (
-                  <p style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: deleteResult.startsWith("Error") ? "#ef4444" : "var(--text-secondary)", marginBottom: "12px" }}>
+                  <p className={cx("font-body text-xs mb-3", deleteResult.startsWith("Error") ? "text-error" : "text-secondary")}>
                     {deleteResult}
                   </p>
                 )}
-                <div style={{ display: "flex", gap: "8px" }}>
+                <div className="flex gap-2">
                   <button
                     onClick={handleDelete}
                     disabled={deleting}
-                    style={{ padding: "8px 16px", borderRadius: "6px", backgroundColor: "#ef4444", color: "white", border: "none", cursor: deleting ? "not-allowed" : "pointer", fontFamily: "var(--font-body)", fontSize: "12px", fontWeight: 600, opacity: deleting ? 0.5 : 1 }}
+                    className={cx("px-4 py-2 rounded-md bg-error text-white border-0 font-body text-xs font-semibold", deleting ? "cursor-not-allowed opacity-50" : "cursor-pointer opacity-100")}
                   >
                     {deleting ? "Deleting..." : skill.agent_count > 0 ? "Uninstall & Delete" : "Delete"}
                   </button>
                   <button
                     onClick={() => { setShowDeleteConfirm(false); setDeleteResult(null); }}
-                    style={{ padding: "8px 16px", borderRadius: "6px", backgroundColor: "var(--surface-elevated)", color: "var(--text-secondary)", border: "1px solid var(--border)", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: "12px", fontWeight: 600 }}
+                    className="px-4 py-2 rounded-md bg-surface-elevated text-secondary border border-border cursor-pointer font-body text-xs font-semibold"
                   >
                     Cancel
                   </button>
@@ -340,7 +339,7 @@ export default function SkillsPage() {
     return (
       <div className="p-6">
         <div className="flex items-center justify-center py-24">
-          <RefreshCw className="w-8 h-8 animate-spin" style={{ color: "var(--accent)" }} />
+          <RefreshCw className="w-8 h-8 animate-spin text-accent" />
         </div>
       </div>
     );
@@ -359,43 +358,43 @@ export default function SkillsPage() {
   const totalInstalled = skills.reduce((sum, s) => sum + s.installed_count, 0);
 
   return (
-    <div style={{ padding: "24px" }}>
+    <div className="p-6">
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px" }}>
+      <div className="flex justify-between items-start mb-6">
         <div>
-          <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "24px", fontWeight: 700, letterSpacing: "-1px", color: "var(--text-primary)", marginBottom: "4px" }}>Skills Marketplace</h1>
-          <p style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-secondary)" }}>Installable knowledge packages for your agents</p>
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-primary mb-1">Skills Marketplace</h1>
+          <p className="font-body text-[13px] text-secondary">Installable knowledge packages for your agents</p>
         </div>
-        <button onClick={() => setShowRegister(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 16px", borderRadius: "6px", backgroundColor: "var(--accent)", color: "white", border: "none", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: "12px", fontWeight: 600 }}>
-          <Plus style={{ width: "14px", height: "14px" }} /> Register Skill
+        <button onClick={() => setShowRegister(true)} className="flex items-center gap-1.5 px-4 py-[10px] rounded-md bg-accent text-white border-0 cursor-pointer font-body text-xs font-semibold">
+          <Plus className="w-3.5 h-3.5" /> Register Skill
         </button>
       </div>
 
       {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "24px" }}>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-6">
         {[
-          { icon: Puzzle, value: skills.length, label: "Total Skills", color: "var(--text-primary)" },
-          { icon: CheckCircle, value: totalInstalled, label: "Installed", color: "var(--positive)" },
-        ].map(({ icon: Icon, value, label, color }) => (
-          <div key={label} className="stats-card" style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <Icon style={{ width: "16px", height: "16px", color }} />
+          { icon: Puzzle, value: skills.length, label: "Total Skills", colorClass: "text-primary" },
+          { icon: CheckCircle, value: totalInstalled, label: "Installed", colorClass: "text-success" },
+        ].map(({ icon: Icon, value, label, colorClass }) => (
+          <div key={label} className="stats-card flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <Icon className={cx("w-4 h-4", colorClass)} />
               <span className="title">{label}</span>
             </div>
-            <span className="value" style={{ color }}>{value}</span>
+            <span className={cx("value", colorClass)}>{value}</span>
           </div>
         ))}
       </div>
 
       {/* Filters */}
-      <div style={{ display: "flex", gap: "12px", marginBottom: "24px", flexWrap: "wrap" }}>
-        <div style={{ position: "relative", flex: 1, minWidth: "240px" }}>
-          <Search style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", width: "16px", height: "16px", color: "var(--text-muted)" }} />
-          <input type="text" placeholder="Search skills..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ width: "100%", paddingLeft: "40px", paddingRight: "16px", paddingTop: "12px", paddingBottom: "12px", borderRadius: "6px", backgroundColor: "var(--surface-elevated)", border: "1px solid var(--border)", color: "var(--text-primary)", fontFamily: "var(--font-body)", fontSize: "12px" }} />
+      <div className="flex gap-3 mb-6 flex-wrap">
+        <div className="relative flex-1 min-w-[240px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
+          <input type="text" placeholder="Search skills..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-3 rounded-md bg-surface-elevated border border-border text-primary font-body text-xs" />
         </div>
-        <div style={{ display: "flex", gap: "8px" }}>
+        <div className="flex gap-2">
           {(["all", "local", "github", "skills_sh"] as const).map((src) => (
-            <button key={src} onClick={() => setFilterOrigin(src)} style={{ padding: "12px 20px", borderRadius: "6px", backgroundColor: filterOrigin === src ? "var(--accent-soft)" : "var(--surface)", color: filterOrigin === src ? "var(--accent)" : "var(--text-secondary)", border: "1px solid var(--border)", fontFamily: "var(--font-body)", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>
+            <button key={src} onClick={() => setFilterOrigin(src)} className={cx("px-5 py-3 rounded-md border border-border font-body text-xs font-semibold cursor-pointer", filterOrigin === src ? "bg-accent-soft text-accent" : "bg-surface text-secondary")}>
               {{ all: `All (${skills.length})`, local: `Local (${localCount})`, github: `GitHub (${githubCount})`, skills_sh: `skills.sh (${skillsShCount})` }[src]}
             </button>
           ))}
@@ -404,13 +403,13 @@ export default function SkillsPage() {
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div style={{ backgroundColor: "var(--surface)", borderRadius: "12px", padding: "48px", textAlign: "center" }}>
-          <Puzzle style={{ width: "48px", height: "48px", color: "var(--text-muted)", margin: "0 auto 16px" }} />
-          <p style={{ color: "var(--text-secondary)", marginBottom: "16px" }}>No skills found</p>
-          <button onClick={() => setShowRegister(true)} style={{ padding: "10px 20px", borderRadius: "6px", backgroundColor: "var(--accent)", color: "white", border: "none", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: "12px", fontWeight: 600 }}>Register your first skill</button>
+        <div className="bg-surface rounded-xl p-12 text-center">
+          <Puzzle className="w-12 h-12 text-muted mx-auto mb-4" />
+          <p className="text-secondary mb-4">No skills found</p>
+          <button onClick={() => setShowRegister(true)} className="px-5 py-[10px] rounded-md bg-accent text-white border-0 cursor-pointer font-body text-xs font-semibold">Register your first skill</button>
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "12px" }}>
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3">
           {filtered.map((skill) => (
             <SkillCard key={skill.id} skill={skill} onClick={() => setSelectedSkill(skill)} />
           ))}
@@ -421,10 +420,10 @@ export default function SkillsPage() {
 
       {/* Toast */}
       {toast && (
-        <div style={{ position: "fixed", bottom: "24px", right: "24px", backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "8px", padding: "12px 20px", boxShadow: "0 4px 12px rgba(0,0,0,0.3)", zIndex: 200, display: "flex", alignItems: "center", gap: "8px", maxWidth: "400px" }}>
-          <RefreshCw className="w-4 h-4 animate-spin" style={{ color: "var(--accent)", flexShrink: 0 }} />
-          <span style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-primary)" }}>{toast}</span>
-          <button onClick={() => setToast(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "2px", flexShrink: 0 }}><X style={{ width: "14px", height: "14px" }} /></button>
+        <div className="fixed bottom-6 right-6 bg-surface border border-border rounded-lg px-5 py-3 shadow-[0_4px_12px_rgba(0,0,0,0.3)] z-[200] flex items-center gap-2 max-w-[400px]">
+          <RefreshCw className="w-4 h-4 animate-spin text-accent shrink-0" />
+          <span className="font-body text-[13px] text-primary">{toast}</span>
+          <button onClick={() => setToast(null)} className="bg-transparent border-0 cursor-pointer text-muted p-0.5 shrink-0"><X className="w-3.5 h-3.5" /></button>
         </div>
       )}
       {showRegister && (
