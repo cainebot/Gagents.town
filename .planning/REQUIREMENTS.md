@@ -1,78 +1,143 @@
-# Requirements: UUI Migration — Waves B+C (Terminal D)
+# Requirements: OpenClaw Control Panel — Post-Migration Deep Fix
 
 **Defined:** 2026-03-20
-**Core Value:** Every Wave B+C page uses exclusively UUI tokens and components with zero legacy artifacts
+**Core Value:** Every surface renders correctly with UUI semantic tokens, brand indigo, zero broken classes
 
-## v1 Requirements
+## v1.6.1 Requirements
 
-Requirements for M7 milestone. Each maps to roadmap phases.
+Requirements for post-migration fix release. Each maps to roadmap phases.
 
-### Wave B — Medium Pages
+### Hotfix
 
-- [x] **WAVB-01**: Skills page uses only UUI tokens and @openclaw/ui components — zero var(--*) inline styles
-- [x] **WAVB-02**: Costs page uses only UUI tokens — chart containers migrated, Recharts internals allowlisted
-- [x] **WAVB-03**: System page uses only UUI tokens and @openclaw/ui components — zero var(--*) inline styles
-- [x] **WAVB-04**: Analytics page uses only UUI tokens — chart wrapper containers migrated, chart component internals allowlisted
+- [ ] **HOTX-01**: theme.css file restored from accidental rename (" .css" → theme.css)
 
-### Wave C — Complex Pages
+### Brand
 
-- [x] **WAVC-01**: Boards listing page uses only UUI tokens and components — zero var(--*) inline styles
-- [x] **WAVC-02**: Board detail page (boards/[id]) and all sub-components (BoardKanban, BoardFilterBar, CardDetailPanel, ColumnManager) use only UUI tokens
-- [x] **WAVC-03**: Agents listing page and AgentOrganigrama use only UUI tokens and components
-- [x] **WAVC-04**: Agent detail page (agents/[id]) and AgentFormPanel use only UUI tokens and components
-- [x] **WAVC-05**: Board-groups pages (listing, detail, edit, new) all use only UUI tokens and components
-- [x] **WAVC-06**: Office page React chrome uses only UUI tokens — Phaser canvas internals allowlisted
+- [ ] **BRND-01**: Brand color scale uses UUI official indigo (#444CE7 = brand-600) in both dark and light modes
+- [ ] **BRND-02**: Error scale is independent from brand (red stays for error, indigo for brand)
+- [ ] **BRND-03**: tokens.json brand values match theme.css brand values exactly (single source of truth)
+- [ ] **BRND-04**: --accent alias defined as var(--brand-600) in theme.css
+- [ ] **BRND-05**: CLAUDE.md files updated with correct brand color (#444CE7)
+- [ ] **BRND-06**: button.tsx focus ring uses brand indigo instead of red
 
-### Animation Migration
+### Theme Aliases
 
-- [x] **ANIM-01**: SmartAddModal uses tailwindcss-animate instead of motion.div/motion.span/AnimatePresence — zero motion imports
+- [ ] **THEM-01**: @theme block in theme.css maps bare background classes (bg-background, bg-card, bg-surface, bg-surface-elevated, bg-surface-alt)
+- [ ] **THEM-02**: @theme block maps bare text classes (text-primary, text-secondary, text-tertiary, text-muted)
+- [ ] **THEM-03**: @theme block maps accent classes (bg-accent, text-accent, border-accent, bg-accent-soft)
+- [ ] **THEM-04**: @theme block maps status classes with opacity support (bg-success/10, bg-error/25, etc.)
+- [ ] **THEM-05**: @theme block maps border-border class
+- [ ] **THEM-06**: @theme block maps font-heading and font-body classes
+- [ ] **THEM-07**: Typography aliases (.font-heading, .font-body) added to typography.css
 
-### Verification
+### Wrapper Hardening
 
-- [x] **VERF-01**: `grep -r "var(--"` across all Wave B+C files returns zero matches (excluding allowlisted internals)
-- [x] **VERF-02**: `next build` succeeds with zero errors
-- [x] **VERF-03**: Boards kanban drag-and-drop and card detail panel function correctly
-- [x] **VERF-04**: Agent CRUD operations (create, edit, delete) work correctly
+- [ ] **WRAP-01**: button.tsx uses semantic tokens instead of hardcoded dark-theme values (text-white, bg-white/10)
+- [ ] **WRAP-02**: input.tsx uses semantic tokens instead of raw color scales (text-neutral-300)
+- [ ] **WRAP-03**: modal.tsx uses semantic tokens instead of hex colors (bg-[#1C1C1E], text-white)
+- [ ] **WRAP-04**: slideout-menu.tsx uses semantic tokens instead of hex colors
+- [ ] **WRAP-05**: StatusBadge.tsx uses valid token (bg-info instead of bg-info-500)
+- [ ] **WRAP-06**: MetricCard.tsx uses semantic status tokens (text-success, text-error)
+- [ ] **WRAP-07**: Unused imports removed from wrapper files (DialogProps, cx)
+
+### Surface Sweep
+
+- [ ] **SURF-01**: Zero var(--surface-*) references in src/ (replaced by semantic classes or UUI tokens)
+- [ ] **SURF-02**: Zero var(--foreground) references in src/
+- [ ] **SURF-03**: Zero var(--accent, #6366f1) fallbacks in src/ (replaced by var(--accent))
+- [ ] **SURF-04**: Zero var(--font-body) / var(--font-heading) in src/ (replaced by classes)
+- [ ] **SURF-05**: All ~60 affected app surface files use resolved @theme classes
+
+### Kanban Migration
+
+- [ ] **KANB-01**: BoardKanban.tsx uses UUI Button instead of raw `<button>`
+- [ ] **KANB-02**: KanbanColumn.tsx uses Tailwind classes instead of inline styles, UUI Button
+- [ ] **KANB-03**: KanbanCard.tsx uses Tailwind classes and UUI tokens instead of inline styles
+- [ ] **KANB-04**: InlineCardCreate.tsx uses UUI Input instead of raw `<input>`
+- [ ] **KANB-05**: BoardFilterBar.tsx uses UUI Checkbox, Input, Button instead of raw form elements
+- [ ] **KANB-06**: ColumnManager.tsx uses UUI Input, Checkbox, Button instead of raw elements
+- [ ] **KANB-07**: CardDetailPanel.tsx uses UUI TextArea/Select/Button instead of contentEditable/raw elements
+- [ ] **KANB-08**: Drag/drop positioning inline styles (sortable) are allowed exception
+
+### Metadata
+
+- [ ] **META-01**: layout.tsx title updated from "Digital Circus" to "OpenClaw"
+- [ ] **META-02**: globals.css has no orphaned classes
+- [ ] **META-03**: next build succeeds with 0 errors
+
+### Lint
+
+- [ ] **LINT-01**: Zero lint errors in files touched during this milestone
+- [ ] **LINT-02**: No unused imports in modified files
+
+## Future Requirements
+
+### Raw Element Completeness (Optional Phase 7)
+
+- **RAWL-01**: Zero raw `<button>`, `<input>`, `<textarea>`, `<select>` outside Kanban
+- **RAWL-02**: All dashboard pages use @openclaw/ui components exclusively
+- **RAWL-03**: All organisms/ components use @openclaw/ui components
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| App shell / layout migration | Terminal C (M6) handles this |
-| Wave A simple pages (16 pages) | Terminal C (M6) handles this |
-| Cron Jobs pilot | Terminal B (M5) handles this |
-| Legacy purge / enforcement checks | Terminal A (M8) handles this |
-| Office2D Phaser canvas internals | Allowlisted — non-React rendering |
-| Recharts chart fill/stroke internals | Allowlisted — chart library internals |
-| Chart component color constants | Phase 8 handles hex→token in chart internals |
-| globals.css cleanup | Phase 8 handles legacy CSS removal |
-| Dependency removal (motion, etc.) | Phase 8 handles package.json cleanup |
+| New features | This milestone is purely fix/cleanup |
+| Light theme visual QA | Dark theme is default, light deferred |
+| Office2D canvas internals | Allowlisted exception (non-React) |
+| Recharts internals | Allowlisted exception (chart rendering) |
+| Monaco Editor internals | Allowlisted exception (editor engine) |
+| Pre-existing lint debt | Only fix lint in files touched by this milestone |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| WAVB-01 | Phase 1 | Complete |
-| WAVB-02 | Phase 1 | Complete |
-| WAVB-03 | Phase 1 | Complete |
-| WAVB-04 | Phase 1 | Complete |
-| WAVC-01 | Phase 2 | Complete |
-| WAVC-02 | Phase 2 | Complete |
-| WAVC-03 | Phase 3 | Complete |
-| WAVC-04 | Phase 3 | Complete |
-| WAVC-05 | Phase 3 | Complete |
-| WAVC-06 | Phase 3 | Complete |
-| ANIM-01 | Phase 4 | Complete |
-| VERF-01 | Phase 4 | Complete |
-| VERF-02 | Phase 4 | Complete |
-| VERF-03 | Phase 4 | Complete |
-| VERF-04 | Phase 4 | Complete |
+| HOTX-01 | Phase 46 | Pending |
+| BRND-01 | Phase 47 | Pending |
+| BRND-02 | Phase 47 | Pending |
+| BRND-03 | Phase 47 | Pending |
+| BRND-04 | Phase 47 | Pending |
+| BRND-05 | Phase 47 | Pending |
+| BRND-06 | Phase 47 | Pending |
+| THEM-01 | Phase 47 | Pending |
+| THEM-02 | Phase 47 | Pending |
+| THEM-03 | Phase 47 | Pending |
+| THEM-04 | Phase 47 | Pending |
+| THEM-05 | Phase 47 | Pending |
+| THEM-06 | Phase 47 | Pending |
+| THEM-07 | Phase 47 | Pending |
+| WRAP-01 | Phase 48 | Pending |
+| WRAP-02 | Phase 48 | Pending |
+| WRAP-03 | Phase 48 | Pending |
+| WRAP-04 | Phase 48 | Pending |
+| WRAP-05 | Phase 48 | Pending |
+| WRAP-06 | Phase 48 | Pending |
+| WRAP-07 | Phase 48 | Pending |
+| SURF-01 | Phase 49 | Pending |
+| SURF-02 | Phase 49 | Pending |
+| SURF-03 | Phase 49 | Pending |
+| SURF-04 | Phase 49 | Pending |
+| SURF-05 | Phase 49 | Pending |
+| KANB-01 | Phase 50 | Pending |
+| KANB-02 | Phase 50 | Pending |
+| KANB-03 | Phase 50 | Pending |
+| KANB-04 | Phase 50 | Pending |
+| KANB-05 | Phase 50 | Pending |
+| KANB-06 | Phase 50 | Pending |
+| KANB-07 | Phase 50 | Pending |
+| KANB-08 | Phase 50 | Pending |
+| META-01 | Phase 51 | Pending |
+| META-02 | Phase 51 | Pending |
+| META-03 | Phase 51 | Pending |
+| LINT-01 | Phase 52 | Pending |
+| LINT-02 | Phase 52 | Pending |
 
 **Coverage:**
-- v1 requirements: 15 total
-- Mapped to phases: 15
-- Unmapped: 0 ✓
+- v1.6.1 requirements: 37 total (THEM-07 merged into Phase 47)
+- Mapped to phases: 37
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-20*
-*Last updated: 2026-03-20 — traceability confirmed after roadmap creation*
+*Last updated: 2026-03-20 — Traceability renumbered to phases 46-52 (continuing from v1.5 phase 45.1)*
