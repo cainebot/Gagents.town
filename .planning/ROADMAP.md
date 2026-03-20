@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. The costs page chart containers use UUI tokens for layout and chrome — Recharts component internals remain as-is (allowlisted)
   3. The system page renders with no var(--*) inline styles and all interactive controls use @openclaw/ui components
   4. The analytics page chart wrappers use UUI tokens for layout — chart component internals remain as-is (allowlisted)
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 Plans:
 - [ ] 01-01-PLAN.md — Migrate skills and analytics pages to UUI tokens
 - [ ] 01-02-PLAN.md — Migrate costs and system pages to UUI tokens
@@ -79,7 +79,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Wave B Pages | 0/2 | Planning complete | - |
+| 1. Wave B Pages | 1/2 | In Progress|  |
 | 2. Wave C Boards | 0/TBD | Not started | - |
 | 3. Wave C Agents + Office | 0/TBD | Not started | - |
 | 4. Animation Migration + Final Verification | 0/TBD | Not started | - |
