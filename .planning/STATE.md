@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: unknown
 stopped_at: Completed 02-wave-a-batch-1-02-04-PLAN.md
-last_updated: "2026-03-20T18:03:56.749Z"
+last_updated: "2026-03-20T18:04:02.327Z"
 progress:
   total_phases: 3
   completed_phases: 2
@@ -70,6 +70,8 @@ Recent decisions affecting current work:
 - [Phase 02-wave-a-batch-1]: Dynamic computed border colors (template literals) kept as inline style per plan allowlist
 - [Phase 02-wave-a-batch-1]: Terminal output modal retains #0d1117 dark terminal colors — intentional theming, not legacy tokens
 - [Phase 02-wave-a-batch-1]: Dynamic action.color in ACTIONS data drives color-mix() expressions — kept as inline style since not expressible as Tailwind class
+- [Phase 02-wave-a-batch-1]: Logs terminal output area retains fixed dark colors — intentional terminal aesthetic not subject to UUI theming
+- [Phase 02-wave-a-batch-1]: Dynamic style={} blocks retained for streaming indicator and log line colors (computed from state/function)
 
 ### Pending Todos
 
