@@ -22,13 +22,13 @@ import { AgentFormPanel } from '@/components/organisms/AgentFormPanel'
 import type { AgentRow, AgentStatus } from '@/types/supabase'
 
 const STATUS_COLORS: Record<AgentStatus, string> = {
-  idle: '#4ade80',
-  working: '#f59e0b',
-  error: '#ef4444',
-  offline: '#6b7280',
-  thinking: '#3b82f6',
-  queued: '#eab308',
-  executing_tool: '#f59e0b',
+  idle: 'text-success',
+  working: 'text-warning',
+  error: 'text-error',
+  offline: 'text-muted',
+  thinking: 'text-info',
+  queued: 'text-warning',
+  executing_tool: 'text-warning',
 }
 
 const formatLastActivity = (timestamp?: string) => {
@@ -77,7 +77,7 @@ export default function AgentsPage() {
     return (
       <div className="p-8">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-pulse text-lg" style={{ color: 'var(--text-muted)' }}>
+          <div className="animate-pulse text-lg text-muted">
             Loading agents...
           </div>
         </div>
@@ -90,39 +90,22 @@ export default function AgentsPage() {
   return (
     <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="mb-6" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+      <div className="mb-6 flex items-start justify-between">
         <div>
           <h1
-            className="text-3xl font-bold mb-2"
-            style={{
-              fontFamily: 'var(--font-heading)',
-              color: 'var(--text-primary)',
-              letterSpacing: '-1.5px',
-            }}
+            className="text-3xl font-bold mb-2 font-heading text-primary"
+            style={{ letterSpacing: '-1.5px' }}
           >
             <Users className="inline-block w-8 h-8 mr-2 mb-1" />
             Agents
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+          <p className="text-secondary text-sm">
             Multi-agent system overview • {agents.length} agents configured
           </p>
         </div>
         <button
           onClick={() => { setFormMode('create'); setEditAgent(null) }}
-          style={{
-            background: 'var(--accent)',
-            color: 'white',
-            borderRadius: '8px',
-            padding: '8px 16px',
-            fontSize: '13px',
-            fontWeight: 600,
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            flexShrink: 0,
-          }}
+          className="bg-accent text-white rounded-lg px-4 py-2 text-xs font-semibold flex items-center gap-1.5 flex-shrink-0 cursor-pointer border-none"
         >
           <Plus size={16} />
           New Agent
@@ -130,7 +113,7 @@ export default function AgentsPage() {
       </div>
 
       {/* Tab switcher */}
-      <div className="flex gap-2 mb-6 border-b" style={{ borderColor: 'var(--border)' }}>
+      <div className="flex gap-2 mb-6 border-b border-border">
         {[
           { id: 'cards' as const, label: 'Agent Cards', icon: LayoutGrid },
           { id: 'organigrama' as const, label: 'Organigrama', icon: GitBranch },
@@ -138,17 +121,12 @@ export default function AgentsPage() {
           <button
             key={id}
             onClick={() => setActiveTab(id)}
-            className="flex items-center gap-2 px-4 py-2 font-medium transition-all"
-            style={{
-              color: activeTab === id ? 'var(--accent)' : 'var(--text-secondary)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              borderBottomStyle: 'solid',
-              borderBottomWidth: '2px',
-              borderBottomColor: activeTab === id ? 'var(--accent)' : 'transparent',
-              paddingBottom: '0.5rem',
-            }}
+            className={[
+              'flex items-center gap-2 px-4 py-2 font-medium transition-all bg-transparent border-none cursor-pointer pb-2 border-b-2',
+              activeTab === id
+                ? 'text-accent border-accent'
+                : 'text-secondary border-transparent',
+            ].join(' ')}
           >
             <Icon className="w-4 h-4" />
             {label}
@@ -158,10 +136,10 @@ export default function AgentsPage() {
 
       {/* Organigrama View */}
       {activeTab === 'organigrama' && (
-        <div className="rounded-xl" style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}>
-          <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
-            <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Agent Hierarchy</h2>
-            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Visualization of agent communication allowances</p>
+        <div className="rounded-xl bg-card border border-border">
+          <div className="px-5 py-4 border-b border-border">
+            <h2 className="font-semibold text-primary">Agent Hierarchy</h2>
+            <p className="text-sm text-muted">Visualization of agent communication allowances</p>
           </div>
           <AgentOrganigrama agents={orgAgents} />
         </div>
@@ -169,33 +147,27 @@ export default function AgentsPage() {
 
       {/* Agents Grid */}
       {activeTab === 'cards' && agents.length === 0 && !loading && (
-        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-muted)', fontSize: '14px' }}>
+        <div className="text-center py-12 text-muted text-sm">
           No agents configured. Click &ldquo;New Agent&rdquo; to create one.
         </div>
       )}
       {activeTab === 'cards' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {agents.map((agent) => {
-            const statusColor = STATUS_COLORS[agent.status] || '#6b7280'
+            const statusColor = STATUS_COLORS[agent.status] || 'text-muted'
             const department = getDepartment(agent.department_id)
             const agentColor = department?.color ?? '#6366f1'
 
             return (
               <div
                 key={agent.agent_id}
-                className="rounded-xl overflow-hidden transition-all hover:scale-[1.01]"
-                style={{
-                  backgroundColor: 'var(--card)',
-                  border: '1px solid var(--border)',
-                  cursor: 'pointer',
-                }}
+                className="rounded-xl overflow-hidden transition-all hover:scale-[1.01] bg-card border border-border cursor-pointer"
                 onClick={() => { setFormMode('edit'); setEditAgent(agent) }}
               >
                 {/* Header with status */}
                 <div
-                  className="px-5 py-4 flex items-center justify-between"
+                  className="px-5 py-4 flex items-center justify-between border-b border-border"
                   style={{
-                    borderBottom: '1px solid var(--border)',
                     background: `linear-gradient(135deg, ${agentColor}15, transparent)`,
                   }}
                 >
@@ -210,18 +182,12 @@ export default function AgentsPage() {
                       {agent.emoji}
                     </div>
                     <div>
-                      <h3
-                        className="text-lg font-bold"
-                        style={{
-                          fontFamily: 'var(--font-heading)',
-                          color: 'var(--text-primary)',
-                        }}
-                      >
+                      <h3 className="text-lg font-bold font-heading text-primary">
                         {agent.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
                         <StatusDot status={agent.status} variant="agent" />
-                        <span className="text-xs font-medium" style={{ color: statusColor }}>
+                        <span className={`text-xs font-medium ${statusColor}`}>
                           {agent.status}
                         </span>
                         {agent.badge && (
@@ -247,14 +213,8 @@ export default function AgentsPage() {
                         )}
                         {agent.soul_dirty === true && (
                           <span
-                            style={{
-                              fontSize: '9px',
-                              fontWeight: 600,
-                              background: 'rgba(255,214,10,0.15)',
-                              color: 'var(--warning, #FFD60A)',
-                              borderRadius: '4px',
-                              padding: '1px 6px',
-                            }}
+                            className="text-warning text-[9px] font-semibold rounded px-1.5 py-px"
+                            style={{ background: 'rgba(255,214,10,0.15)' }}
                           >
                             Needs sync
                           </span>
@@ -287,10 +247,10 @@ export default function AgentsPage() {
                     <div className="flex items-start gap-3">
                       <Bot className="w-4 h-4 mt-0.5" style={{ color: agentColor }} />
                       <div className="flex-1 min-w-0">
-                        <div className="text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>
+                        <div className="text-xs font-medium mb-1 text-muted">
                           Model
                         </div>
-                        <div className="text-sm font-mono truncate" style={{ color: 'var(--text-primary)' }}>
+                        <div className="text-sm font-mono truncate text-primary">
                           {(agent.metadata as Record<string, string>).model}
                         </div>
                       </div>
@@ -302,12 +262,11 @@ export default function AgentsPage() {
                     <div className="flex items-start gap-3">
                       <HardDrive className="w-4 h-4 mt-0.5" style={{ color: agentColor }} />
                       <div className="flex-1 min-w-0">
-                        <div className="text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>
+                        <div className="text-xs font-medium mb-1 text-muted">
                           Workspace
                         </div>
                         <div
-                          className="text-sm font-mono truncate"
-                          style={{ color: 'var(--text-primary)' }}
+                          className="text-sm font-mono truncate text-primary"
                           title={(agent.metadata as Record<string, string>).workspace}
                         >
                           {(agent.metadata as Record<string, string>).workspace}
@@ -341,11 +300,9 @@ export default function AgentsPage() {
                         {agent.skills.map((skill) => (
                           <span
                             key={skill}
-                            className="text-xs px-2 py-0.5 rounded-full"
+                            className="text-xs px-2 py-0.5 rounded-full text-secondary border border-border"
                             style={{
                               backgroundColor: `${agentColor}15`,
-                              color: 'var(--text-secondary)',
-                              border: '1px solid var(--border)',
                             }}
                           >
                             {skill}
@@ -356,10 +313,10 @@ export default function AgentsPage() {
                   )}
 
                   {/* Last Activity */}
-                  <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: 'var(--border)' }}>
+                  <div className="flex items-center justify-between pt-2 border-t border-border">
                     <div className="flex items-center gap-2">
-                      <Activity className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
-                      <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                      <Activity className="w-4 h-4 text-muted" />
+                      <span className="text-xs text-muted">
                         Last activity: {formatLastActivity(agent.last_activity)}
                       </span>
                     </div>
