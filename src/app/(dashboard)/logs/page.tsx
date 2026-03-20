@@ -108,107 +108,87 @@ export default function LogsPage() {
     : lines;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", gap: "0" }}>
+    <div className="flex flex-col h-full gap-0">
       {/* Header */}
-      <div style={{ padding: "1.5rem 1.5rem 1rem" }}>
-        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "1.75rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.25rem" }}>
+      <div className="px-6 pt-6 pb-4">
+        <h1 className="font-[family-name:var(--font-display)] text-[1.75rem] font-bold text-[var(--text-primary-900)] mb-1">
           Log Viewer
         </h1>
-        <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem" }}>
+        <p className="text-[var(--text-secondary-700)] text-sm">
           Real-time log streaming from services
         </p>
       </div>
 
       {/* Controls */}
-      <div style={{
-        display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "center",
-        padding: "0.75rem 1.5rem",
-        borderBottom: "1px solid var(--border)",
-        backgroundColor: "var(--card)",
-      }}>
+      <div className="flex flex-wrap gap-3 items-center px-6 py-3 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]">
         {/* Service selector */}
-        <div style={{ display: "flex", gap: "0.375rem", flexWrap: "wrap" }}>
+        <div className="flex gap-1.5 flex-wrap">
           {SERVICES.map((svc) => (
             <button
               key={svc.name}
               onClick={() => { setSelectedService(svc); stopStream(); setLines([]); }}
-              style={{
-                padding: "0.375rem 0.875rem",
-                borderRadius: "9999px",
-                fontSize: "0.8rem",
-                fontWeight: 500,
-                border: "1px solid",
-                cursor: "pointer",
-                backgroundColor: selectedService.name === svc.name ? "rgba(255,59,48,0.15)" : "var(--card-elevated)",
-                color: selectedService.name === svc.name ? "var(--accent)" : "var(--text-secondary)",
-                borderColor: selectedService.name === svc.name ? "rgba(255,59,48,0.4)" : "var(--border)",
-              }}
+              className={[
+                "px-3.5 py-1.5 rounded-full text-[0.8rem] font-medium border cursor-pointer",
+                selectedService.name === svc.name
+                  ? "bg-[var(--brand-600)]/15 text-[var(--brand-600)] border-[var(--brand-600)]/40"
+                  : "bg-[var(--bg-tertiary)] text-[var(--text-secondary-700)] border-[var(--border-primary)]",
+              ].join(" ")}
             >
               {svc.label}
             </button>
           ))}
         </div>
 
-        <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem", alignItems: "center" }}>
+        <div className="ml-auto flex gap-2 items-center">
           {/* Filter */}
           <input
             placeholder="Filter logs..."
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            style={{
-              padding: "0.375rem 0.75rem",
-              backgroundColor: "var(--card-elevated)",
-              border: "1px solid var(--border)",
-              borderRadius: "0.5rem",
-              color: "var(--text-primary)",
-              fontSize: "0.8rem",
-              outline: "none",
-              width: "12rem",
-            }}
+            className="px-3 py-1.5 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] rounded-lg text-[var(--text-primary-900)] text-[0.8rem] outline-none w-48"
           />
 
           {/* Auto-scroll toggle */}
           <button
             onClick={() => setAutoScroll(!autoScroll)}
             title="Auto-scroll"
-            style={{
-              padding: "0.375rem 0.625rem", borderRadius: "0.5rem", fontSize: "0.75rem",
-              backgroundColor: autoScroll ? "rgba(74,222,128,0.1)" : "var(--card-elevated)",
-              color: autoScroll ? "#4ade80" : "var(--text-muted)",
-              border: "1px solid", borderColor: autoScroll ? "rgba(74,222,128,0.3)" : "var(--border)",
-              cursor: "pointer",
-            }}
+            className={[
+              "px-2.5 py-1.5 rounded-lg text-xs border cursor-pointer",
+              autoScroll
+                ? "bg-[var(--success-600)]/10 text-[var(--success-600)] border-[var(--success-600)]/30"
+                : "bg-[var(--bg-tertiary)] text-[var(--text-quaternary-500)] border-[var(--border-primary)]",
+            ].join(" ")}
           >
             ↓ Auto
           </button>
 
           {/* Clear */}
-          <button onClick={handleClear} title="Clear"
-            style={{ padding: "0.375rem 0.625rem", borderRadius: "0.5rem", background: "var(--card-elevated)", border: "1px solid var(--border)", cursor: "pointer", color: "var(--text-muted)" }}>
+          <button
+            onClick={handleClear}
+            title="Clear"
+            className="px-2.5 py-1.5 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border-primary)] cursor-pointer text-[var(--text-quaternary-500)]"
+          >
             <Trash2 className="w-3.5 h-3.5" />
           </button>
 
           {/* Download */}
-          <button onClick={handleDownload} title="Download logs"
-            style={{ padding: "0.375rem 0.625rem", borderRadius: "0.5rem", background: "var(--card-elevated)", border: "1px solid var(--border)", cursor: "pointer", color: "var(--text-muted)" }}>
+          <button
+            onClick={handleDownload}
+            title="Download logs"
+            className="px-2.5 py-1.5 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border-primary)] cursor-pointer text-[var(--text-quaternary-500)]"
+          >
             <Download className="w-3.5 h-3.5" />
           </button>
 
           {/* Start/Stop stream */}
           <button
             onClick={streaming ? stopStream : startStream}
-            style={{
-              display: "flex", alignItems: "center", gap: "0.5rem",
-              padding: "0.5rem 1rem",
-              borderRadius: "0.5rem",
-              backgroundColor: streaming ? "rgba(239,68,68,0.15)" : "rgba(74,222,128,0.15)",
-              color: streaming ? "#f87171" : "#4ade80",
-              border: "1px solid",
-              borderColor: streaming ? "rgba(239,68,68,0.3)" : "rgba(74,222,128,0.3)",
-              cursor: "pointer",
-              fontWeight: 600,
-              fontSize: "0.875rem",
-            }}
+            className={[
+              "flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer font-semibold text-sm",
+              streaming
+                ? "bg-[var(--error-600)]/15 text-[var(--error-600)] border-[var(--error-600)]/30"
+                : "bg-[var(--success-600)]/15 text-[var(--success-600)] border-[var(--success-600)]/30",
+            ].join(" ")}
           >
             {streaming ? (
               <>
@@ -226,14 +206,8 @@ export default function LogsPage() {
       </div>
 
       {/* Status bar */}
-      <div style={{
-        display: "flex", alignItems: "center", gap: "0.75rem",
-        padding: "0.375rem 1.5rem",
-        backgroundColor: "#0d1117",
-        borderBottom: "1px solid #30363d",
-        fontSize: "0.75rem",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
+      <div className="flex items-center gap-3 px-6 py-1.5 bg-[#0d1117] border-b border-[#30363d] text-xs">
+        <div className="flex items-center gap-1.5">
           <Circle
             className="w-2 h-2"
             style={{ fill: streaming ? "#4ade80" : "#6b7280", color: streaming ? "#4ade80" : "#6b7280" }}
@@ -242,10 +216,10 @@ export default function LogsPage() {
             {streaming ? "LIVE" : "STOPPED"}
           </span>
         </div>
-        <span style={{ color: "#8b949e" }}>
+        <span className="text-[#8b949e]">
           {selectedService.label} · {selectedService.backend}
         </span>
-        <span style={{ color: "#8b949e", marginLeft: "auto" }}>
+        <span className="text-[#8b949e] ml-auto">
           {filteredLines.length} lines{filter && ` (filtered from ${lines.length})`}
         </span>
       </div>
@@ -259,25 +233,17 @@ export default function LogsPage() {
             setAutoScroll(scrollHeight - scrollTop - clientHeight < 50);
           }
         }}
-        style={{
-          flex: 1,
-          overflow: "auto",
-          backgroundColor: "#0d1117",
-          padding: "1rem 1.5rem",
-          fontFamily: "monospace",
-          fontSize: "0.8rem",
-          lineHeight: 1.6,
-        }}
+        className="flex-1 overflow-auto bg-[#0d1117] px-6 py-4 font-mono text-[0.8rem] leading-relaxed"
       >
         {filteredLines.length === 0 ? (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", color: "#8b949e" }}>
+          <div className="flex flex-col items-center justify-center h-full text-[#8b949e]">
             <Terminal className="w-12 h-12 mb-3 opacity-30" />
             <p>{streaming ? "Waiting for logs..." : "Click 'Stream' to start live log viewer"}</p>
           </div>
         ) : (
           filteredLines.map((l) => (
-            <div key={l.id} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
-              <span style={{ color: "#484f58", flexShrink: 0, fontSize: "0.7rem", paddingTop: "0.1rem" }}>
+            <div key={l.id} className="flex gap-4 items-start">
+              <span className="text-[#484f58] shrink-0 text-[0.7rem] pt-[0.1rem]">
                 {new Date(l.ts).toLocaleTimeString()}
               </span>
               <span style={{ color: getLineColor(l.line), wordBreak: "break-all" }}>
