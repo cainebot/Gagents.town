@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { format, addDays, startOfDay, isSameDay } from "date-fns";
 import { Clock, Repeat, CalendarX } from "lucide-react";
+import { OCEmptyState } from "@openclaw/ui";
 import { getNextRuns, isValidCron } from "@/lib/cron-parser";
 import type { CronJob } from "./CronJobCard";
 
@@ -111,7 +112,6 @@ export function CronWeeklyTimeline({ jobs }: CronWeeklyTimelineProps) {
       const atTime = getAtTime(job.schedule);
 
       if (expr && isValidCron(expr)) {
-        // Cron: compute next N runs
         const runs = getNextRuns(expr, 50, now);
         runs
           .filter((r) => r >= startOfDay(now) && r <= sevenDaysOut)
@@ -119,13 +119,10 @@ export function CronWeeklyTimeline({ jobs }: CronWeeklyTimelineProps) {
             allEvents.push({ job, time, color, isInterval: false });
           });
       } else if (intervalMs) {
-        // Interval job: show in each day but don't enumerate every tick
-        // Just mark the days it's "active"
         const label = formatIntervalLabel(intervalMs);
         if (!intervalJobMap.has(job.id)) {
           intervalJobMap.set(job.id, { job, color, intervalLabel: label });
         }
-        // If interval >= 24h, show individual occurrences
         if (intervalMs >= 86400000) {
           let next = job.nextRun ? new Date(job.nextRun) : now;
           while (next <= sevenDaysOut) {
@@ -136,7 +133,6 @@ export function CronWeeklyTimeline({ jobs }: CronWeeklyTimelineProps) {
           }
         }
       } else if (atTime && atTime > now && atTime <= sevenDaysOut) {
-        // One-time job
         allEvents.push({ job, time: atTime, color, isInterval: false });
       }
     });
@@ -152,7 +148,6 @@ export function CronWeeklyTimeline({ jobs }: CronWeeklyTimelineProps) {
         .filter((e) => e.time >= date && e.time < dayEnd)
         .sort((a, b) => a.time.getTime() - b.time.getTime());
 
-      // For interval jobs that fire multiple times per day, include in intervalJobs
       const dayIntervalJobs = Array.from(intervalJobMap.values());
 
       columns.push({
@@ -175,145 +170,77 @@ export function CronWeeklyTimeline({ jobs }: CronWeeklyTimelineProps) {
 
   if (jobs.filter((j) => j.enabled).length === 0) {
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "4rem 0",
-          color: "var(--text-muted)",
-          gap: "1rem",
-        }}
-      >
-        <CalendarX style={{ width: 48, height: 48, opacity: 0.4 }} />
-        <p style={{ fontSize: "0.9rem" }}>No active jobs to display</p>
-      </div>
+      <OCEmptyState
+        icon={<CalendarX className="h-12 w-12 text-gray-600 opacity-40" />}
+        title="No active jobs to display"
+      />
     );
   }
 
   return (
     <div>
       {/* Legend */}
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "0.5rem",
-          marginBottom: "1rem",
-        }}
-      >
+      <div className="mb-4 flex flex-wrap gap-2">
         {jobs
           .filter((j) => j.enabled)
-          .map((job, idx) => (
-            <div
-              key={job.id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.4rem",
-                padding: "0.25rem 0.6rem",
-                borderRadius: "9999px",
-                backgroundColor: `${getJobColor(idx)}18`,
-                border: `1px solid ${getJobColor(idx)}40`,
-                fontSize: "0.75rem",
-                color: getJobColor(idx),
-                fontWeight: 600,
-              }}
-            >
+          .map((job, idx) => {
+            const color = getJobColor(idx);
+            return (
               <div
+                key={job.id}
+                className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
                 style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  backgroundColor: getJobColor(idx),
-                  flexShrink: 0,
+                  backgroundColor: `${color}18`,
+                  border: `1px solid ${color}40`,
+                  color: color,
                 }}
-              />
-              {getJobEmoji(job.agentId)} {job.name}
-            </div>
-          ))}
-        <div
-          style={{
-            marginLeft: "auto",
-            fontSize: "0.75rem",
-            color: "var(--text-muted)",
-            alignSelf: "center",
-          }}
-        >
+              >
+                <div
+                  className="h-2 w-2 flex-shrink-0 rounded-full"
+                  style={{ backgroundColor: color }}
+                />
+                {getJobEmoji(job.agentId)} {job.name}
+              </div>
+            );
+          })}
+        <div className="ml-auto self-center text-xs text-gray-600">
           {totalEvents} scheduled events in the next 7 days
         </div>
       </div>
 
       {/* Calendar Grid */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
-          gap: "0.5rem",
-          overflowX: "auto",
-        }}
-      >
+      <div className="grid grid-cols-7 gap-2 overflow-x-auto">
         {days.map((day) => (
           <div
             key={day.date.toISOString()}
-            style={{
-              backgroundColor: day.isToday
-                ? "color-mix(in srgb, var(--accent) 8%, var(--card))"
-                : "var(--card)",
-              border: day.isToday
-                ? "1px solid color-mix(in srgb, var(--accent) 40%, transparent)"
-                : "1px solid var(--border)",
-              borderRadius: "0.75rem",
-              overflow: "hidden",
-              minWidth: "120px",
-            }}
+            className={`min-w-[120px] overflow-hidden rounded-xl border ${
+              day.isToday
+                ? "border-[#FF3B30]/40 bg-[#FF3B30]/[0.08]"
+                : "border-white/10 bg-white/[0.02]"
+            }`}
           >
             {/* Day Header */}
             <div
-              style={{
-                padding: "0.5rem 0.75rem",
-                borderBottom: "1px solid var(--border)",
-                backgroundColor: day.isToday
-                  ? "color-mix(in srgb, var(--accent) 12%, transparent)"
-                  : "transparent",
-              }}
+              className={`border-b border-white/10 px-3 py-2 ${
+                day.isToday ? "bg-[#FF3B30]/[0.12]" : ""
+              }`}
             >
               <div
-                style={{
-                  fontSize: "0.8rem",
-                  fontWeight: 700,
-                  color: day.isToday ? "var(--accent)" : "var(--text-primary)",
-                  fontFamily: "var(--font-heading)",
-                }}
+                className={`font-display text-xs font-bold ${
+                  day.isToday ? "text-[#FF3B30]" : "text-white"
+                }`}
               >
                 {day.label}
               </div>
-              <div
-                style={{
-                  fontSize: "0.65rem",
-                  color: "var(--text-muted)",
-                  marginTop: "1px",
-                }}
-              >
+              <div className="mt-px text-[0.65rem] text-gray-600">
                 {day.subLabel}
               </div>
             </div>
 
             {/* Events */}
-            <div style={{ padding: "0.5rem", display: "flex", flexDirection: "column", gap: "0.35rem", minHeight: "80px" }}>
+            <div className="flex min-h-[80px] flex-col gap-1 p-2">
               {day.events.length === 0 && day.intervalJobs.length === 0 && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    height: "80px",
-                    color: "var(--text-muted)",
-                    fontSize: "0.7rem",
-                    opacity: 0.5,
-                  }}
-                >
+                <div className="flex h-20 items-center justify-center text-[0.7rem] text-gray-600 opacity-50">
                   —
                 </div>
               )}
@@ -323,43 +250,23 @@ export function CronWeeklyTimeline({ jobs }: CronWeeklyTimelineProps) {
                 <div
                   key={`${event.job.id}-${eIdx}`}
                   title={`${event.job.name}\n${format(event.time, "HH:mm")}`}
+                  className="flex flex-col gap-px rounded-md px-2 py-1"
                   style={{
-                    padding: "0.3rem 0.5rem",
-                    borderRadius: "0.4rem",
                     backgroundColor: `${event.color}18`,
                     border: `1px solid ${event.color}35`,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "1px",
                   }}
                 >
                   <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.3rem",
-                      fontSize: "0.65rem",
-                      color: event.color,
-                      fontWeight: 700,
-                    }}
+                    className="flex items-center gap-1 text-[0.65rem] font-bold"
+                    style={{ color: event.color }}
                   >
-                    <Clock style={{ width: 9, height: 9, flexShrink: 0 }} />
+                    <Clock className="h-[9px] w-[9px] flex-shrink-0" />
                     {format(event.time, "HH:mm")}
                     {event.isInterval && (
-                      <Repeat style={{ width: 9, height: 9, opacity: 0.7 }} />
+                      <Repeat className="h-[9px] w-[9px] opacity-70" />
                     )}
                   </div>
-                  <div
-                    style={{
-                      fontSize: "0.65rem",
-                      color: "var(--text-secondary)",
-                      fontWeight: 500,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                      maxWidth: "100%",
-                    }}
-                  >
+                  <div className="max-w-full truncate text-[0.65rem] font-medium text-gray-700">
                     {getJobEmoji(event.job.agentId)} {event.job.name}
                   </div>
                 </div>
@@ -370,40 +277,20 @@ export function CronWeeklyTimeline({ jobs }: CronWeeklyTimelineProps) {
                 <div
                   key={`${job.id}-interval`}
                   title={`${job.name} — ${intervalLabel}`}
+                  className="flex flex-col gap-px rounded-md border-dashed px-2 py-1"
                   style={{
-                    padding: "0.3rem 0.5rem",
-                    borderRadius: "0.4rem",
                     backgroundColor: `${color}12`,
-                    border: `1px solid ${color}25`,
-                    borderStyle: "dashed",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "1px",
+                    border: `1px dashed ${color}25`,
                   }}
                 >
                   <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.3rem",
-                      fontSize: "0.65rem",
-                      color: color,
-                      fontWeight: 700,
-                    }}
+                    className="flex items-center gap-1 text-[0.65rem] font-bold"
+                    style={{ color: color }}
                   >
-                    <Repeat style={{ width: 9, height: 9, flexShrink: 0 }} />
+                    <Repeat className="h-[9px] w-[9px] flex-shrink-0" />
                     {intervalLabel}
                   </div>
-                  <div
-                    style={{
-                      fontSize: "0.65rem",
-                      color: "var(--text-secondary)",
-                      fontWeight: 500,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
+                  <div className="truncate text-[0.65rem] font-medium text-gray-700">
                     {getJobEmoji(job.agentId)} {job.name}
                   </div>
                 </div>
