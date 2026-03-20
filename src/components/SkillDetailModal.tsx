@@ -61,13 +61,13 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
     >
       <div
         className="rounded-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col"
-        style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}
+        style={{ backgroundColor: "var(--bg-secondary)", border: "1px solid var(--border-primary)" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div 
           className="flex items-center justify-between p-6"
-          style={{ borderBottom: "1px solid var(--border)" }}
+          style={{ borderBottom: "1px solid var(--border-primary)" }}
         >
           <div className="flex items-center gap-4">
             <div 
@@ -83,7 +83,7 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
             <div>
               <h2 
                 className="text-xl font-bold"
-                style={{ color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}
+                style={{ color: "var(--text-primary-900)", fontFamily: "var(--font-sora), system-ui, sans-serif" }}
               >
                 {skill.name}
               </h2>
@@ -105,7 +105,7 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 text-xs transition-colors hover:opacity-80"
-                    style={{ color: "var(--accent)" }}
+                    style={{ color: "var(--brand-600)" }}
                   >
                     <ExternalLink className="w-3 h-3" />
                     Homepage
@@ -117,7 +117,7 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
           <button
             onClick={onClose}
             className="p-2 rounded-lg transition-colors"
-            style={{ color: "var(--text-secondary)" }}
+            style={{ color: "var(--text-tertiary-600)" }}
           >
             <X className="w-5 h-5" />
           </button>
@@ -128,14 +128,14 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
           className="px-6 py-3 flex items-center justify-between"
           style={{ backgroundColor: "rgba(26, 26, 26, 0.5)" }}
         >
-          <div className="flex items-center gap-2 text-sm" style={{ color: "var(--text-secondary)" }}>
+          <div className="flex items-center gap-2 text-sm" style={{ color: "var(--text-tertiary-600)" }}>
             <FolderOpen className="w-4 h-4" />
-            <code style={{ color: "var(--text-primary)" }}>{skill.location}</code>
+            <code style={{ color: "var(--text-primary-900)" }}>{skill.location}</code>
           </div>
           <a
             href={`/search?q=path:${memoryBrowserPath}`}
             className="flex items-center gap-1.5 text-sm transition-colors hover:opacity-80"
-            style={{ color: "var(--accent)" }}
+            style={{ color: "var(--brand-600)" }}
           >
             <ExternalLink className="w-4 h-4" />
             Open in Memory Browser
@@ -143,13 +143,13 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
         </div>
 
         {/* Tabs */}
-        <div className="flex" style={{ borderBottom: "1px solid var(--border)" }}>
+        <div className="flex" style={{ borderBottom: "1px solid var(--border-primary)" }}>
           <button
             onClick={() => setActiveTab("readme")}
             className="px-6 py-3 text-sm font-medium transition-colors"
             style={{
-              color: activeTab === "readme" ? "var(--accent)" : "var(--text-secondary)",
-              borderBottom: activeTab === "readme" ? "2px solid var(--accent)" : "2px solid transparent"
+              color: activeTab === "readme" ? "var(--brand-600)" : "var(--text-tertiary-600)",
+              borderBottom: activeTab === "readme" ? "2px solid var(--brand-600)" : "2px solid transparent"
             }}
           >
             SKILL.md
@@ -158,8 +158,8 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
             onClick={() => setActiveTab("files")}
             className="px-6 py-3 text-sm font-medium transition-colors"
             style={{
-              color: activeTab === "files" ? "var(--accent)" : "var(--text-secondary)",
-              borderBottom: activeTab === "files" ? "2px solid var(--accent)" : "2px solid transparent"
+              color: activeTab === "files" ? "var(--brand-600)" : "var(--text-tertiary-600)",
+              borderBottom: activeTab === "files" ? "2px solid var(--brand-600)" : "2px solid transparent"
             }}
           >
             Files ({skill.fileCount})
@@ -171,10 +171,10 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
           {activeTab === "readme" && (
             <div className="prose prose-invert max-w-none prose-headings:font-semibold prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded"
               style={{ 
-                "--tw-prose-body": "var(--text-secondary)",
-                "--tw-prose-headings": "var(--text-primary)",
-                "--tw-prose-links": "var(--accent)",
-                "--tw-prose-code": "var(--text-primary)"
+                "--tw-prose-body": "var(--text-tertiary-600)",
+                "--tw-prose-headings": "var(--text-primary-900)",
+                "--tw-prose-links": "var(--brand-600)",
+                "--tw-prose-code": "var(--text-primary-900)"
               } as React.CSSProperties}
             >
               <ReactMarkdown>{displayContent}</ReactMarkdown>
@@ -184,7 +184,7 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
           {activeTab === "files" && (
             <div className="space-y-1">
               {skill.files.length === 0 ? (
-                <p className="text-center py-8" style={{ color: "var(--text-secondary)" }}>
+                <p className="text-center py-8" style={{ color: "var(--text-tertiary-600)" }}>
                   No files found
                 </p>
               ) : (
@@ -194,8 +194,8 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
                     className="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors"
                     style={{ backgroundColor: "rgba(26, 26, 26, 0.5)" }}
                   >
-                    <FileText className="w-4 h-4 flex-shrink-0" style={{ color: "var(--text-muted)" }} />
-                    <span className="text-sm font-mono" style={{ color: "var(--text-primary)" }}>
+                    <FileText className="w-4 h-4 flex-shrink-0" style={{ color: "var(--text-quaternary-500)" }} />
+                    <span className="text-sm font-mono" style={{ color: "var(--text-primary-900)" }}>
                       {file}
                     </span>
                   </div>

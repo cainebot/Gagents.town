@@ -188,7 +188,7 @@ export function CustomFieldManager({
         <div
           style={{
             background: 'var(--surface-elevated, var(--surface, #1a1a2e))',
-            border: '1px solid var(--border)',
+            border: '1px solid var(--border-primary)',
             borderRadius: '10px',
             width: '480px',
             maxWidth: '95vw',
@@ -206,16 +206,16 @@ export function CustomFieldManager({
               alignItems: 'center',
               justifyContent: 'space-between',
               padding: '16px 20px',
-              borderBottom: '1px solid var(--border)',
+              borderBottom: '1px solid var(--border-primary)',
               flexShrink: 0,
             }}
           >
             <h2
               style={{
-                fontFamily: 'var(--font-heading)',
+                fontFamily: 'var(--font-sora), system-ui, sans-serif',
                 fontSize: '15px',
                 fontWeight: 600,
-                color: 'var(--text-primary)',
+                color: 'var(--text-primary-900)',
                 margin: 0,
               }}
             >
@@ -227,7 +227,7 @@ export function CustomFieldManager({
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                color: 'var(--text-secondary)',
+                color: 'var(--text-tertiary-600)',
                 display: 'flex',
                 alignItems: 'center',
                 padding: '4px',
@@ -242,15 +242,15 @@ export function CustomFieldManager({
           {/* Field list */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '12px 20px' }}>
             {loading ? (
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--text-muted)', textAlign: 'center', padding: '16px 0' }}>
+              <p style={{ fontFamily: 'var(--font-inter), system-ui, sans-serif', fontSize: '13px', color: 'var(--text-quaternary-500)', textAlign: 'center', padding: '16px 0' }}>
                 Loading fields...
               </p>
             ) : error ? (
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: '#ef4444', padding: '8px 0' }}>
+              <p style={{ fontFamily: 'var(--font-inter), system-ui, sans-serif', fontSize: '13px', color: '#ef4444', padding: '8px 0' }}>
                 {error}
               </p>
             ) : fields.length === 0 ? (
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--text-muted)', textAlign: 'center', padding: '16px 0' }}>
+              <p style={{ fontFamily: 'var(--font-inter), system-ui, sans-serif', fontSize: '13px', color: 'var(--text-quaternary-500)', textAlign: 'center', padding: '16px 0' }}>
                 No custom fields yet. Add one below.
               </p>
             ) : (
@@ -264,7 +264,7 @@ export function CustomFieldManager({
                       gap: '8px',
                       padding: '8px 10px',
                       background: 'var(--surface, #1a1a2e)',
-                      border: '1px solid var(--border)',
+                      border: '1px solid var(--border-primary)',
                       borderRadius: '6px',
                     }}
                   >
@@ -280,10 +280,10 @@ export function CustomFieldManager({
                             onKeyDown={(e) => handleEditKeyDown(e, field.field_id)}
                             style={{
                               flex: 1,
-                              fontFamily: 'var(--font-body)',
+                              fontFamily: 'var(--font-inter), system-ui, sans-serif',
                               fontSize: '13px',
-                              color: 'var(--text-primary)',
-                              background: 'var(--surface-elevated, var(--surface))',
+                              color: 'var(--text-primary-900)',
+                              background: 'var(--surface-elevated, var(--bg-secondary))',
                               border: '1px solid var(--accent, #6366f1)',
                               borderRadius: '4px',
                               padding: '2px 6px',
@@ -312,8 +312,8 @@ export function CustomFieldManager({
                             background: 'none',
                             border: 'none',
                             cursor: 'text',
-                            color: 'var(--text-primary)',
-                            fontFamily: 'var(--font-body)',
+                            color: 'var(--text-primary-900)',
+                            fontFamily: 'var(--font-inter), system-ui, sans-serif',
                             fontSize: '13px',
                             padding: 0,
                             textAlign: 'left',
@@ -336,7 +336,7 @@ export function CustomFieldManager({
                         borderRadius: '4px',
                         padding: '1px 7px',
                         fontSize: '10px',
-                        fontFamily: 'var(--font-body)',
+                        fontFamily: 'var(--font-inter), system-ui, sans-serif',
                         fontWeight: 600,
                         letterSpacing: '0.03em',
                         whiteSpace: 'nowrap',
@@ -351,8 +351,8 @@ export function CustomFieldManager({
                       <span
                         style={{
                           fontSize: '11px',
-                          color: 'var(--text-muted)',
-                          fontFamily: 'var(--font-body)',
+                          color: 'var(--text-quaternary-500)',
+                          fontFamily: 'var(--font-inter), system-ui, sans-serif',
                           flexShrink: 0,
                           maxWidth: '100px',
                           overflow: 'hidden',
@@ -372,7 +372,7 @@ export function CustomFieldManager({
                         background: 'none',
                         border: 'none',
                         cursor: 'pointer',
-                        color: 'var(--text-muted)',
+                        color: 'var(--text-quaternary-500)',
                         display: 'flex',
                         alignItems: 'center',
                         padding: '2px',
@@ -395,16 +395,16 @@ export function CustomFieldManager({
                 marginTop: '16px',
                 padding: '14px',
                 background: 'var(--surface, #1a1a2e)',
-                border: '1px solid var(--border)',
+                border: '1px solid var(--border-primary)',
                 borderRadius: '8px',
               }}
             >
               <p
                 style={{
-                  fontFamily: 'var(--font-body)',
+                  fontFamily: 'var(--font-inter), system-ui, sans-serif',
                   fontSize: '11px',
                   fontWeight: 600,
-                  color: 'var(--text-muted)',
+                  color: 'var(--text-quaternary-500)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
                   margin: '0 0 10px 0',
@@ -422,11 +422,11 @@ export function CustomFieldManager({
                   onChange={(e) => setNewFieldName(e.target.value)}
                   style={{
                     width: '100%',
-                    fontFamily: 'var(--font-body)',
+                    fontFamily: 'var(--font-inter), system-ui, sans-serif',
                     fontSize: '13px',
-                    color: 'var(--text-primary)',
-                    background: 'var(--surface-elevated, var(--surface))',
-                    border: '1px solid var(--border)',
+                    color: 'var(--text-primary-900)',
+                    background: 'var(--surface-elevated, var(--bg-secondary))',
+                    border: '1px solid var(--border-primary)',
                     borderRadius: '6px',
                     padding: '6px 10px',
                     outline: 'none',
@@ -442,11 +442,11 @@ export function CustomFieldManager({
                   onChange={(e) => setNewFieldType(e.target.value as CustomFieldType)}
                   style={{
                     flex: 1,
-                    fontFamily: 'var(--font-body)',
+                    fontFamily: 'var(--font-inter), system-ui, sans-serif',
                     fontSize: '13px',
-                    color: 'var(--text-primary)',
-                    background: 'var(--surface-elevated, var(--surface))',
-                    border: '1px solid var(--border)',
+                    color: 'var(--text-primary-900)',
+                    background: 'var(--surface-elevated, var(--bg-secondary))',
+                    border: '1px solid var(--border-primary)',
                     borderRadius: '6px',
                     padding: '6px 8px',
                     outline: 'none',
@@ -464,11 +464,11 @@ export function CustomFieldManager({
                   onChange={(e) => setNewFieldCardType(e.target.value as CardType | '')}
                   style={{
                     flex: 1,
-                    fontFamily: 'var(--font-body)',
+                    fontFamily: 'var(--font-inter), system-ui, sans-serif',
                     fontSize: '13px',
-                    color: 'var(--text-primary)',
-                    background: 'var(--surface-elevated, var(--surface))',
-                    border: '1px solid var(--border)',
+                    color: 'var(--text-primary-900)',
+                    background: 'var(--surface-elevated, var(--bg-secondary))',
+                    border: '1px solid var(--border-primary)',
                     borderRadius: '6px',
                     padding: '6px 8px',
                     outline: 'none',
@@ -492,11 +492,11 @@ export function CustomFieldManager({
                     onChange={(e) => setNewFieldOptions(e.target.value)}
                     style={{
                       width: '100%',
-                      fontFamily: 'var(--font-body)',
+                      fontFamily: 'var(--font-inter), system-ui, sans-serif',
                       fontSize: '13px',
-                      color: 'var(--text-primary)',
-                      background: 'var(--surface-elevated, var(--surface))',
-                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary-900)',
+                      background: 'var(--surface-elevated, var(--bg-secondary))',
+                      border: '1px solid var(--border-primary)',
                       borderRadius: '6px',
                       padding: '6px 10px',
                       outline: 'none',
@@ -507,7 +507,7 @@ export function CustomFieldManager({
               )}
 
               {addError && (
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: '#ef4444', margin: '0 0 8px 0' }}>
+                <p style={{ fontFamily: 'var(--font-inter), system-ui, sans-serif', fontSize: '12px', color: '#ef4444', margin: '0 0 8px 0' }}>
                   {addError}
                 </p>
               )}
@@ -525,7 +525,7 @@ export function CustomFieldManager({
                   padding: '6px 14px',
                   cursor: adding ? 'not-allowed' : 'pointer',
                   color: '#fff',
-                  fontFamily: 'var(--font-body)',
+                  fontFamily: 'var(--font-inter), system-ui, sans-serif',
                   fontSize: '13px',
                   fontWeight: 600,
                   opacity: adding ? 0.7 : 1,
@@ -555,8 +555,8 @@ export function CustomFieldManager({
         >
           <div
             style={{
-              background: 'var(--surface-elevated, var(--surface))',
-              border: '1px solid var(--border)',
+              background: 'var(--surface-elevated, var(--bg-secondary))',
+              border: '1px solid var(--border-primary)',
               borderRadius: '8px',
               padding: '24px',
               maxWidth: '340px',
@@ -567,10 +567,10 @@ export function CustomFieldManager({
           >
             <h3
               style={{
-                fontFamily: 'var(--font-heading)',
+                fontFamily: 'var(--font-sora), system-ui, sans-serif',
                 fontSize: '15px',
                 fontWeight: 600,
-                color: 'var(--text-primary)',
+                color: 'var(--text-primary-900)',
                 margin: '0 0 8px 0',
               }}
             >
@@ -578,9 +578,9 @@ export function CustomFieldManager({
             </h3>
             <p
               style={{
-                fontFamily: 'var(--font-body)',
+                fontFamily: 'var(--font-inter), system-ui, sans-serif',
                 fontSize: '13px',
-                color: 'var(--text-secondary)',
+                color: 'var(--text-tertiary-600)',
                 margin: '0 0 20px 0',
                 lineHeight: 1.5,
               }}
@@ -593,12 +593,12 @@ export function CustomFieldManager({
                 disabled={deleting}
                 style={{
                   background: 'none',
-                  border: '1px solid var(--border)',
+                  border: '1px solid var(--border-primary)',
                   borderRadius: '6px',
                   padding: '6px 14px',
                   cursor: deleting ? 'not-allowed' : 'pointer',
-                  color: 'var(--text-secondary)',
-                  fontFamily: 'var(--font-body)',
+                  color: 'var(--text-tertiary-600)',
+                  fontFamily: 'var(--font-inter), system-ui, sans-serif',
                   fontSize: '13px',
                 }}
               >
@@ -614,7 +614,7 @@ export function CustomFieldManager({
                   padding: '6px 14px',
                   cursor: deleting ? 'not-allowed' : 'pointer',
                   color: '#fff',
-                  fontFamily: 'var(--font-body)',
+                  fontFamily: 'var(--font-inter), system-ui, sans-serif',
                   fontSize: '13px',
                   fontWeight: 600,
                   opacity: deleting ? 0.7 : 1,

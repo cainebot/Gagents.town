@@ -31,8 +31,8 @@ export function SkillCard({ skill, onViewDetails }: SkillCardProps) {
     <div 
       className="rounded-xl p-3 md:p-5 transition-all hover:shadow-lg group"
       style={{ 
-        backgroundColor: "var(--card)", 
-        border: "1px solid var(--border)" 
+        backgroundColor: "var(--bg-secondary)", 
+        border: "1px solid var(--border-primary)" 
       }}
     >
       <div className="flex items-start gap-3 md:gap-4 mb-3 md:mb-4">
@@ -49,7 +49,7 @@ export function SkillCard({ skill, onViewDetails }: SkillCardProps) {
         <div className="flex-1 min-w-0">
           <h3 
             className="font-bold text-base md:text-lg truncate"
-            style={{ color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}
+            style={{ color: "var(--text-primary-900)", fontFamily: "var(--font-sora), system-ui, sans-serif" }}
           >
             {skill.name}
           </h3>
@@ -69,14 +69,14 @@ export function SkillCard({ skill, onViewDetails }: SkillCardProps) {
 
       <p 
         className="text-xs md:text-sm mb-3 md:mb-4 line-clamp-2"
-        style={{ color: "var(--text-secondary)" }}
+        style={{ color: "var(--text-tertiary-600)" }}
       >
         {truncatedDesc}
       </p>
 
       <div 
         className="flex items-center gap-2 text-[10px] md:text-xs mb-3 md:mb-4"
-        style={{ color: "var(--text-muted)" }}
+        style={{ color: "var(--text-quaternary-500)" }}
       >
         <FolderOpen className="w-3 h-3 md:w-3.5 md:h-3.5" />
         <span className="truncate">{skill.location}</span>
@@ -84,15 +84,15 @@ export function SkillCard({ skill, onViewDetails }: SkillCardProps) {
 
       <div 
         className="flex items-center justify-between pt-2 md:pt-3"
-        style={{ borderTop: "1px solid var(--border)" }}
+        style={{ borderTop: "1px solid var(--border-primary)" }}
       >
-        <span className="text-[10px] md:text-xs" style={{ color: "var(--text-muted)" }}>
+        <span className="text-[10px] md:text-xs" style={{ color: "var(--text-quaternary-500)" }}>
           {skill.fileCount} files
         </span>
         <button
           onClick={onViewDetails}
           className="flex items-center gap-1 md:gap-1.5 text-xs md:text-sm transition-colors hover:opacity-80"
-          style={{ color: "var(--accent)" }}
+          style={{ color: "var(--brand-600)" }}
         >
           View Details
           <ArrowRight className="w-3.5 h-3.5 md:w-4 md:h-4" />

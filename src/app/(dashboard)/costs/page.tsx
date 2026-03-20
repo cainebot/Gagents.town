@@ -212,18 +212,18 @@ export default function CostsPage() {
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={costData.daily}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="date" stroke="var(--text-muted)" style={{ fontSize: "12px" }} />
-              <YAxis stroke="var(--text-muted)" style={{ fontSize: "12px" }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-primary)" />
+              <XAxis dataKey="date" stroke="var(--text-quaternary-500)" style={{ fontSize: "12px" }} />
+              <YAxis stroke="var(--text-quaternary-500)" style={{ fontSize: "12px" }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "var(--card-elevated)",
-                  border: "1px solid var(--border)",
+                  backgroundColor: "var(--bg-tertiary)",
+                  border: "1px solid var(--border-primary)",
                   borderRadius: "8px",
                 }}
               />
               <Legend />
-              <Line type="monotone" dataKey="cost" stroke="var(--accent)" strokeWidth={2} name="Cost ($)" />
+              <Line type="monotone" dataKey="cost" stroke="var(--brand-600)" strokeWidth={2} name="Cost ($)" />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -235,17 +235,17 @@ export default function CostsPage() {
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={costData.byAgent}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="agent" stroke="var(--text-muted)" style={{ fontSize: "12px" }} />
-              <YAxis stroke="var(--text-muted)" style={{ fontSize: "12px" }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-primary)" />
+              <XAxis dataKey="agent" stroke="var(--text-quaternary-500)" style={{ fontSize: "12px" }} />
+              <YAxis stroke="var(--text-quaternary-500)" style={{ fontSize: "12px" }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "var(--card-elevated)",
-                  border: "1px solid var(--border)",
+                  backgroundColor: "var(--bg-tertiary)",
+                  border: "1px solid var(--border-primary)",
                   borderRadius: "8px",
                 }}
               />
-              <Bar dataKey="cost" fill="var(--accent)" name="Cost ($)" />
+              <Bar dataKey="cost" fill="var(--brand-600)" name="Cost ($)" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -272,8 +272,8 @@ export default function CostsPage() {
               </Pie>
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "var(--card-elevated)",
-                  border: "1px solid var(--border)",
+                  backgroundColor: "var(--bg-tertiary)",
+                  border: "1px solid var(--border-primary)",
                   borderRadius: "8px",
                 }}
               />
@@ -288,13 +288,13 @@ export default function CostsPage() {
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={costData.daily}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="date" stroke="var(--text-muted)" style={{ fontSize: "12px" }} />
-              <YAxis stroke="var(--text-muted)" style={{ fontSize: "12px" }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-primary)" />
+              <XAxis dataKey="date" stroke="var(--text-quaternary-500)" style={{ fontSize: "12px" }} />
+              <YAxis stroke="var(--text-quaternary-500)" style={{ fontSize: "12px" }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "var(--card-elevated)",
-                  border: "1px solid var(--border)",
+                  backgroundColor: "var(--bg-tertiary)",
+                  border: "1px solid var(--border-primary)",
                   borderRadius: "8px",
                 }}
               />

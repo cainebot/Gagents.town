@@ -13,7 +13,7 @@ interface SearchResult {
 
 const typeConfig = {
   memory: { icon: FileText, color: "#3B82F6", bg: "rgba(59, 130, 246, 0.1)" },
-  activity: { icon: Zap, color: "var(--accent)", bg: "rgba(255, 59, 48, 0.1)" },
+  activity: { icon: Zap, color: "var(--brand-600)", bg: "rgba(255, 59, 48, 0.1)" },
   task: { icon: Calendar, color: "#A855F7", bg: "rgba(168, 85, 247, 0.1)" },
 };
 
@@ -54,7 +54,7 @@ export function GlobalSearch({ fullPage = false }: GlobalSearchProps) {
       <div className="relative">
         <Search 
           className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" 
-          style={{ color: "var(--text-secondary)" }} 
+          style={{ color: "var(--text-tertiary-600)" }} 
         />
         <input
           type="text"
@@ -63,16 +63,16 @@ export function GlobalSearch({ fullPage = false }: GlobalSearchProps) {
           placeholder="Search activities, tasks, and documents..."
           className="w-full pl-12 pr-10 py-3 rounded-xl transition-colors focus:outline-none"
           style={{ 
-            backgroundColor: "var(--card)", 
-            color: "var(--text-primary)", 
-            border: "1px solid var(--border)" 
+            backgroundColor: "var(--bg-secondary)", 
+            color: "var(--text-primary-900)", 
+            border: "1px solid var(--border-primary)" 
           }}
         />
         {query && (
           <button
             onClick={() => setQuery("")}
             className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded transition-colors"
-            style={{ color: "var(--text-secondary)" }}
+            style={{ color: "var(--text-tertiary-600)" }}
           >
             <X className="w-4 h-4" />
           </button>
@@ -87,16 +87,16 @@ export function GlobalSearch({ fullPage = false }: GlobalSearchProps) {
               ? "mt-6 rounded-xl"
               : "absolute top-full left-0 right-0 mt-2 rounded-xl shadow-xl z-50 max-h-96 overflow-y-auto"
           }`}
-          style={{ backgroundColor: "var(--card)" }}
+          style={{ backgroundColor: "var(--bg-secondary)" }}
         >
           {isSearching && (
-            <div className="p-4 text-center" style={{ color: "var(--text-secondary)" }}>
+            <div className="p-4 text-center" style={{ color: "var(--text-tertiary-600)" }}>
               Searching...
             </div>
           )}
 
           {!isSearching && results.length === 0 && query.length >= 2 && (
-            <div className="p-8 text-center" style={{ color: "var(--text-secondary)" }}>
+            <div className="p-8 text-center" style={{ color: "var(--text-tertiary-600)" }}>
               <Search className="w-10 h-10 mx-auto mb-3 opacity-50" />
               <p>No results found for &quot;{query}&quot;</p>
             </div>
@@ -113,7 +113,7 @@ export function GlobalSearch({ fullPage = false }: GlobalSearchProps) {
                     key={index}
                     className="p-4 transition-colors cursor-pointer"
                     style={{ 
-                      borderBottom: index < results.length - 1 ? "1px solid var(--border)" : "none" 
+                      borderBottom: index < results.length - 1 ? "1px solid var(--border-primary)" : "none" 
                     }}
                   >
                     <div className="flex items-start gap-3">
@@ -125,7 +125,7 @@ export function GlobalSearch({ fullPage = false }: GlobalSearchProps) {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium" style={{ color: "var(--text-primary)" }}>
+                          <span className="font-medium" style={{ color: "var(--text-primary-900)" }}>
                             {result.title}
                           </span>
                           <span
@@ -137,14 +137,14 @@ export function GlobalSearch({ fullPage = false }: GlobalSearchProps) {
                         </div>
                         <p 
                           className="text-sm line-clamp-2"
-                          style={{ color: "var(--text-secondary)" }}
+                          style={{ color: "var(--text-tertiary-600)" }}
                         >
                           {result.snippet}
                         </p>
                         {result.path && (
                           <p 
                             className="text-xs mt-1 truncate"
-                            style={{ color: "var(--text-muted)" }}
+                            style={{ color: "var(--text-quaternary-500)" }}
                           >
                             {result.path}
                           </p>

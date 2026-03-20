@@ -61,9 +61,9 @@ function getFileColor(name: string, type: string): string {
   if (["js", "jsx"].includes(ext)) return "#FCD34D";
   if (["json"].includes(ext)) return "#4ADE80";
   if (["py"].includes(ext)) return "#93C5FD";
-  if (["md", "mdx"].includes(ext)) return "var(--text-secondary)";
+  if (["md", "mdx"].includes(ext)) return "var(--text-tertiary-600)";
   if (["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(ext)) return "#C084FC";
-  return "var(--text-secondary)";
+  return "var(--text-tertiary-600)";
 }
 
 function formatFileSize(bytes: number): string {
@@ -162,9 +162,9 @@ function EditorModal({ workspace, filePath, fileName, onClose }: EditorModalProp
     }}>
       <div style={{
         width: "95vw", maxWidth: "1200px", height: "90vh",
-        backgroundColor: "var(--card)",
+        backgroundColor: "var(--bg-secondary)",
         borderRadius: "1rem",
-        border: "1px solid var(--border)",
+        border: "1px solid var(--border-primary)",
         display: "flex", flexDirection: "column",
         overflow: "hidden",
       }}>
@@ -172,11 +172,11 @@ function EditorModal({ workspace, filePath, fileName, onClose }: EditorModalProp
         <div style={{
           display: "flex", alignItems: "center", gap: "1rem",
           padding: "0.75rem 1rem",
-          borderBottom: "1px solid var(--border)",
+          borderBottom: "1px solid var(--border-primary)",
           flexShrink: 0,
         }}>
-          <FileCode className="w-5 h-5" style={{ color: "var(--accent)" }} />
-          <span style={{ color: "var(--text-primary)", fontFamily: "monospace", fontSize: "0.9rem", flex: 1 }}>
+          <FileCode className="w-5 h-5" style={{ color: "var(--brand-600)" }} />
+          <span style={{ color: "var(--text-primary-900)", fontFamily: "monospace", fontSize: "0.9rem", flex: 1 }}>
             {fileName}
           </span>
 
@@ -186,8 +186,8 @@ function EditorModal({ workspace, filePath, fileName, onClose }: EditorModalProp
               onClick={() => setViewMode("edit")}
               style={{
                 padding: "0.375rem 0.75rem", borderRadius: "0.375rem", fontSize: "0.75rem",
-                backgroundColor: viewMode === "edit" ? "var(--accent)" : "var(--card-elevated)",
-                color: viewMode === "edit" ? "#000" : "var(--text-secondary)",
+                backgroundColor: viewMode === "edit" ? "var(--brand-600)" : "var(--bg-tertiary)",
+                color: viewMode === "edit" ? "#000" : "var(--text-tertiary-600)",
                 border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.25rem",
               }}
             >
@@ -197,8 +197,8 @@ function EditorModal({ workspace, filePath, fileName, onClose }: EditorModalProp
               onClick={() => setViewMode("preview")}
               style={{
                 padding: "0.375rem 0.75rem", borderRadius: "0.375rem", fontSize: "0.75rem",
-                backgroundColor: viewMode === "preview" ? "var(--accent)" : "var(--card-elevated)",
-                color: viewMode === "preview" ? "#000" : "var(--text-secondary)",
+                backgroundColor: viewMode === "preview" ? "var(--brand-600)" : "var(--bg-tertiary)",
+                color: viewMode === "preview" ? "#000" : "var(--text-tertiary-600)",
                 border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.25rem",
               }}
             >
@@ -212,7 +212,7 @@ function EditorModal({ workspace, filePath, fileName, onClose }: EditorModalProp
             style={{
               display: "flex", alignItems: "center", gap: "0.5rem",
               padding: "0.5rem 1rem", borderRadius: "0.5rem",
-              backgroundColor: saved ? "var(--success)" : "var(--accent)",
+              backgroundColor: saved ? "var(--success-500)" : "var(--brand-600)",
               color: "#000", border: "none", cursor: saving ? "not-allowed" : "pointer",
               fontWeight: 600, fontSize: "0.875rem", opacity: saving ? 0.7 : 1,
             }}
@@ -223,7 +223,7 @@ function EditorModal({ workspace, filePath, fileName, onClose }: EditorModalProp
 
           <button
             onClick={onClose}
-            style={{ padding: "0.5rem", borderRadius: "0.5rem", border: "none", cursor: "pointer", backgroundColor: "var(--card-elevated)", color: "var(--text-secondary)" }}
+            style={{ padding: "0.5rem", borderRadius: "0.5rem", border: "none", cursor: "pointer", backgroundColor: "var(--bg-tertiary)", color: "var(--text-tertiary-600)" }}
           >
             <X className="w-4 h-4" />
           </button>
@@ -231,7 +231,7 @@ function EditorModal({ workspace, filePath, fileName, onClose }: EditorModalProp
 
         {/* Error bar */}
         {error && (
-          <div style={{ padding: "0.5rem 1rem", backgroundColor: "rgba(239,68,68,0.1)", color: "var(--error)", fontSize: "0.875rem" }}>
+          <div style={{ padding: "0.5rem 1rem", backgroundColor: "rgba(239,68,68,0.1)", color: "var(--error-500)", fontSize: "0.875rem" }}>
             {error}
           </div>
         )}
@@ -240,7 +240,7 @@ function EditorModal({ workspace, filePath, fileName, onClose }: EditorModalProp
         <div style={{ flex: 1, overflow: "hidden" }}>
           {loading ? (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-              <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--accent)" }} />
+              <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--brand-600)" }} />
             </div>
           ) : viewMode === "edit" ? (
             <MonacoEditor
@@ -261,7 +261,7 @@ function EditorModal({ workspace, filePath, fileName, onClose }: EditorModalProp
             />
           ) : (
             <div style={{ height: "100%", overflow: "auto", padding: "1.5rem" }}>
-              <pre style={{ color: "var(--text-primary)", whiteSpace: "pre-wrap", fontFamily: "monospace", fontSize: "0.875rem" }}>
+              <pre style={{ color: "var(--text-primary-900)", whiteSpace: "pre-wrap", fontFamily: "monospace", fontSize: "0.875rem" }}>
                 {content}
               </pre>
             </div>
@@ -427,14 +427,14 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--accent)" }} />
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--brand-600)" }} />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-12" style={{ color: "var(--accent)" }}>
+      <div className="flex flex-col items-center justify-center py-12" style={{ color: "var(--brand-600)" }}>
         <AlertCircle className="w-12 h-12 mb-4" />
         <p>{error}</p>
       </div>
@@ -447,7 +447,7 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
       <div style={{
         display: "flex", alignItems: "center", gap: "0.5rem",
         padding: "0.5rem 1rem",
-        borderBottom: "1px solid var(--border)",
+        borderBottom: "1px solid var(--border-primary)",
         flexWrap: "wrap",
       }}>
         {/* Upload */}
@@ -458,8 +458,8 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
           style={{
             display: "flex", alignItems: "center", gap: "0.375rem",
             padding: "0.375rem 0.75rem", borderRadius: "0.5rem",
-            backgroundColor: "var(--card-elevated)", color: "var(--text-secondary)",
-            border: "1px solid var(--border)", cursor: "pointer", fontSize: "0.8rem",
+            backgroundColor: "var(--bg-tertiary)", color: "var(--text-tertiary-600)",
+            border: "1px solid var(--border-primary)", cursor: "pointer", fontSize: "0.8rem",
           }}
         >
           {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
@@ -480,8 +480,8 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
           style={{
             display: "flex", alignItems: "center", gap: "0.375rem",
             padding: "0.375rem 0.75rem", borderRadius: "0.5rem",
-            backgroundColor: "var(--card-elevated)", color: "var(--text-secondary)",
-            border: "1px solid var(--border)", cursor: "pointer", fontSize: "0.8rem",
+            backgroundColor: "var(--bg-tertiary)", color: "var(--text-tertiary-600)",
+            border: "1px solid var(--border-primary)", cursor: "pointer", fontSize: "0.8rem",
           }}
         >
           <FolderPlus className="w-3.5 h-3.5" /> New Folder
@@ -494,8 +494,8 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
           style={{
             display: "flex", alignItems: "center", gap: "0.375rem",
             padding: "0.375rem 0.75rem", borderRadius: "0.5rem",
-            backgroundColor: "var(--card-elevated)", color: "var(--text-secondary)",
-            border: "1px solid var(--border)", cursor: "pointer", fontSize: "0.8rem",
+            backgroundColor: "var(--bg-tertiary)", color: "var(--text-tertiary-600)",
+            border: "1px solid var(--border-primary)", cursor: "pointer", fontSize: "0.8rem",
           }}
         >
           <FilePlus className="w-3.5 h-3.5" /> New File
@@ -507,7 +507,7 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
           style={{
             display: "flex", alignItems: "center",
             padding: "0.375rem", borderRadius: "0.5rem",
-            backgroundColor: "transparent", color: "var(--text-muted)",
+            backgroundColor: "transparent", color: "var(--text-quaternary-500)",
             border: "none", cursor: "pointer", marginLeft: "auto",
           }}
         >
@@ -517,7 +517,7 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
 
       {/* New Folder input */}
       {showNewFolder && (
-        <div style={{ display: "flex", gap: "0.5rem", padding: "0.75rem 1rem", borderBottom: "1px solid var(--border)", backgroundColor: "var(--card-elevated)" }}>
+        <div style={{ display: "flex", gap: "0.5rem", padding: "0.75rem 1rem", borderBottom: "1px solid var(--border-primary)", backgroundColor: "var(--bg-tertiary)" }}>
           <Folder className="w-4 h-4 mt-1.5" style={{ color: "#F59E0B", flexShrink: 0 }} />
           <input
             autoFocus
@@ -525,27 +525,27 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
             onChange={(e) => setNewFolderName(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") handleCreateFolder(); if (e.key === "Escape") setShowNewFolder(false); }}
             placeholder="Folder name..."
-            style={{ flex: 1, background: "transparent", border: "none", outline: "none", color: "var(--text-primary)", fontSize: "0.9rem" }}
+            style={{ flex: 1, background: "transparent", border: "none", outline: "none", color: "var(--text-primary-900)", fontSize: "0.9rem" }}
           />
-          <button onClick={handleCreateFolder} style={{ padding: "0.25rem 0.75rem", borderRadius: "0.375rem", background: "var(--accent)", color: "#000", border: "none", cursor: "pointer", fontSize: "0.8rem" }}>Create</button>
-          <button onClick={() => setShowNewFolder(false)} style={{ padding: "0.25rem", borderRadius: "0.375rem", background: "none", color: "var(--text-muted)", border: "none", cursor: "pointer" }}><X className="w-4 h-4" /></button>
+          <button onClick={handleCreateFolder} style={{ padding: "0.25rem 0.75rem", borderRadius: "0.375rem", background: "var(--brand-600)", color: "#000", border: "none", cursor: "pointer", fontSize: "0.8rem" }}>Create</button>
+          <button onClick={() => setShowNewFolder(false)} style={{ padding: "0.25rem", borderRadius: "0.375rem", background: "none", color: "var(--text-quaternary-500)", border: "none", cursor: "pointer" }}><X className="w-4 h-4" /></button>
         </div>
       )}
 
       {/* New File input */}
       {showNewFile && (
-        <div style={{ display: "flex", gap: "0.5rem", padding: "0.75rem 1rem", borderBottom: "1px solid var(--border)", backgroundColor: "var(--card-elevated)" }}>
-          <File className="w-4 h-4 mt-1.5" style={{ color: "var(--text-secondary)", flexShrink: 0 }} />
+        <div style={{ display: "flex", gap: "0.5rem", padding: "0.75rem 1rem", borderBottom: "1px solid var(--border-primary)", backgroundColor: "var(--bg-tertiary)" }}>
+          <File className="w-4 h-4 mt-1.5" style={{ color: "var(--text-tertiary-600)", flexShrink: 0 }} />
           <input
             autoFocus
             value={newFileName}
             onChange={(e) => setNewFileName(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") handleCreateFile(); if (e.key === "Escape") setShowNewFile(false); }}
             placeholder="filename.ts"
-            style={{ flex: 1, background: "transparent", border: "none", outline: "none", color: "var(--text-primary)", fontSize: "0.9rem" }}
+            style={{ flex: 1, background: "transparent", border: "none", outline: "none", color: "var(--text-primary-900)", fontSize: "0.9rem" }}
           />
-          <button onClick={handleCreateFile} style={{ padding: "0.25rem 0.75rem", borderRadius: "0.375rem", background: "var(--accent)", color: "#000", border: "none", cursor: "pointer", fontSize: "0.8rem" }}>Create</button>
-          <button onClick={() => setShowNewFile(false)} style={{ padding: "0.25rem", borderRadius: "0.375rem", background: "none", color: "var(--text-muted)", border: "none", cursor: "pointer" }}><X className="w-4 h-4" /></button>
+          <button onClick={handleCreateFile} style={{ padding: "0.25rem 0.75rem", borderRadius: "0.375rem", background: "var(--brand-600)", color: "#000", border: "none", cursor: "pointer", fontSize: "0.8rem" }}>Create</button>
+          <button onClick={() => setShowNewFile(false)} style={{ padding: "0.25rem", borderRadius: "0.375rem", background: "none", color: "var(--text-quaternary-500)", border: "none", cursor: "pointer" }}><X className="w-4 h-4" /></button>
         </div>
       )}
 
@@ -556,22 +556,22 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
         onDrop={handleDrop}
         style={{
           flex: 1,
-          outline: dragging ? "2px dashed var(--accent)" : "none",
+          outline: dragging ? "2px dashed var(--brand-600)" : "none",
           outlineOffset: "-2px",
           transition: "outline 0.2s",
           minHeight: "100px",
         }}
       >
         {items.length === 0 && !dragging && (
-          <div className="flex flex-col items-center justify-center py-12" style={{ color: "var(--text-secondary)" }}>
+          <div className="flex flex-col items-center justify-center py-12" style={{ color: "var(--text-tertiary-600)" }}>
             <FolderOpen className="w-16 h-16 mb-4 opacity-50" />
             <p>This folder is empty</p>
-            <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "0.5rem" }}>Drag & drop files to upload</p>
+            <p style={{ fontSize: "0.8rem", color: "var(--text-quaternary-500)", marginTop: "0.5rem" }}>Drag & drop files to upload</p>
           </div>
         )}
 
         {dragging && (
-          <div className="flex flex-col items-center justify-center py-12" style={{ color: "var(--accent)" }}>
+          <div className="flex flex-col items-center justify-center py-12" style={{ color: "var(--brand-600)" }}>
             <Upload className="w-16 h-16 mb-4" />
             <p>Drop files to upload</p>
           </div>
@@ -579,10 +579,10 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
 
         {/* List View */}
         {viewMode === "list" && items.length > 0 && !dragging && (
-          <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "var(--card)" }}>
+          <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "var(--bg-secondary)" }}>
             <div
               className="hidden md:grid grid-cols-12 gap-4 px-4 md:px-6 py-2 md:py-3 text-xs md:text-sm font-medium"
-              style={{ backgroundColor: "var(--background)", color: "var(--text-secondary)" }}
+              style={{ backgroundColor: "var(--bg-primary)", color: "var(--text-tertiary-600)" }}
             >
               <div className="col-span-6">Name</div>
               <div className="col-span-2">Size</div>
@@ -599,8 +599,8 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
                 <div
                   key={item.name}
                   className="flex md:grid md:grid-cols-12 gap-2 md:gap-4 px-3 md:px-6 py-2.5 md:py-3 cursor-pointer transition-colors hover:opacity-80 group"
-                  style={{ borderBottom: "1px solid var(--border)", position: "relative" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--background)"; }}
+                  style={{ borderBottom: "1px solid var(--border-primary)", position: "relative" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--bg-primary)"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; setActionMenu(null); }}
                 >
                   {/* Name */}
@@ -609,18 +609,18 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
                     onClick={() => handleItemClick(item)}
                   >
                     <Icon className="w-4 h-4 md:w-5 md:h-5 shrink-0" style={{ color: iconColor }} />
-                    <span className="truncate text-sm md:text-base" style={{ color: "var(--text-primary)" }}>
+                    <span className="truncate text-sm md:text-base" style={{ color: "var(--text-primary-900)" }}>
                       {item.name}
                     </span>
                     {isEditable(item.name) && item.type === "file" && (
-                      <span style={{ fontSize: "0.65rem", color: "var(--text-muted)", opacity: 0 }} className="group-hover:opacity-100">
+                      <span style={{ fontSize: "0.65rem", color: "var(--text-quaternary-500)", opacity: 0 }} className="group-hover:opacity-100">
                         edit
                       </span>
                     )}
                   </div>
 
                   {/* Size */}
-                  <div className="md:col-span-2 text-xs md:text-sm flex items-center" style={{ color: "var(--text-secondary)" }}
+                  <div className="md:col-span-2 text-xs md:text-sm flex items-center" style={{ color: "var(--text-tertiary-600)" }}
                     onClick={() => handleItemClick(item)}
                   >
                     {item.type === "folder" ? "—" : formatFileSize(item.size)}
@@ -629,7 +629,7 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
                   {/* Modified */}
                   <div
                     className="hidden md:col-span-3 md:text-sm md:flex items-center"
-                    style={{ color: "var(--text-secondary)" }}
+                    style={{ color: "var(--text-tertiary-600)" }}
                     onClick={() => handleItemClick(item)}
                   >
                     {format(new Date(item.modified), "MMM d, yyyy HH:mm")}
@@ -641,7 +641,7 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDownload(item); }}
                         title="Download"
-                        style={{ padding: "0.25rem", borderRadius: "0.25rem", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}
+                        style={{ padding: "0.25rem", borderRadius: "0.25rem", background: "none", border: "none", cursor: "pointer", color: "var(--text-quaternary-500)" }}
                       >
                         <Download className="w-3.5 h-3.5" />
                       </button>
@@ -649,7 +649,7 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
                     <button
                       onClick={(e) => { e.stopPropagation(); setConfirmDelete(item); }}
                       title="Delete"
-                      style={{ padding: "0.25rem", borderRadius: "0.25rem", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}
+                      style={{ padding: "0.25rem", borderRadius: "0.25rem", background: "none", border: "none", cursor: "pointer", color: "var(--text-quaternary-500)" }}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -672,15 +672,15 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
                   key={item.name}
                   onClick={() => handleItemClick(item)}
                   className="flex flex-col items-center p-3 md:p-4 rounded-xl cursor-pointer transition-all group relative"
-                  style={{ backgroundColor: "var(--card)" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--background)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--card)"; }}
+                  style={{ backgroundColor: "var(--bg-secondary)" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--bg-primary)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--bg-secondary)"; }}
                 >
                   <Icon className="w-10 h-10 md:w-12 md:h-12 mb-2 md:mb-3 group-hover:scale-110 transition-transform" style={{ color: iconColor }} />
-                  <span className="text-xs md:text-sm text-center truncate w-full" style={{ color: "var(--text-primary)" }} title={item.name}>
+                  <span className="text-xs md:text-sm text-center truncate w-full" style={{ color: "var(--text-primary-900)" }} title={item.name}>
                     {item.name}
                   </span>
-                  <span className="text-[10px] md:text-xs mt-0.5 md:mt-1" style={{ color: "var(--text-muted)" }}>
+                  <span className="text-[10px] md:text-xs mt-0.5 md:mt-1" style={{ color: "var(--text-quaternary-500)" }}>
                     {item.type === "folder" ? "Folder" : formatFileSize(item.size)}
                   </span>
 
@@ -693,14 +693,14 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
                     {item.type === "file" && (
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDownload(item); }}
-                        style={{ padding: "0.2rem", borderRadius: "0.25rem", background: "var(--card-elevated)", border: "none", cursor: "pointer", color: "var(--text-muted)" }}
+                        style={{ padding: "0.2rem", borderRadius: "0.25rem", background: "var(--bg-tertiary)", border: "none", cursor: "pointer", color: "var(--text-quaternary-500)" }}
                       >
                         <Download className="w-3 h-3" />
                       </button>
                     )}
                     <button
                       onClick={(e) => { e.stopPropagation(); setConfirmDelete(item); }}
-                      style={{ padding: "0.2rem", borderRadius: "0.25rem", background: "var(--card-elevated)", border: "none", cursor: "pointer", color: "var(--text-muted)" }}
+                      style={{ padding: "0.2rem", borderRadius: "0.25rem", background: "var(--bg-tertiary)", border: "none", cursor: "pointer", color: "var(--text-quaternary-500)" }}
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
@@ -720,22 +720,22 @@ export function FileBrowser({ workspace, path, onNavigate, viewMode = "list" }: 
           display: "flex", alignItems: "center", justifyContent: "center",
         }}>
           <div style={{
-            backgroundColor: "var(--card)", borderRadius: "1rem",
+            backgroundColor: "var(--bg-secondary)", borderRadius: "1rem",
             padding: "2rem", maxWidth: "400px", width: "90%",
-            border: "1px solid var(--border)",
+            border: "1px solid var(--border-primary)",
           }}>
-            <h3 style={{ color: "var(--text-primary)", marginBottom: "0.75rem", fontSize: "1.1rem", fontWeight: 600 }}>
+            <h3 style={{ color: "var(--text-primary-900)", marginBottom: "0.75rem", fontSize: "1.1rem", fontWeight: 600 }}>
               Delete {confirmDelete.type === "folder" ? "Folder" : "File"}?
             </h3>
-            <p style={{ color: "var(--text-secondary)", marginBottom: "1.5rem", fontSize: "0.9rem" }}>
-              Are you sure you want to delete <strong style={{ color: "var(--text-primary)" }}>{confirmDelete.name}</strong>?
+            <p style={{ color: "var(--text-tertiary-600)", marginBottom: "1.5rem", fontSize: "0.9rem" }}>
+              Are you sure you want to delete <strong style={{ color: "var(--text-primary-900)" }}>{confirmDelete.name}</strong>?
               {confirmDelete.type === "folder" && " This will delete all contents inside."}
               This action cannot be undone.
             </p>
             <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
               <button
                 onClick={() => setConfirmDelete(null)}
-                style={{ padding: "0.5rem 1rem", borderRadius: "0.5rem", background: "var(--card-elevated)", color: "var(--text-secondary)", border: "none", cursor: "pointer" }}
+                style={{ padding: "0.5rem 1rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", color: "var(--text-tertiary-600)", border: "none", cursor: "pointer" }}
               >
                 Cancel
               </button>

@@ -3,17 +3,17 @@
 import { cx } from "@openclaw/ui";
 
 const AGENT_STATUS_COLORS: Record<string, string> = {
-  working: 'var(--positive)',
-  thinking: 'var(--positive)',
-  executing_tool: 'var(--positive)',
-  paused: 'var(--warning)',
-  idle: 'var(--info)',
-  queued: 'var(--info)',
-  offline: 'var(--negative)',
-  error: 'var(--negative)',
+  working: 'var(--success-500)',
+  thinking: 'var(--success-500)',
+  executing_tool: 'var(--success-500)',
+  paused: 'var(--warning-500)',
+  idle: 'var(--blue-500)',
+  queued: 'var(--blue-500)',
+  offline: 'var(--error-500)',
+  error: 'var(--error-500)',
 };
 
-const DEFAULT_COLOR = 'var(--text-muted)';
+const DEFAULT_COLOR = 'var(--text-quaternary-500)';
 
 /**
  * Returns the CSS color value for a given agent status string.

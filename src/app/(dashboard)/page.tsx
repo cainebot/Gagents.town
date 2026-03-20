@@ -69,14 +69,14 @@ export default function DashboardPage() {
         <h1 
           className="text-2xl md:text-3xl font-bold mb-1"
           style={{ 
-            fontFamily: 'var(--font-heading)',
-            color: 'var(--text-primary)',
+            fontFamily: 'var(--font-sora), system-ui, sans-serif',
+            color: 'var(--text-primary-900)',
             letterSpacing: '-1.5px'
           }}
         >
           🦞 Mission Control
         </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+        <p style={{ color: 'var(--text-tertiary-600)', fontSize: '14px' }}>
           Overview of Tenacitas agent activity
         </p>
       </div>
@@ -89,25 +89,25 @@ export default function DashboardPage() {
             title="Total Activities"
             value={stats.total.toLocaleString()}
             icon={<Activity className="w-5 h-5" />}
-            iconColor="var(--info)"
+            iconColor="var(--blue-500)"
           />
           <StatsCard
             title="Today"
             value={stats.today.toLocaleString()}
             icon={<Zap className="w-5 h-5" />}
-            iconColor="var(--accent)"
+            iconColor="var(--brand-600)"
           />
           <StatsCard
             title="Successful"
             value={stats.success.toLocaleString()}
             icon={<CheckCircle className="w-5 h-5" />}
-            iconColor="var(--success)"
+            iconColor="var(--success-500)"
           />
           <StatsCard
             title="Errors"
             value={stats.error.toLocaleString()}
             icon={<XCircle className="w-5 h-5" />}
-            iconColor="var(--error)"
+            iconColor="var(--error-500)"
           />
         </div>
 
@@ -121,21 +121,21 @@ export default function DashboardPage() {
       <div 
         className="mb-6 rounded-xl overflow-hidden"
         style={{
-          backgroundColor: 'var(--card)',
-          border: '1px solid var(--border)',
+          backgroundColor: 'var(--bg-secondary)',
+          border: '1px solid var(--border-primary)',
         }}
       >
         <div 
           className="flex items-center justify-between px-5 py-4"
-          style={{ borderBottom: '1px solid var(--border)' }}
+          style={{ borderBottom: '1px solid var(--border-primary)' }}
         >
           <div className="flex items-center gap-3">
             <div className="accent-line" />
             <h2 
               className="text-base font-semibold"
               style={{ 
-                fontFamily: 'var(--font-heading)',
-                color: 'var(--text-primary)'
+                fontFamily: 'var(--font-sora), system-ui, sans-serif',
+                color: 'var(--text-primary-900)'
               }}
             >
               <Users className="inline-block w-5 h-5 mr-2 mb-1" />
@@ -147,8 +147,8 @@ export default function DashboardPage() {
               href="/office"
               className="text-sm font-medium px-3 py-1.5 rounded-lg transition-all"
               style={{ 
-                backgroundColor: 'var(--accent)',
-                color: 'var(--text-primary)',
+                backgroundColor: 'var(--brand-600)',
+                color: 'var(--text-primary-900)',
               }}
             >
               <Gamepad2 className="inline-block w-4 h-4 mr-1 mb-0.5" />
@@ -157,7 +157,7 @@ export default function DashboardPage() {
             <Link
               href="/agents"
               className="text-sm font-medium"
-              style={{ color: 'var(--accent)' }}
+              style={{ color: 'var(--brand-600)' }}
             >
               View all →
             </Link>
@@ -170,7 +170,7 @@ export default function DashboardPage() {
                 key={agent.id}
                 className="p-3 rounded-lg transition-all hover:scale-105"
                 style={{
-                  backgroundColor: 'var(--card-elevated)',
+                  backgroundColor: 'var(--bg-tertiary)',
                   border: `2px solid ${agent.color}`,
                   cursor: 'pointer',
                 }}
@@ -188,15 +188,15 @@ export default function DashboardPage() {
                 <div 
                   className="text-sm font-bold mb-1"
                   style={{ 
-                    fontFamily: 'var(--font-heading)',
-                    color: 'var(--text-primary)',
+                    fontFamily: 'var(--font-sora), system-ui, sans-serif',
+                    color: 'var(--text-primary-900)',
                   }}
                 >
                   {agent.name}
                 </div>
                 <div 
                   className="text-xs truncate mb-1"
-                  style={{ color: 'var(--text-muted)' }}
+                  style={{ color: 'var(--text-quaternary-500)' }}
                   title={agent.model}
                 >
                   <Bot className="inline-block w-3 h-3 mr-1" />
@@ -223,21 +223,21 @@ export default function DashboardPage() {
         <div 
           className="lg:col-span-2 rounded-xl overflow-hidden"
           style={{
-            backgroundColor: 'var(--card)',
-            border: '1px solid var(--border)',
+            backgroundColor: 'var(--bg-secondary)',
+            border: '1px solid var(--border-primary)',
           }}
         >
           <div 
             className="flex items-center justify-between px-5 py-4"
-            style={{ borderBottom: '1px solid var(--border)' }}
+            style={{ borderBottom: '1px solid var(--border-primary)' }}
           >
             <div className="flex items-center gap-3">
               <div className="accent-line" />
               <h2 
                 className="text-base font-semibold"
                 style={{ 
-                  fontFamily: 'var(--font-heading)',
-                  color: 'var(--text-primary)'
+                  fontFamily: 'var(--font-sora), system-ui, sans-serif',
+                  color: 'var(--text-primary-900)'
                 }}
               >
                 Recent Activity
@@ -246,7 +246,7 @@ export default function DashboardPage() {
             <a
               href="/activity"
               className="text-sm font-medium"
-              style={{ color: 'var(--accent)' }}
+              style={{ color: 'var(--brand-600)' }}
             >
               View all →
             </a>
@@ -260,21 +260,21 @@ export default function DashboardPage() {
         <div 
           className="rounded-xl overflow-hidden"
           style={{
-            backgroundColor: 'var(--card)',
-            border: '1px solid var(--border)',
+            backgroundColor: 'var(--bg-secondary)',
+            border: '1px solid var(--border-primary)',
           }}
         >
           <div 
             className="flex items-center justify-between px-5 py-4"
-            style={{ borderBottom: '1px solid var(--border)' }}
+            style={{ borderBottom: '1px solid var(--border-primary)' }}
           >
             <div className="flex items-center gap-3">
               <div className="accent-line" />
               <h2 
                 className="text-base font-semibold"
                 style={{ 
-                  fontFamily: 'var(--font-heading)',
-                  color: 'var(--text-primary)'
+                  fontFamily: 'var(--font-sora), system-ui, sans-serif',
+                  color: 'var(--text-primary-900)'
                 }}
               >
                 Quick Links
@@ -284,8 +284,8 @@ export default function DashboardPage() {
           <div className="p-4 grid grid-cols-2 gap-2">
             {[
               { href: "/cron", icon: Calendar, label: "Cron Jobs", color: "#a78bfa" },
-              { href: "/actions", icon: Zap, label: "Quick Actions", color: "var(--accent)" },
-              { href: "/system", icon: Server, label: "System", color: "var(--success)" },
+              { href: "/actions", icon: Zap, label: "Quick Actions", color: "var(--brand-600)" },
+              { href: "/system", icon: Server, label: "System", color: "var(--success-500)" },
               { href: "/logs", icon: Terminal, label: "Live Logs", color: "#60a5fa" },
               { href: "/memory", icon: Brain, label: "Memory", color: "#f59e0b" },
               { href: "/skills", icon: Puzzle, label: "Skills", color: "#4ade80" },
@@ -294,11 +294,11 @@ export default function DashboardPage() {
                 key={href}
                 href={href}
                 className="p-3 rounded-lg transition-all hover:scale-[1.02]"
-                style={{ backgroundColor: 'var(--card-elevated)', border: '1px solid var(--border)' }}
+                style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-primary)' }}
               >
                 <div className="flex items-center gap-2">
                   <Icon className="w-4 h-4" style={{ color }} />
-                  <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{label}</span>
+                  <span className="text-sm font-medium" style={{ color: 'var(--text-primary-900)' }}>{label}</span>
                 </div>
               </Link>
             ))}

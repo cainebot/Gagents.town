@@ -41,15 +41,15 @@ const typeConfig: Record<string, {
   color: string;
   bgColor: string;
 }> = {
-  file: { icon: FileText, color: 'var(--type-file)', bgColor: 'var(--type-file-bg)' },
-  search: { icon: Search, color: 'var(--type-search)', bgColor: 'var(--type-search-bg)' },
-  message: { icon: MessageSquare, color: 'var(--type-message)', bgColor: 'var(--type-message-bg)' },
-  command: { icon: Terminal, color: 'var(--type-command)', bgColor: 'var(--type-command-bg)' },
-  security: { icon: Shield, color: 'var(--type-security)', bgColor: 'var(--type-security-bg)' },
-  build: { icon: Hammer, color: 'var(--type-build)', bgColor: 'var(--type-build-bg)' },
-  cron: { icon: Timer, color: 'var(--type-cron)', bgColor: 'var(--type-cron-bg)' },
-  memory: { icon: Brain, color: 'var(--info)', bgColor: 'var(--info-bg)' },
-  default: { icon: Zap, color: 'var(--text-secondary)', bgColor: 'var(--card-elevated)' },
+  file: { icon: FileText, color: 'var(--oc-type-file)', bgColor: 'var(--oc-type-file-bg)' },
+  search: { icon: Search, color: 'var(--oc-type-search)', bgColor: 'var(--oc-type-search-bg)' },
+  message: { icon: MessageSquare, color: 'var(--oc-type-message)', bgColor: 'var(--oc-type-message-bg)' },
+  command: { icon: Terminal, color: 'var(--oc-type-command)', bgColor: 'var(--oc-type-command-bg)' },
+  security: { icon: Shield, color: 'var(--oc-type-security)', bgColor: 'var(--oc-type-security-bg)' },
+  build: { icon: Hammer, color: 'var(--oc-type-build)', bgColor: 'var(--oc-type-build-bg)' },
+  cron: { icon: Timer, color: 'var(--oc-type-cron)', bgColor: 'var(--oc-type-cron-bg)' },
+  memory: { icon: Brain, color: 'var(--blue-500)', bgColor: 'var(--info-bg)' },
+  default: { icon: Zap, color: 'var(--text-tertiary-600)', bgColor: 'var(--bg-tertiary)' },
 };
 
 const statusConfig: Record<string, { 
@@ -57,9 +57,9 @@ const statusConfig: Record<string, {
   color: string;
   bgColor: string;
 }> = {
-  success: { icon: CheckCircle, color: 'var(--success)', bgColor: 'var(--success-bg)' },
-  error: { icon: XCircle, color: 'var(--error)', bgColor: 'var(--error-bg)' },
-  pending: { icon: Clock, color: 'var(--warning)', bgColor: 'var(--warning-bg)' },
+  success: { icon: CheckCircle, color: 'var(--success-500)', bgColor: 'var(--success-50)' },
+  error: { icon: XCircle, color: 'var(--error-500)', bgColor: 'var(--error-50)' },
+  pending: { icon: Clock, color: 'var(--warning-500)', bgColor: 'var(--warning-bg)' },
 };
 
 interface ActivityFeedProps {
@@ -83,7 +83,7 @@ export function ActivityFeed({ limit = 10 }: ActivityFeedProps) {
           <div 
             key={i} 
             className="h-16 mx-4 my-2 rounded-lg"
-            style={{ backgroundColor: 'var(--card-elevated)' }}
+            style={{ backgroundColor: 'var(--bg-tertiary)' }}
           />
         ))}
       </div>
@@ -92,7 +92,7 @@ export function ActivityFeed({ limit = 10 }: ActivityFeedProps) {
 
   if (activities.length === 0) {
     return (
-      <div className="text-center py-12" style={{ color: 'var(--text-secondary)' }}>
+      <div className="text-center py-12" style={{ color: 'var(--text-tertiary-600)' }}>
         <Zap className="w-12 h-12 mx-auto mb-4 opacity-50" />
         <p>No activities logged yet</p>
       </div>
@@ -114,7 +114,7 @@ export function ActivityFeed({ limit = 10 }: ActivityFeedProps) {
               borderRadius: '8px',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--card-elevated)';
+              e.currentTarget.style.backgroundColor = 'var(--bg-tertiary)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = 'transparent';
@@ -163,14 +163,14 @@ export function ActivityFeed({ limit = 10 }: ActivityFeedProps) {
               <RichDescription 
                 text={activity.description}
                 className="text-xs md:text-sm"
-                style={{ color: 'var(--text-primary)' }}
+                style={{ color: 'var(--text-primary-900)' }}
               />
             </div>
 
             {/* Time */}
             <time 
               className="text-[10px] md:text-xs whitespace-nowrap flex-shrink-0"
-              style={{ color: 'var(--text-muted)' }}
+              style={{ color: 'var(--text-quaternary-500)' }}
             >
               {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: false })}
             </time>

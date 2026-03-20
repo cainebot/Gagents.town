@@ -61,8 +61,8 @@ export function MarkdownEditor({
       <div
         className="flex items-center justify-between px-4 py-2"
         style={{
-          backgroundColor: "var(--card)",
-          borderBottom: "1px solid var(--border)",
+          backgroundColor: "var(--bg-secondary)",
+          borderBottom: "1px solid var(--border-primary)",
         }}
       >
         <div className="flex items-center gap-2">
@@ -83,12 +83,12 @@ export function MarkdownEditor({
           style={{
             backgroundColor:
               hasUnsavedChanges && !isSaving && !disabled
-                ? "var(--accent)"
-                : "var(--border)",
+                ? "var(--brand-600)"
+                : "var(--border-primary)",
             color:
               hasUnsavedChanges && !isSaving && !disabled
-                ? "var(--text-primary)"
-                : "var(--text-muted)",
+                ? "var(--text-primary-900)"
+                : "var(--text-quaternary-500)",
             cursor:
               !hasUnsavedChanges || isSaving || disabled
                 ? "not-allowed"
@@ -110,8 +110,8 @@ export function MarkdownEditor({
         placeholder="Select a file to edit..."
         className="flex-1 w-full p-4 resize-none focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
-          backgroundColor: "var(--card)",
-          color: "var(--text-primary)",
+          backgroundColor: "var(--bg-secondary)",
+          color: "var(--text-primary-900)",
           fontFamily: "var(--font-jetbrains), 'JetBrains Mono', 'Fira Code', 'Roboto Mono', Consolas, monospace",
           fontSize: "13px",
           lineHeight: "1.7",

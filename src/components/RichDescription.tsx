@@ -27,7 +27,7 @@ function ImageInline({ src }: { src: string }) {
           borderRadius: "0.5rem",
           marginTop: "0.5rem",
           cursor: "pointer",
-          border: "1px solid var(--border)",
+          border: "1px solid var(--border-primary)",
         }}
       />
       {fullscreen && (

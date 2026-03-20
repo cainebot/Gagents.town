@@ -14,7 +14,7 @@ const PRIORITY_LEFT_BORDER: Record<Priority, string> = {
   critica: '#ef4444',
   alta:    '#f97316',
   media:   '#eab308',
-  baja:    'var(--border)',
+  baja:    'var(--border-primary)',
 }
 
 const MAX_VISIBLE_LABELS = 3
@@ -62,8 +62,8 @@ export function KanbanCard({ card, onDragStart, onCardClick, isNew = false }: Ka
       onDragStart={handleDragStart}
       onClick={() => onCardClick(card.card_id)}
       style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--border)',
+        background: 'var(--bg-secondary)',
+        border: '1px solid var(--border-primary)',
         borderLeft: `3px solid ${PRIORITY_LEFT_BORDER[card.priority]}`,
         borderRadius: 'var(--radius-md, 8px)',
         padding: '10px 12px',
@@ -94,10 +94,10 @@ export function KanbanCard({ card, onDragStart, onCardClick, isNew = false }: Ka
         />
         {card.code && (
           <span style={{
-            fontFamily: 'var(--font-body)',
+            fontFamily: 'var(--font-inter), system-ui, sans-serif',
             fontSize: '10px',
             fontWeight: 700,
-            color: 'var(--text-muted)',
+            color: 'var(--text-quaternary-500)',
           }}>
             {card.code}
           </span>
@@ -106,10 +106,10 @@ export function KanbanCard({ card, onDragStart, onCardClick, isNew = false }: Ka
 
       {/* Row 2 — Title */}
       <p style={{
-        fontFamily: 'var(--font-body)',
+        fontFamily: 'var(--font-inter), system-ui, sans-serif',
         fontSize: '13px',
         fontWeight: 500,
-        color: 'var(--text-primary)',
+        color: 'var(--text-primary-900)',
         margin: '0 0 6px 0',
         display: '-webkit-box',
         WebkitLineClamp: 2,
@@ -125,14 +125,14 @@ export function KanbanCard({ card, onDragStart, onCardClick, isNew = false }: Ka
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '6px' }}>
           {card.labels.slice(0, MAX_VISIBLE_LABELS).map((label) => (
             <span key={label} style={{
-              fontFamily: 'var(--font-body)',
+              fontFamily: 'var(--font-inter), system-ui, sans-serif',
               fontSize: '10px',
               fontWeight: 700,
               textTransform: 'uppercase' as const,
               letterSpacing: '0.4px',
-              color: 'var(--text-secondary)',
+              color: 'var(--text-tertiary-600)',
               background: 'rgba(82,82,82,0.12)',
-              border: '1px solid var(--border)',
+              border: '1px solid var(--border-primary)',
               borderRadius: '4px',
               padding: '2px 6px',
               maxWidth: '80px',
@@ -144,7 +144,7 @@ export function KanbanCard({ card, onDragStart, onCardClick, isNew = false }: Ka
             </span>
           ))}
           {card.labels.length > MAX_VISIBLE_LABELS && (
-            <span style={{ fontFamily: 'var(--font-body)', fontSize: '10px', color: 'var(--text-secondary)' }}>
+            <span style={{ fontFamily: 'var(--font-inter), system-ui, sans-serif', fontSize: '10px', color: 'var(--text-tertiary-600)' }}>
               +{card.labels.length - MAX_VISIBLE_LABELS}
             </span>
           )}
@@ -161,14 +161,14 @@ export function KanbanCard({ card, onDragStart, onCardClick, isNew = false }: Ka
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                background: 'var(--surface-elevated)',
-                border: '1px solid var(--border)',
+                background: 'var(--bg-tertiary)',
+                border: '1px solid var(--border-primary)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexShrink: 0,
               }}>
-                <span style={{ fontSize: '8px', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                <span style={{ fontSize: '8px', fontWeight: 700, color: 'var(--text-tertiary-600)' }}>
                   {card.assigned_agent_id.charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -177,14 +177,14 @@ export function KanbanCard({ card, onDragStart, onCardClick, isNew = false }: Ka
           {/* Due date */}
           {card.due_date && (
             <span style={{
-              fontFamily: 'var(--font-body)',
+              fontFamily: 'var(--font-inter), system-ui, sans-serif',
               fontSize: '10px',
               fontWeight: 500,
               color: isDueOverdue(card.due_date)
-                ? 'var(--negative)'
+                ? 'var(--error-500)'
                 : isDueToday(card.due_date)
-                  ? 'var(--warning)'
-                  : 'var(--text-muted)',
+                  ? 'var(--warning-500)'
+                  : 'var(--text-quaternary-500)',
               marginLeft: 'auto',
             }}>
               {formatDueDate(card.due_date)}

@@ -40,7 +40,7 @@ function channelBadge(channel: AgentMessageRow['channel']): { label: string; bg:
     case 'tui':
       return { label: 'TUI', bg: 'rgba(50,215,75,0.15)', color: '#32D74B' }
     default:
-      return { label: (channel as string).toUpperCase(), bg: 'rgba(82,82,82,0.12)', color: 'var(--text-muted)' }
+      return { label: (channel as string).toUpperCase(), bg: 'rgba(82,82,82,0.12)', color: 'var(--text-quaternary-500)' }
   }
 }
 
@@ -156,7 +156,7 @@ export function ChatPanel({ agentId, agentName }: ChatPanelProps) {
           alignItems: 'center',
           gap: '6px',
           padding: '10px 16px',
-          borderBottom: '1px solid var(--border)',
+          borderBottom: '1px solid var(--border-primary)',
           overflowX: 'auto',
           flexShrink: 0,
         }}
@@ -174,12 +174,12 @@ export function ChatPanel({ agentId, agentName }: ChatPanelProps) {
                 padding: '3px 10px',
                 borderRadius: '9999px',
                 border: '1px solid',
-                borderColor: isActive ? 'var(--accent)' : 'var(--border)',
-                background: isActive ? 'var(--accent)' : 'transparent',
-                color: isActive ? '#fff' : 'var(--text-secondary)',
+                borderColor: isActive ? 'var(--brand-600)' : 'var(--border-primary)',
+                background: isActive ? 'var(--brand-600)' : 'transparent',
+                color: isActive ? '#fff' : 'var(--text-tertiary-600)',
                 fontSize: '11px',
                 fontWeight: isActive ? 600 : 500,
-                fontFamily: 'var(--font-body)',
+                fontFamily: 'var(--font-inter), system-ui, sans-serif',
                 cursor: 'pointer',
                 flexShrink: 0,
                 whiteSpace: 'nowrap',
@@ -195,7 +195,7 @@ export function ChatPanel({ agentId, agentName }: ChatPanelProps) {
                     width: '14px',
                     height: '14px',
                     borderRadius: '50%',
-                    background: isActive ? 'rgba(255,255,255,0.3)' : 'var(--accent)',
+                    background: isActive ? 'rgba(255,255,255,0.3)' : 'var(--brand-600)',
                     color: '#fff',
                     fontSize: '8px',
                     fontWeight: 700,
@@ -217,9 +217,9 @@ export function ChatPanel({ agentId, agentName }: ChatPanelProps) {
             width: '22px',
             height: '22px',
             borderRadius: '50%',
-            border: '1px solid var(--border)',
+            border: '1px solid var(--border-primary)',
             background: 'transparent',
-            color: 'var(--text-muted)',
+            color: 'var(--text-quaternary-500)',
             cursor: 'pointer',
             flexShrink: 0,
           }}
@@ -251,9 +251,9 @@ export function ChatPanel({ agentId, agentName }: ChatPanelProps) {
               gap: '4px',
               padding: '4px 12px',
               borderRadius: '9999px',
-              border: '1px solid var(--border)',
+              border: '1px solid var(--border-primary)',
               background: 'transparent',
-              color: 'var(--text-muted)',
+              color: 'var(--text-quaternary-500)',
               fontSize: '10px',
               cursor: 'pointer',
             }}
@@ -264,7 +264,7 @@ export function ChatPanel({ agentId, agentName }: ChatPanelProps) {
         )}
 
         {loading && (
-          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic', textAlign: 'center', padding: '16px 0' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-quaternary-500)', fontStyle: 'italic', textAlign: 'center', padding: '16px 0' }}>
             Loading messages...
           </div>
         )}
@@ -276,7 +276,7 @@ export function ChatPanel({ agentId, agentName }: ChatPanelProps) {
         )}
 
         {!loading && !error && messages.length === 0 && (
-          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic', textAlign: 'center', padding: '16px 0' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-quaternary-500)', fontStyle: 'italic', textAlign: 'center', padding: '16px 0' }}>
             No messages yet in #{activeTopic}. Send one below.
           </div>
         )}
@@ -292,8 +292,8 @@ export function ChatPanel({ agentId, agentName }: ChatPanelProps) {
                 style={{
                   fontSize: '11px',
                   fontWeight: 700,
-                  color: isUser ? 'var(--accent)' : 'var(--text-secondary)',
-                  fontFamily: 'var(--font-body)',
+                  color: isUser ? 'var(--brand-600)' : 'var(--text-tertiary-600)',
+                  fontFamily: 'var(--font-inter), system-ui, sans-serif',
                 }}
               >
                 {senderLabel}
@@ -303,8 +303,8 @@ export function ChatPanel({ agentId, agentName }: ChatPanelProps) {
               <span
                 style={{
                   fontSize: '13px',
-                  color: 'var(--text-primary)',
-                  fontFamily: 'var(--font-body)',
+                  color: 'var(--text-primary-900)',
+                  fontFamily: 'var(--font-inter), system-ui, sans-serif',
                   lineHeight: 1.5,
                   wordBreak: 'break-word',
                 }}
@@ -328,7 +328,7 @@ export function ChatPanel({ agentId, agentName }: ChatPanelProps) {
                 >
                   {badge.label}
                 </span>
-                <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>
+                <span style={{ fontSize: '9px', color: 'var(--text-quaternary-500)' }}>
                   {relativeTime(m.created_at)}
                 </span>
               </div>
@@ -343,7 +343,7 @@ export function ChatPanel({ agentId, agentName }: ChatPanelProps) {
       {/* Send input area */}
       <div
         style={{
-          borderTop: '1px solid var(--border)',
+          borderTop: '1px solid var(--border-primary)',
           background: 'var(--surface-elevated, #242424)',
           padding: '10px 16px',
           flexShrink: 0,
@@ -361,21 +361,21 @@ export function ChatPanel({ agentId, agentName }: ChatPanelProps) {
             style={{
               flex: 1,
               fontSize: '13px',
-              fontFamily: 'var(--font-body)',
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
+              fontFamily: 'var(--font-inter), system-ui, sans-serif',
+              background: 'var(--bg-secondary)',
+              border: '1px solid var(--border-primary)',
               borderRadius: '6px',
               minHeight: '52px',
               maxHeight: '150px',
               resize: 'vertical',
-              color: 'var(--text-primary)',
+              color: 'var(--text-primary-900)',
               padding: '8px 10px',
               outline: 'none',
               boxSizing: 'border-box',
             }}
-            onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
+            onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--brand-600)')}
             onBlur={(e) => {
-              e.currentTarget.style.borderColor = 'var(--border)'
+              e.currentTarget.style.borderColor = 'var(--border-primary)'
             }}
           />
           <button
@@ -391,7 +391,7 @@ export function ChatPanel({ agentId, agentName }: ChatPanelProps) {
               background: 'transparent',
               border: 'none',
               cursor: inputText.trim() && !sending ? 'pointer' : 'not-allowed',
-              color: inputText.trim() && !sending ? 'var(--accent)' : 'var(--text-muted)',
+              color: inputText.trim() && !sending ? 'var(--brand-600)' : 'var(--text-quaternary-500)',
               opacity: inputText.trim() && !sending ? 1 : 0.4,
               flexShrink: 0,
               borderRadius: '6px',

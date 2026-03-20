@@ -36,16 +36,16 @@ export function SystemInfo({ data }: SystemInfoProps) {
     return (
       <div 
         className="rounded-xl p-6 animate-pulse"
-        style={{ backgroundColor: "var(--card)" }}
+        style={{ backgroundColor: "var(--bg-secondary)" }}
       >
         <div 
           className="h-6 rounded w-1/3 mb-4"
-          style={{ backgroundColor: "var(--border)" }}
+          style={{ backgroundColor: "var(--border-primary)" }}
         ></div>
         <div className="space-y-3">
-          <div className="h-4 rounded w-2/3" style={{ backgroundColor: "var(--border)" }}></div>
-          <div className="h-4 rounded w-1/2" style={{ backgroundColor: "var(--border)" }}></div>
-          <div className="h-4 rounded w-3/4" style={{ backgroundColor: "var(--border)" }}></div>
+          <div className="h-4 rounded w-2/3" style={{ backgroundColor: "var(--border-primary)" }}></div>
+          <div className="h-4 rounded w-1/2" style={{ backgroundColor: "var(--border-primary)" }}></div>
+          <div className="h-4 rounded w-3/4" style={{ backgroundColor: "var(--border-primary)" }}></div>
         </div>
       </div>
     );
@@ -93,13 +93,13 @@ export function SystemInfo({ data }: SystemInfoProps) {
   return (
     <div 
       className="rounded-xl p-6"
-      style={{ backgroundColor: "var(--card)" }}
+      style={{ backgroundColor: "var(--bg-secondary)" }}
     >
       <h2 
         className="text-xl font-semibold mb-6 flex items-center gap-2"
-        style={{ color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}
+        style={{ color: "var(--text-primary-900)", fontFamily: "var(--font-sora), system-ui, sans-serif" }}
       >
-        <Server className="w-5 h-5" style={{ color: "var(--accent)" }} />
+        <Server className="w-5 h-5" style={{ color: "var(--brand-600)" }} />
         System Information
       </h2>
 
@@ -119,16 +119,16 @@ export function SystemInfo({ data }: SystemInfoProps) {
                 className="p-2 rounded-lg"
                 style={{ backgroundColor: "rgba(255, 59, 48, 0.1)" }}
               >
-                <Icon className="w-5 h-5" style={{ color: "var(--accent)" }} />
+                <Icon className="w-5 h-5" style={{ color: "var(--brand-600)" }} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm mb-1" style={{ color: "var(--text-secondary)" }}>
+                <div className="text-sm mb-1" style={{ color: "var(--text-tertiary-600)" }}>
                   {item.label}
                 </div>
-                <div className="font-medium truncate" style={{ color: "var(--text-primary)" }}>
+                <div className="font-medium truncate" style={{ color: "var(--text-primary-900)" }}>
                   {item.value}
                 </div>
-                <div className="text-xs truncate" style={{ color: "var(--text-muted)" }}>
+                <div className="text-xs truncate" style={{ color: "var(--text-quaternary-500)" }}>
                   {item.sublabel}
                 </div>
               </div>

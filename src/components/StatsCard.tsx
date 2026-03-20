@@ -17,21 +17,21 @@ export function StatsCard({
   title,
   value,
   icon,
-  iconColor = "var(--info)",
+  iconColor = "var(--blue-500)",
   trend,
 }: StatsCardProps) {
   return (
     <div 
       className="rounded-xl p-4 md:p-6"
       style={{
-        backgroundColor: 'var(--card)',
-        border: '1px solid var(--border)',
+        backgroundColor: 'var(--bg-secondary)',
+        border: '1px solid var(--border-primary)',
       }}
     >
       <div className="flex items-center justify-between mb-1.5 md:mb-2">
         <span 
           className="text-xs md:text-sm font-medium"
-          style={{ color: 'var(--text-secondary)' }}
+          style={{ color: 'var(--text-tertiary-600)' }}
         >
           {title}
         </span>
@@ -44,8 +44,8 @@ export function StatsCard({
         <span 
           className="text-2xl md:text-3xl font-bold tracking-tight"
           style={{ 
-            fontFamily: 'var(--font-heading)',
-            color: 'var(--text-primary)',
+            fontFamily: 'var(--font-sora), system-ui, sans-serif',
+            color: 'var(--text-primary-900)',
             letterSpacing: '-1.5px'
           }}
         >
@@ -54,7 +54,7 @@ export function StatsCard({
         {trend && (
           <span
             className="text-xs md:text-sm font-medium"
-            style={{ color: trend.isPositive ? 'var(--success)' : 'var(--error)' }}
+            style={{ color: trend.isPositive ? 'var(--success-500)' : 'var(--error-500)' }}
           >
             {trend.isPositive ? "↑" : "↓"} {trend.value}%
           </span>

@@ -161,8 +161,8 @@ export function NotificationDropdown() {
           height: "36px",
           borderRadius: "8px",
           border: "none",
-          backgroundColor: isOpen ? "var(--surface-elevated)" : "transparent",
-          color: "var(--text-secondary)",
+          backgroundColor: isOpen ? "var(--bg-tertiary)" : "transparent",
+          color: "var(--text-tertiary-600)",
           cursor: "pointer",
           transition: "all 0.2s ease",
         }}
@@ -190,7 +190,7 @@ export function NotificationDropdown() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              border: "2px solid var(--bg)",
+              border: "2px solid var(--bg-primary)",
             }}
           >
             {unreadCount > 9 ? "9+" : unreadCount}
@@ -207,8 +207,8 @@ export function NotificationDropdown() {
             right: 0,
             width: "420px",
             maxHeight: "600px",
-            backgroundColor: "var(--surface)",
-            border: "1px solid var(--border)",
+            backgroundColor: "var(--bg-secondary)",
+            border: "1px solid var(--border-primary)",
             borderRadius: "12px",
             boxShadow: "0 8px 24px rgba(0, 0, 0, 0.25)",
             zIndex: 1000,
@@ -224,23 +224,23 @@ export function NotificationDropdown() {
               alignItems: "center",
               justifyContent: "space-between",
               padding: "16px 20px",
-              borderBottom: "1px solid var(--border)",
-              backgroundColor: "var(--surface-elevated)",
+              borderBottom: "1px solid var(--border-primary)",
+              backgroundColor: "var(--bg-tertiary)",
             }}
           >
             <div>
               <h3
                 style={{
-                  fontFamily: "var(--font-heading)",
+                  fontFamily: "var(--font-sora), system-ui, sans-serif",
                   fontSize: "16px",
                   fontWeight: 700,
-                  color: "var(--text-primary)",
+                  color: "var(--text-primary-900)",
                   marginBottom: "2px",
                 }}
               >
                 Notifications
               </h3>
-              <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+              <p style={{ fontSize: "12px", color: "var(--text-quaternary-500)" }}>
                 {unreadCount > 0 ? `${unreadCount} unread` : "All caught up!"}
               </p>
             </div>
@@ -256,7 +256,7 @@ export function NotificationDropdown() {
                     borderRadius: "6px",
                     border: "none",
                     backgroundColor: "transparent",
-                    color: "var(--text-muted)",
+                    color: "var(--text-quaternary-500)",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
@@ -264,12 +264,12 @@ export function NotificationDropdown() {
                     transition: "all 0.2s",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "var(--surface)";
-                    e.currentTarget.style.color = "var(--text-primary)";
+                    e.currentTarget.style.backgroundColor = "var(--bg-secondary)";
+                    e.currentTarget.style.color = "var(--text-primary-900)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color = "var(--text-muted)";
+                    e.currentTarget.style.color = "var(--text-quaternary-500)";
                   }}
                 >
                   <CheckCheck size={16} />
@@ -284,7 +284,7 @@ export function NotificationDropdown() {
                     borderRadius: "6px",
                     border: "none",
                     backgroundColor: "transparent",
-                    color: "var(--text-muted)",
+                    color: "var(--text-quaternary-500)",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
@@ -292,12 +292,12 @@ export function NotificationDropdown() {
                     transition: "all 0.2s",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "var(--surface)";
-                    e.currentTarget.style.color = "var(--text-primary)";
+                    e.currentTarget.style.backgroundColor = "var(--bg-secondary)";
+                    e.currentTarget.style.color = "var(--text-primary-900)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color = "var(--text-muted)";
+                    e.currentTarget.style.color = "var(--text-quaternary-500)";
                   }}
                 >
                   <Trash2 size={16} />
@@ -315,7 +315,7 @@ export function NotificationDropdown() {
                   alignItems: "center",
                   justifyContent: "center",
                   padding: "40px 20px",
-                  color: "var(--text-muted)",
+                  color: "var(--text-quaternary-500)",
                 }}
               >
                 Loading...
@@ -330,7 +330,7 @@ export function NotificationDropdown() {
                   alignItems: "center",
                   justifyContent: "center",
                   padding: "40px 20px",
-                  color: "var(--text-muted)",
+                  color: "var(--text-quaternary-500)",
                   textAlign: "center",
                 }}
               >
@@ -351,7 +351,7 @@ export function NotificationDropdown() {
                     display: "flex",
                     gap: "12px",
                     padding: "16px 20px",
-                    borderBottom: index < notifications.length - 1 ? "1px solid var(--border)" : "none",
+                    borderBottom: index < notifications.length - 1 ? "1px solid var(--border-primary)" : "none",
                     backgroundColor: notification.read ? "transparent" : "rgba(96, 165, 250, 0.05)",
                     cursor: notification.link ? "pointer" : "default",
                     transition: "background-color 0.2s",
@@ -389,10 +389,10 @@ export function NotificationDropdown() {
                     <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "4px" }}>
                       <h4
                         style={{
-                          fontFamily: "var(--font-heading)",
+                          fontFamily: "var(--font-sora), system-ui, sans-serif",
                           fontSize: "13px",
                           fontWeight: 600,
-                          color: "var(--text-primary)",
+                          color: "var(--text-primary-900)",
                           marginBottom: "2px",
                         }}
                       >
@@ -415,7 +415,7 @@ export function NotificationDropdown() {
                     <p
                       style={{
                         fontSize: "12px",
-                        color: "var(--text-secondary)",
+                        color: "var(--text-tertiary-600)",
                         lineHeight: "1.5",
                         marginBottom: "6px",
                       }}
@@ -427,7 +427,7 @@ export function NotificationDropdown() {
                       <span
                         style={{
                           fontSize: "11px",
-                          color: "var(--text-muted)",
+                          color: "var(--text-quaternary-500)",
                         }}
                       >
                         {formatDistanceToNow(new Date(notification.timestamp), { addSuffix: true })}
@@ -447,7 +447,7 @@ export function NotificationDropdown() {
                               borderRadius: "4px",
                               border: "none",
                               backgroundColor: "transparent",
-                              color: "var(--text-muted)",
+                              color: "var(--text-quaternary-500)",
                               cursor: "pointer",
                               display: "flex",
                               alignItems: "center",
@@ -455,12 +455,12 @@ export function NotificationDropdown() {
                               transition: "all 0.2s",
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = "var(--surface)";
+                              e.currentTarget.style.backgroundColor = "var(--bg-secondary)";
                               e.currentTarget.style.color = "#4ade80";
                             }}
                             onMouseLeave={(e) => {
                               e.currentTarget.style.backgroundColor = "transparent";
-                              e.currentTarget.style.color = "var(--text-muted)";
+                              e.currentTarget.style.color = "var(--text-quaternary-500)";
                             }}
                           >
                             <Check size={14} />
@@ -477,7 +477,7 @@ export function NotificationDropdown() {
                             borderRadius: "4px",
                             border: "none",
                             backgroundColor: "transparent",
-                            color: "var(--text-muted)",
+                            color: "var(--text-quaternary-500)",
                             cursor: "pointer",
                             display: "flex",
                             alignItems: "center",
@@ -485,12 +485,12 @@ export function NotificationDropdown() {
                             transition: "all 0.2s",
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = "var(--surface)";
+                            e.currentTarget.style.backgroundColor = "var(--bg-secondary)";
                             e.currentTarget.style.color = "#f87171";
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.backgroundColor = "transparent";
-                            e.currentTarget.style.color = "var(--text-muted)";
+                            e.currentTarget.style.color = "var(--text-quaternary-500)";
                           }}
                         >
                           <X size={14} />
