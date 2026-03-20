@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 02-wave-a-batch-1-02-04-PLAN.md
-last_updated: "2026-03-20T18:08:40.237Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-03-20T18:17:33.159Z"
 progress:
   total_phases: 3
   completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 12
+  completed_plans: 8
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-20)
 
 **Core value:** Every surface uses @openclaw/ui with zero legacy tokens
-**Current focus:** Phase 02 — Wave A Batch 1
+**Current focus:** Phase 03 — Wave A Batch 2 + Verify
 
 ## Current Position
 
-Phase: 02 (Wave A Batch 1) — EXECUTING
-Plan: 2 of 4
+Phase: 03 (Wave A Batch 2 + Verify) — EXECUTING
+Plan: 1 of 5
 
 ## Performance Metrics
 
@@ -51,6 +51,7 @@ Plan: 2 of 4
 | Phase 02-wave-a-batch-1 P03 | 122s | 2 tasks | 2 files |
 | Phase 02-wave-a-batch-1 P01 | 165s | 2 tasks | 2 files |
 | Phase 02-wave-a-batch-1 P04 | 167s | 2 tasks | 2 files |
+| Phase 03-wave-a-batch-2-+-verify P02 | 3min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,8 @@ Recent decisions affecting current work:
 - [Phase 02-wave-a-batch-1]: Dynamic action.color in ACTIONS data drives color-mix() expressions — kept as inline style since not expressible as Tailwind class
 - [Phase 02-wave-a-batch-1]: Logs terminal output area retains fixed dark colors — intentional terminal aesthetic not subject to UUI theming
 - [Phase 02-wave-a-batch-1]: Dynamic style={} blocks retained for streaming indicator and log line colors (computed from state/function)
+- [Phase 03-wave-a-batch-2-+-verify]: Terminal page header/quick-commands converted to Tailwind; fixed GitHub dark palette retained as allowlisted inline styles
+- [Phase 03-wave-a-batch-2-+-verify]: Settings footer rgba(26,26,26,0.5) replaced with bg-[var(--bg-secondary)]
 
 ### Pending Todos
 
@@ -83,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T18:03:56.747Z
-Stopped at: Completed 02-wave-a-batch-1-02-04-PLAN.md
+Last session: 2026-03-20T18:17:33.157Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
