@@ -105,9 +105,9 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <Suspense fallback={
           <div className="rounded-xl p-10 animate-pulse bg-[var(--bg-secondary)] border border-[var(--border-primary)]">
-            <div className="h-8 bg-gray-700 rounded mb-4" />
-            <div className="h-12 bg-gray-700 rounded mb-4" />
-            <div className="h-10 bg-gray-700 rounded" />
+            <div className="h-8 bg-[var(--bg-tertiary)] rounded mb-4" />
+            <div className="h-12 bg-[var(--bg-tertiary)] rounded mb-4" />
+            <div className="h-10 bg-[var(--bg-tertiary)] rounded" />
           </div>
         }>
           <LoginForm />
