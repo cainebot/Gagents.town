@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-02-PLAN.md
-last_updated: "2026-03-20T18:50:21.728Z"
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-20T18:51:57.067Z"
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 13
-  completed_plans: 11
+  completed_plans: 12
 ---
 
 # Project State
@@ -57,6 +57,7 @@ Plan: 1 of 3
 | Phase 03-wave-c-agents-+-office P01 | 192 | 2 tasks | 2 files |
 | Phase 03-wave-c-agents-+-office P02 | 328 | 2 tasks | 3 files |
 | Phase 04 P02 | 95 | 2 tasks | 2 files |
+| Phase 04-animation-migration-+-final-verification P01 | 171 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,9 @@ Plan: 1 of 3
 - [Phase 04]: DiscoveryPanel result card hover via hover:border-accent Tailwind modifier (eliminates JS onMouseEnter/onMouseLeave per card)
 - [Phase 04]: Source badge uses cx() with bg-accent/bg-[#6366f1]/bg-border — #6366f1 kept as Tailwind arbitrary value (brand color)
 - [Phase 04]: SkillPreviewCard contentFocus state tracks textarea focus for border styling via cx() — consistent with title/desc hover+focus pattern
+- [Phase 04-01]: Tasks 1+2 implemented in single atomic file write — motion removal and var(--*) migration co-located in same JSX elements
+- [Phase 04-01]: Loading dot animationDelay retained as inline style (dynamic computed value, not a design token)
+- [Phase 04-01]: Composer border border-[#393939] in isReviewMode — deliberate hardcoded dark border for terminal aesthetic (same as Phase 01-02 Logs modal)
 
 ### Pending Todos
 
@@ -101,6 +105,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T18:50:21.726Z
-Stopped at: Completed 04-02-PLAN.md
+Last session: 2026-03-20T18:51:57.064Z
+Stopped at: Completed 04-01-PLAN.md
 Resume file: None

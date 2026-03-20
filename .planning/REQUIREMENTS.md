@@ -25,7 +25,7 @@ Requirements for M7 milestone. Each maps to roadmap phases.
 
 ### Animation Migration
 
-- [ ] **ANIM-01**: SmartAddModal uses tailwindcss-animate instead of motion.div/motion.span/AnimatePresence — zero motion imports
+- [x] **ANIM-01**: SmartAddModal uses tailwindcss-animate instead of motion.div/motion.span/AnimatePresence — zero motion imports
 
 ### Verification
 
@@ -62,7 +62,7 @@ Requirements for M7 milestone. Each maps to roadmap phases.
 | WAVC-04 | Phase 3 | Complete |
 | WAVC-05 | Phase 3 | Complete |
 | WAVC-06 | Phase 3 | Complete |
-| ANIM-01 | Phase 4 | Pending |
+| ANIM-01 | Phase 4 | Complete |
 | VERF-01 | Phase 4 | Complete |
 | VERF-02 | Phase 4 | Pending |
 | VERF-03 | Phase 4 | Pending |
