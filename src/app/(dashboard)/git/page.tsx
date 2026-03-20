@@ -91,22 +91,17 @@ export default function GitPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: "var(--font-heading)", color: "var(--text-primary)" }}>
+          <h1 className="text-3xl font-bold mb-2 font-[family-name:var(--font-display)] text-[var(--text-primary-900)]">
             Git Dashboard
           </h1>
-          <p style={{ color: "var(--text-secondary)", fontSize: "14px" }}>
+          <p className="text-sm text-[var(--text-secondary-700)]">
             {repos.length} repositories · {dirtyRepos.length} with changes
           </p>
         </div>
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          style={{
-            display: "flex", alignItems: "center", gap: "0.5rem",
-            padding: "0.5rem 1rem", borderRadius: "0.5rem",
-            backgroundColor: "var(--card)", color: "var(--text-secondary)",
-            border: "1px solid var(--border)", cursor: "pointer",
-          }}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-secondary-700)] border border-[var(--border-primary)] cursor-pointer"
         >
           <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
           Refresh
@@ -114,11 +109,11 @@ export default function GitPage() {
       </div>
 
       {loading ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "200px" }}>
-          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--accent)" }} />
+        <div className="flex items-center justify-center h-[200px]">
+          <Loader2 className="w-8 h-8 animate-spin text-[var(--brand-600)]" />
         </div>
       ) : repos.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "3rem", color: "var(--text-muted)" }}>
+        <div className="text-center p-12 text-[var(--text-quaternary-500)]">
           <FolderGit2 className="w-12 h-12 mx-auto mb-3 opacity-30" />
           <p>No git repos found in workspace</p>
         </div>
@@ -130,53 +125,52 @@ export default function GitPage() {
               key={repo.path}
               className="rounded-xl overflow-hidden"
               style={{
-                backgroundColor: "var(--card)",
-                border: `1px solid ${repo.isDirty ? "rgba(251,191,36,0.3)" : "var(--border)"}`,
+                backgroundColor: "var(--bg-secondary)",
+                border: `1px solid ${repo.isDirty ? "rgba(251,191,36,0.3)" : "var(--border-primary)"}`,
               }}
             >
               {/* Repo header */}
               <div
-                className="flex items-center gap-3 px-5 py-4"
-                style={{ borderBottom: "1px solid var(--border)" }}
+                className="flex items-center gap-3 px-5 py-4 border-b border-[var(--border-primary)]"
               >
-                <div className="p-2 rounded-lg" style={{ backgroundColor: "var(--card-elevated)" }}>
-                  <FolderGit2 className="w-5 h-5" style={{ color: repo.isDirty ? "#fbbf24" : "var(--success)" }} />
+                <div className="p-2 rounded-lg bg-[var(--bg-tertiary)]">
+                  <FolderGit2 className={`w-5 h-5 ${repo.isDirty ? "text-[#fbbf24]" : "text-[var(--success-600)]"}`} />
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-bold" style={{ color: "var(--text-primary)", fontFamily: "monospace" }}>
+                    <h3 className="font-bold font-mono text-[var(--text-primary-900)]">
                       {repo.name}
                     </h3>
-                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs" style={{ backgroundColor: "var(--card-elevated)", color: "var(--text-secondary)" }}>
+                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-[var(--bg-tertiary)] text-[var(--text-secondary-700)]">
                       <GitBranch className="w-3 h-3" />
                       {repo.branch}
                     </div>
                     {repo.ahead > 0 && (
-                      <span className="flex items-center gap-0.5 text-xs" style={{ color: "var(--success)" }}>
+                      <span className="flex items-center gap-0.5 text-xs text-[var(--success-600)]">
                         <ArrowUp className="w-3 h-3" /> {repo.ahead} ahead
                       </span>
                     )}
                     {repo.behind > 0 && (
-                      <span className="flex items-center gap-0.5 text-xs" style={{ color: "var(--warning, #f59e0b)" }}>
+                      <span className="flex items-center gap-0.5 text-xs text-[var(--warning-600)]">
                         <ArrowDown className="w-3 h-3" /> {repo.behind} behind
                       </span>
                     )}
                     {!repo.isDirty && (
-                      <span className="flex items-center gap-1 text-xs" style={{ color: "var(--success)" }}>
+                      <span className="flex items-center gap-1 text-xs text-[var(--success-600)]">
                         <CheckCircle className="w-3 h-3" /> clean
                       </span>
                     )}
                     {repo.isDirty && (
-                      <span className="flex items-center gap-1 text-xs" style={{ color: "#fbbf24" }}>
+                      <span className="flex items-center gap-1 text-xs text-[#fbbf24]">
                         <AlertCircle className="w-3 h-3" /> {repo.staged.length + repo.unstaged.length + repo.untracked.length} changes
                       </span>
                     )}
                   </div>
                   {repo.lastCommit && (
-                    <div className="flex items-center gap-1.5 mt-1 text-xs" style={{ color: "var(--text-muted)" }}>
+                    <div className="flex items-center gap-1.5 mt-1 text-xs text-[var(--text-quaternary-500)]">
                       <GitCommit className="w-3 h-3" />
-                      <code style={{ color: "var(--accent)" }}>{repo.lastCommit.hash}</code>
+                      <code className="text-[var(--brand-600)]">{repo.lastCommit.hash}</code>
                       <span>{repo.lastCommit.message.slice(0, 60)}{repo.lastCommit.message.length > 60 ? "…" : ""}</span>
                       <span>·</span>
                       <span>{repo.lastCommit.date}</span>
@@ -196,16 +190,7 @@ export default function GitPage() {
                       key={action}
                       onClick={() => runAction(repo, action)}
                       disabled={actionLoading[`${repo.name}-${action}`]}
-                      style={{
-                        padding: "0.25rem 0.625rem",
-                        borderRadius: "0.375rem",
-                        fontSize: "0.75rem",
-                        fontFamily: "monospace",
-                        backgroundColor: "var(--card-elevated)",
-                        color: "var(--text-secondary)",
-                        border: "1px solid var(--border)",
-                        cursor: "pointer",
-                      }}
+                      className="px-2.5 py-1 rounded-md text-xs font-mono bg-[var(--bg-tertiary)] text-[var(--text-secondary-700)] border border-[var(--border-primary)] cursor-pointer"
                     >
                       {actionLoading[`${repo.name}-${action}`] ? "…" : label}
                     </button>
@@ -215,43 +200,43 @@ export default function GitPage() {
 
               {/* Changes breakdown */}
               {repo.isDirty && (
-                <div className="px-5 py-3 grid grid-cols-3 gap-4" style={{ backgroundColor: "rgba(251,191,36,0.04)" }}>
+                <div className="px-5 py-3 grid grid-cols-3 gap-4 bg-[#fbbf24]/[0.04]">
                   {repo.staged.length > 0 && (
                     <div>
-                      <div className="text-xs font-semibold mb-1" style={{ color: "var(--success)" }}>
+                      <div className="text-xs font-semibold mb-1 text-[var(--success-600)]">
                         Staged ({repo.staged.length})
                       </div>
                       <div className="space-y-0.5">
                         {repo.staged.slice(0, 5).map((f) => (
-                          <div key={f} className="text-xs font-mono truncate" style={{ color: "var(--text-secondary)" }}>{f}</div>
+                          <div key={f} className="text-xs font-mono truncate text-[var(--text-secondary-700)]">{f}</div>
                         ))}
-                        {repo.staged.length > 5 && <div className="text-xs" style={{ color: "var(--text-muted)" }}>+{repo.staged.length - 5} more</div>}
+                        {repo.staged.length > 5 && <div className="text-xs text-[var(--text-quaternary-500)]">+{repo.staged.length - 5} more</div>}
                       </div>
                     </div>
                   )}
                   {repo.unstaged.length > 0 && (
                     <div>
-                      <div className="text-xs font-semibold mb-1" style={{ color: "#fbbf24" }}>
+                      <div className="text-xs font-semibold mb-1 text-[#fbbf24]">
                         Modified ({repo.unstaged.length})
                       </div>
                       <div className="space-y-0.5">
                         {repo.unstaged.slice(0, 5).map((f) => (
-                          <div key={f} className="text-xs font-mono truncate" style={{ color: "var(--text-secondary)" }}>{f}</div>
+                          <div key={f} className="text-xs font-mono truncate text-[var(--text-secondary-700)]">{f}</div>
                         ))}
-                        {repo.unstaged.length > 5 && <div className="text-xs" style={{ color: "var(--text-muted)" }}>+{repo.unstaged.length - 5} more</div>}
+                        {repo.unstaged.length > 5 && <div className="text-xs text-[var(--text-quaternary-500)]">+{repo.unstaged.length - 5} more</div>}
                       </div>
                     </div>
                   )}
                   {repo.untracked.length > 0 && (
                     <div>
-                      <div className="text-xs font-semibold mb-1" style={{ color: "var(--text-muted)" }}>
+                      <div className="text-xs font-semibold mb-1 text-[var(--text-quaternary-500)]">
                         Untracked ({repo.untracked.length})
                       </div>
                       <div className="space-y-0.5">
                         {repo.untracked.slice(0, 5).map((f) => (
-                          <div key={f} className="text-xs font-mono truncate" style={{ color: "var(--text-secondary)" }}>{f}</div>
+                          <div key={f} className="text-xs font-mono truncate text-[var(--text-secondary-700)]">{f}</div>
                         ))}
-                        {repo.untracked.length > 5 && <div className="text-xs" style={{ color: "var(--text-muted)" }}>+{repo.untracked.length - 5} more</div>}
+                        {repo.untracked.length > 5 && <div className="text-xs text-[var(--text-quaternary-500)]">+{repo.untracked.length - 5} more</div>}
                       </div>
                     </div>
                   )}
@@ -262,36 +247,36 @@ export default function GitPage() {
         </div>
       )}
 
-      {/* Output Modal */}
+      {/* Output Modal — terminal UI with intentional fixed dark theme colors */}
       {outputModal && (
-        <div style={{
-          position: "fixed", inset: 0, zIndex: 1000,
-          backgroundColor: "rgba(0,0,0,0.85)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          padding: "1rem",
-        }}>
-          <div style={{
-            width: "95vw", maxWidth: "700px", height: "65vh",
-            backgroundColor: "#0d1117",
-            borderRadius: "1rem", border: "1px solid #30363d",
-            display: "flex", flexDirection: "column",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.875rem 1rem", borderBottom: "1px solid #30363d", flexShrink: 0 }}>
-              <Terminal className="w-4 h-4" style={{ color: "var(--accent)" }} />
-              <span style={{ color: "#c9d1d9", fontFamily: "monospace", fontSize: "0.875rem", flex: 1 }}>
+        <div className="fixed inset-0 z-[1000] bg-black/85 flex items-center justify-center p-4">
+          <div
+            className="w-[95vw] max-w-[700px] h-[65vh] rounded-2xl flex flex-col"
+            style={{ backgroundColor: "#0d1117", border: "1px solid #30363d" }}
+          >
+            <div
+              className="flex items-center gap-3 px-4 py-3.5 shrink-0"
+              style={{ borderBottom: "1px solid #30363d" }}
+            >
+              <Terminal className="w-4 h-4 text-[var(--brand-600)]" />
+              <span className="font-mono text-sm flex-1" style={{ color: "#c9d1d9" }}>
                 {outputModal.title}
               </span>
-              <button onClick={() => setOutputModal(null)} style={{ padding: "0.375rem", borderRadius: "0.375rem", background: "none", border: "none", cursor: "pointer", color: "#8b949e" }}>
+              <button
+                onClick={() => setOutputModal(null)}
+                className="p-1.5 rounded-md bg-transparent border-none cursor-pointer"
+                style={{ color: "#8b949e" }}
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div style={{ flex: 1, overflow: "auto", padding: "1rem" }}>
+            <div className="flex-1 overflow-auto p-4">
               {outputModal.loading ? (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-                  <Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--accent)" }} />
+                <div className="flex items-center justify-center h-full">
+                  <Loader2 className="w-6 h-6 animate-spin text-[var(--brand-600)]" />
                 </div>
               ) : (
-                <pre style={{ fontFamily: "monospace", fontSize: "0.8rem", color: "#c9d1d9", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
+                <pre className="font-mono text-[0.8rem] whitespace-pre-wrap leading-relaxed" style={{ color: "#c9d1d9" }}>
                   {outputModal.content}
                 </pre>
               )}
