@@ -100,19 +100,13 @@ export default function AboutPage() {
     <div className="p-4 md:p-8 max-w-5xl">
       {/* Hero Section */}
       <div
-        className="rounded-xl p-4 md:p-8 mb-6 md:mb-8"
-        style={{
-          backgroundColor: "var(--card)",
-          border: "1px solid var(--border)",
-        }}
+        className="rounded-xl p-4 md:p-8 mb-6 md:mb-8 bg-[var(--bg-secondary)] border border-[var(--border-primary)]"
       >
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 md:gap-6 text-center sm:text-left">
           {/* Avatar */}
           <div
-            className="w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center"
+            className="w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center border-[3px] border-[var(--brand-600)] bg-[var(--bg-primary)]"
             style={{
-              border: "3px solid var(--accent)",
-              backgroundColor: "var(--background)",
               fontSize: BRANDING.agentAvatar ? undefined : "2.5rem",
             }}
           >
@@ -131,36 +125,25 @@ export default function AboutPage() {
           <div className="flex-1">
             <div className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 mb-2">
               <h1
-                className="text-2xl md:text-3xl font-bold"
-                style={{
-                  fontFamily: "var(--font-heading)",
-                  color: "var(--text-primary)",
-                  letterSpacing: "-1px",
-                }}
+                className="text-2xl md:text-3xl font-bold font-[family-name:var(--font-display)] text-[var(--text-primary-900)] tracking-[-1px]"
               >
                 {getAgentDisplayName()}
               </h1>
               <span
-                className="px-3 py-1 rounded-full text-xs font-medium"
-                style={{
-                  backgroundColor: "var(--success-bg)",
-                  color: "var(--success)",
-                }}
+                className="px-3 py-1 rounded-full text-xs font-medium bg-[var(--success-600)]/10 text-[var(--success-600)]"
               >
                 ● Online
               </span>
             </div>
 
             <p
-              className="text-base md:text-lg mb-3 md:mb-4"
-              style={{ color: "var(--text-secondary)" }}
+              className="text-base md:text-lg mb-3 md:mb-4 text-[var(--text-secondary-700)]"
             >
               {description}
             </p>
 
             <div
-              className="flex flex-col sm:flex-row flex-wrap justify-center sm:justify-start gap-2 sm:gap-4 text-xs sm:text-sm"
-              style={{ color: "var(--text-muted)" }}
+              className="flex flex-col sm:flex-row flex-wrap justify-center sm:justify-start gap-2 sm:gap-4 text-xs sm:text-sm text-[var(--text-quaternary-500)]"
             >
               {BRANDING.birthDate && (
                 <span className="flex items-center justify-center sm:justify-start gap-1.5">
@@ -180,8 +163,7 @@ export default function AboutPage() {
               )}
               <span className="flex items-center justify-center sm:justify-start gap-1.5">
                 <Terminal
-                  className="w-4 h-4"
-                  style={{ color: "var(--accent)" }}
+                  className="w-4 h-4 text-[var(--brand-600)]"
                 />
                 OpenClaw + Claude
               </span>
@@ -194,102 +176,67 @@ export default function AboutPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
         {uptime && (
           <div
-            className="rounded-xl p-3 md:p-5 text-center"
-            style={{
-              backgroundColor: "var(--card)",
-              border: "1px solid var(--border)",
-            }}
+            className="rounded-xl p-3 md:p-5 text-center bg-[var(--bg-secondary)] border border-[var(--border-primary)]"
           >
             <Clock
-              className="w-5 h-5 md:w-6 md:h-6 mx-auto mb-1 md:mb-2"
-              style={{ color: "var(--accent)" }}
+              className="w-5 h-5 md:w-6 md:h-6 mx-auto mb-1 md:mb-2 text-[var(--brand-600)]"
             />
             <div
-              className="text-xl md:text-2xl font-bold mb-0.5 md:mb-1"
-              style={{
-                fontFamily: "var(--font-heading)",
-                color: "var(--text-primary)",
-              }}
+              className="text-xl md:text-2xl font-bold mb-0.5 md:mb-1 font-[family-name:var(--font-display)] text-[var(--text-primary-900)]"
             >
               {uptime}
             </div>
-            <div className="text-xs" style={{ color: "var(--text-muted)" }}>
+            <div className="text-xs text-[var(--text-quaternary-500)]">
               uptime
             </div>
           </div>
         )}
 
         <div
-          className="rounded-xl p-3 md:p-5 text-center"
-          style={{
-            backgroundColor: "var(--card)",
-            border: "1px solid var(--border)",
-          }}
+          className="rounded-xl p-3 md:p-5 text-center bg-[var(--bg-secondary)] border border-[var(--border-primary)]"
         >
           <Activity
-            className="w-5 h-5 md:w-6 md:h-6 mx-auto mb-1 md:mb-2"
-            style={{ color: "var(--info)" }}
+            className="w-5 h-5 md:w-6 md:h-6 mx-auto mb-1 md:mb-2 text-[var(--blue-600)]"
           />
           <div
-            className="text-xl md:text-2xl font-bold mb-0.5 md:mb-1"
-            style={{
-              fontFamily: "var(--font-heading)",
-              color: "var(--text-primary)",
-            }}
+            className="text-xl md:text-2xl font-bold mb-0.5 md:mb-1 font-[family-name:var(--font-display)] text-[var(--text-primary-900)]"
           >
             {stats?.totalActivities.toLocaleString() || "..."}
           </div>
-          <div className="text-xs" style={{ color: "var(--text-muted)" }}>
+          <div className="text-xs text-[var(--text-quaternary-500)]">
             activities
           </div>
         </div>
 
         <div
-          className="rounded-xl p-3 md:p-5 text-center"
-          style={{
-            backgroundColor: "var(--card)",
-            border: "1px solid var(--border)",
-          }}
+          className="rounded-xl p-3 md:p-5 text-center bg-[var(--bg-secondary)] border border-[var(--border-primary)]"
         >
           <CheckCircle
-            className="w-5 h-5 md:w-6 md:h-6 mx-auto mb-1 md:mb-2"
-            style={{ color: "var(--success)" }}
+            className="w-5 h-5 md:w-6 md:h-6 mx-auto mb-1 md:mb-2 text-[var(--success-600)]"
           />
           <div
-            className="text-xl md:text-2xl font-bold mb-0.5 md:mb-1"
-            style={{
-              fontFamily: "var(--font-heading)",
-              color: "var(--text-primary)",
-            }}
+            className="text-xl md:text-2xl font-bold mb-0.5 md:mb-1 font-[family-name:var(--font-display)] text-[var(--text-primary-900)]"
           >
             {stats?.successRate || "..."}%
           </div>
-          <div className="text-xs" style={{ color: "var(--text-muted)" }}>
+          <div className="text-xs text-[var(--text-quaternary-500)]">
             success rate
           </div>
         </div>
 
         <div
-          className="rounded-xl p-3 md:p-5 text-center"
-          style={{
-            backgroundColor: "var(--card)",
-            border: "1px solid var(--border)",
-          }}
+          className="rounded-xl p-3 md:p-5 text-center bg-[var(--bg-secondary)] border border-[var(--border-primary)]"
         >
           <Puzzle
             className="w-5 h-5 md:w-6 md:h-6 mx-auto mb-1 md:mb-2"
             style={{ color: "#a78bfa" }}
           />
           <div
-            className="text-xl md:text-2xl font-bold mb-0.5 md:mb-1"
-            style={{
-              fontFamily: "var(--font-heading)",
-              color: "var(--text-primary)",
-            }}
+            className="text-xl md:text-2xl font-bold mb-0.5 md:mb-1 font-[family-name:var(--font-display)] text-[var(--text-primary-900)]"
           >
             {stats?.skillsCount || "..."}
           </div>
-          <div className="text-xs" style={{ color: "var(--text-muted)" }}>
+          <div className="text-xs text-[var(--text-quaternary-500)]">
             skills
           </div>
         </div>
@@ -298,40 +245,32 @@ export default function AboutPage() {
       <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
         {/* About */}
         <div
-          className="rounded-xl p-4 md:p-6"
-          style={{
-            backgroundColor: "var(--card)",
-            border: "1px solid var(--border)",
-          }}
+          className="rounded-xl p-4 md:p-6 bg-[var(--bg-secondary)] border border-[var(--border-primary)]"
         >
           <div className="flex items-center gap-2 mb-3 md:mb-4">
-            <Heart className="w-5 h-5" style={{ color: "var(--accent)" }} />
+            <Heart className="w-5 h-5 text-[var(--brand-600)]" />
             <h2
-              className="text-base md:text-lg font-semibold"
-              style={{
-                fontFamily: "var(--font-heading)",
-                color: "var(--text-primary)",
-              }}
+              className="text-base md:text-lg font-semibold font-[family-name:var(--font-display)] text-[var(--text-primary-900)]"
             >
               About
             </h2>
           </div>
           <div
-            className="space-y-2 md:space-y-3 text-xs md:text-sm"
-            style={{ color: "var(--text-secondary)", lineHeight: 1.7 }}
+            className="space-y-2 md:space-y-3 text-xs md:text-sm text-[var(--text-secondary-700)]"
+            style={{ lineHeight: 1.7 }}
           >
             <p>
               I am{" "}
-              <strong style={{ color: "var(--text-primary)" }}>
+              <strong className="text-[var(--text-primary-900)]">
                 {agentName} {agentEmoji}
               </strong>
               , an AI agent running on{" "}
-              <span style={{ color: "var(--accent)" }}>OpenClaw</span> with
+              <span className="text-[var(--brand-600)]">OpenClaw</span> with
               Claude as my brain.
             </p>
             <p>
               My purpose is to assist{" "}
-              <strong style={{ color: "var(--text-primary)" }}>
+              <strong className="text-[var(--text-primary-900)]">
                 {ownerUsername}
               </strong>{" "}
               with daily tasks: managing communications, scheduling, research,
@@ -346,20 +285,12 @@ export default function AboutPage() {
 
         {/* Personality */}
         <div
-          className="rounded-xl p-4 md:p-6"
-          style={{
-            backgroundColor: "var(--card)",
-            border: "1px solid var(--border)",
-          }}
+          className="rounded-xl p-4 md:p-6 bg-[var(--bg-secondary)] border border-[var(--border-primary)]"
         >
           <div className="flex items-center gap-2 mb-3 md:mb-4">
             <Sparkles className="w-5 h-5" style={{ color: "#facc15" }} />
             <h2
-              className="text-base md:text-lg font-semibold"
-              style={{
-                fontFamily: "var(--font-heading)",
-                color: "var(--text-primary)",
-              }}
+              className="text-base md:text-lg font-semibold font-[family-name:var(--font-display)] text-[var(--text-primary-900)]"
             >
               Personality
             </h2>
@@ -368,18 +299,15 @@ export default function AboutPage() {
             {personality.map((p) => (
               <div
                 key={p.trait}
-                className="rounded-lg p-2 md:p-3"
-                style={{ backgroundColor: "var(--background)" }}
+                className="rounded-lg p-2 md:p-3 bg-[var(--bg-primary)]"
               >
                 <div
-                  className="text-sm md:text-base font-medium mb-0.5"
-                  style={{ color: "var(--text-primary)" }}
+                  className="text-sm md:text-base font-medium mb-0.5 text-[var(--text-primary-900)]"
                 >
                   {p.trait}
                 </div>
                 <div
-                  className="text-xs"
-                  style={{ color: "var(--text-muted)" }}
+                  className="text-xs text-[var(--text-quaternary-500)]"
                 >
                   {p.desc}
                 </div>
@@ -391,20 +319,12 @@ export default function AboutPage() {
 
       {/* Philosophy */}
       <div
-        className="rounded-xl p-4 md:p-6 mb-6 md:mb-8"
-        style={{
-          backgroundColor: "var(--card)",
-          border: "1px solid var(--border)",
-        }}
+        className="rounded-xl p-4 md:p-6 mb-6 md:mb-8 bg-[var(--bg-secondary)] border border-[var(--border-primary)]"
       >
         <div className="flex items-center gap-2 mb-3 md:mb-4">
-          <Brain className="w-5 h-5" style={{ color: "var(--info)" }} />
+          <Brain className="w-5 h-5 text-[var(--blue-600)]" />
           <h2
-            className="text-base md:text-lg font-semibold"
-            style={{
-              fontFamily: "var(--font-heading)",
-              color: "var(--text-primary)",
-            }}
+            className="text-base md:text-lg font-semibold font-[family-name:var(--font-display)] text-[var(--text-primary-900)]"
           >
             Working Philosophy
           </h2>
@@ -413,15 +333,13 @@ export default function AboutPage() {
           {philosophies.map((p, i) => (
             <div
               key={i}
-              className="flex gap-2 md:gap-3 p-2 md:p-3 rounded-lg"
-              style={{ backgroundColor: "var(--background)" }}
+              className="flex gap-2 md:gap-3 p-2 md:p-3 rounded-lg bg-[var(--bg-primary)]"
             >
-              <span className="flex-shrink-0" style={{ color: "var(--accent)" }}>
+              <span className="flex-shrink-0 text-[var(--brand-600)]">
                 →
               </span>
               <span
-                className="text-xs md:text-sm"
-                style={{ color: "var(--text-secondary)" }}
+                className="text-xs md:text-sm text-[var(--text-secondary-700)]"
               >
                 {p}
               </span>
@@ -432,20 +350,12 @@ export default function AboutPage() {
 
       {/* Skills/Capabilities */}
       <div
-        className="rounded-xl p-4 md:p-6 mb-6 md:mb-8"
-        style={{
-          backgroundColor: "var(--card)",
-          border: "1px solid var(--border)",
-        }}
+        className="rounded-xl p-4 md:p-6 mb-6 md:mb-8 bg-[var(--bg-secondary)] border border-[var(--border-primary)]"
       >
         <div className="flex items-center gap-2 mb-3 md:mb-4">
-          <Zap className="w-5 h-5" style={{ color: "var(--warning)" }} />
+          <Zap className="w-5 h-5 text-[var(--warning-600)]" />
           <h2
-            className="text-base md:text-lg font-semibold"
-            style={{
-              fontFamily: "var(--font-heading)",
-              color: "var(--text-primary)",
-            }}
+            className="text-base md:text-lg font-semibold font-[family-name:var(--font-display)] text-[var(--text-primary-900)]"
           >
             Capabilities
           </h2>
@@ -456,16 +366,14 @@ export default function AboutPage() {
             return (
               <div
                 key={skill.name}
-                className="flex items-center gap-2 md:gap-3 p-2 md:p-3 rounded-lg"
-                style={{ backgroundColor: "var(--background)" }}
+                className="flex items-center gap-2 md:gap-3 p-2 md:p-3 rounded-lg bg-[var(--bg-primary)]"
               >
                 <Icon
                   className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0"
                   style={{ color: skill.color }}
                 />
                 <span
-                  className="text-xs md:text-sm"
-                  style={{ color: "var(--text-primary)" }}
+                  className="text-xs md:text-sm text-[var(--text-primary-900)]"
                 >
                   {skill.name}
                 </span>
@@ -477,33 +385,27 @@ export default function AboutPage() {
 
       {/* Footer */}
       <div
-        className="text-center py-4 md:py-6 px-4 rounded-xl"
-        style={{
-          backgroundColor: "var(--card)",
-          border: "1px solid var(--border)",
-        }}
+        className="text-center py-4 md:py-6 px-4 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-primary)]"
       >
         <div className="flex items-center justify-center gap-2 mb-2">
           <Coffee
-            className="w-4 h-4 md:w-5 md:h-5"
-            style={{ color: "var(--accent)" }}
+            className="w-4 h-4 md:w-5 md:h-5 text-[var(--brand-600)]"
           />
           <span
-            className="text-sm md:text-base"
-            style={{ color: "var(--text-secondary)" }}
+            className="text-sm md:text-base text-[var(--text-secondary-700)]"
           >
-            Built with <span style={{ color: "var(--accent)" }}>♥</span> on{" "}
+            Built with <span className="text-[var(--brand-600)]">♥</span> on{" "}
             <a
               href="https://github.com/openclaw/openclaw"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: "var(--accent)", textDecoration: "underline" }}
+              className="text-[var(--brand-600)] underline"
             >
               OpenClaw
             </a>
           </span>
         </div>
-        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+        <p className="text-xs text-[var(--text-quaternary-500)]">
           {agentName} {agentEmoji} — Your AI co-pilot
         </p>
       </div>
