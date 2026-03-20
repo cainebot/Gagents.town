@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Badge, Button, Popover } from '@openclaw/ui';
+import { Badge, Button, Popover, cx } from '@openclaw/ui';
 import type { SkillDraft } from '@/types/supabase';
 
 const EMOJI_OPTIONS = ['🔧','🛠️','⚙️','🧰','💻','🖥️','📦','🔌','🤖','🧠','📊','🔍','🚀','✨','🎯','📝','🔐','🌐','📁','⚡','🎨','🧪','📈','🔗','💡','🗂️','🏗️','📡','🧩','💬','🔔','🛡️','📋','🎮','🏷️','📐','🔥','💾','🗃️','🪝'];
@@ -20,6 +20,7 @@ function SkillPreviewCard({ draft, onDraftChange, onConfirm, onCancel, confirmin
   const [titleFocus, setTitleFocus] = useState(false);
   const [descHover, setDescHover] = useState(false);
   const [descFocus, setDescFocus] = useState(false);
+  const [contentFocus, setContentFocus] = useState(false);
 
   function getOriginBadge() {
     switch (draft.origin) {
@@ -34,56 +35,10 @@ function SkillPreviewCard({ draft, onDraftChange, onConfirm, onCancel, confirmin
     }
   }
 
-  const fieldBaseStyle: React.CSSProperties = {
-    border: 'none',
-    outline: 'none',
-    backgroundColor: 'transparent',
-    width: '100%',
-    transition: 'background-color 150ms, border-color 150ms',
-  };
-
-  const titleStyle: React.CSSProperties = {
-    ...fieldBaseStyle,
-    fontFamily: 'var(--font-heading)',
-    fontSize: '18px',
-    fontWeight: 700,
-    color: 'var(--text-primary)',
-    padding: '2px 6px',
-    borderRadius: '6px',
-    margin: '0 -6px',
-    backgroundColor: titleFocus ? 'var(--surface)' : titleHover ? 'var(--surface)' : 'transparent',
-    border: titleFocus ? '1px solid var(--border)' : '1px solid transparent',
-  };
-
-  const descStyle: React.CSSProperties = {
-    ...fieldBaseStyle,
-    fontFamily: 'var(--font-body)',
-    fontSize: '13px',
-    color: 'var(--text-secondary)',
-    padding: '2px 6px',
-    borderRadius: '6px',
-    margin: '2px -6px 0',
-    minHeight: '60px',
-    overflowY: 'auto',
-    lineHeight: '1.5',
-    backgroundColor: descFocus ? 'var(--surface)' : descHover ? 'var(--surface)' : 'transparent',
-    border: descFocus ? '1px solid var(--border)' : '1px solid transparent',
-  };
-
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--surface-elevated)',
-        borderRadius: '12px',
-        border: '1px solid rgba(255,255,255,0.06)',
-        padding: '20px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-      }}
-    >
+    <div className="bg-surface-elevated rounded-xl border border-white/[0.06] p-5 flex flex-col gap-3">
       {/* Header row: icon + name + description */}
-      <div style={{ display: 'flex', flexDirection: 'row', gap: '12px', alignItems: 'flex-start' }}>
+      <div className="flex flex-row gap-3 items-start">
         {/* Emoji picker */}
         <Popover
           isOpen={emojiOpen}
@@ -91,38 +46,23 @@ function SkillPreviewCard({ draft, onDraftChange, onConfirm, onCancel, confirmin
           trigger={
             <button
               type="button"
-              style={{
-                fontSize: '36px',
-                flexShrink: 0,
-                lineHeight: 1,
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '2px',
-                borderRadius: '6px',
-                transition: 'background-color 150ms',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--surface)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+              className="text-[36px] flex-shrink-0 leading-none bg-transparent border-none cursor-pointer p-0.5 rounded-md transition-colors hover:bg-surface"
               title="Change icon"
             >
               {draft.icon ?? '🔧'}
             </button>
           }
         >
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: '4px' }}>
+          <div className="grid grid-cols-8 gap-1">
             {EMOJI_OPTIONS.map((emoji) => (
               <button
                 key={emoji}
                 type="button"
                 onClick={() => { onDraftChange({ ...draft, icon: emoji }); setEmojiOpen(false); }}
-                style={{
-                  fontSize: '22px', padding: '6px', borderRadius: '6px', border: 'none',
-                  backgroundColor: draft.icon === emoji ? 'var(--surface-elevated)' : 'transparent',
-                  cursor: 'pointer', transition: 'background-color 100ms',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--surface-elevated)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = draft.icon === emoji ? 'var(--surface-elevated)' : 'transparent'; }}
+                className={cx(
+                  'text-[22px] p-1.5 rounded-md border-none cursor-pointer transition-colors hover:bg-surface-elevated',
+                  draft.icon === emoji ? 'bg-surface-elevated' : 'bg-transparent'
+                )}
               >
                 {emoji}
               </button>
@@ -130,7 +70,7 @@ function SkillPreviewCard({ draft, onDraftChange, onConfirm, onCancel, confirmin
           </div>
         </Popover>
 
-        <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+        <div className="flex flex-col min-w-0 flex-1">
           <input
             type="text"
             value={draft.name ?? ''}
@@ -140,7 +80,10 @@ function SkillPreviewCard({ draft, onDraftChange, onConfirm, onCancel, confirmin
             onMouseLeave={() => setTitleHover(false)}
             onFocus={() => setTitleFocus(true)}
             onBlur={() => setTitleFocus(false)}
-            style={titleStyle}
+            className={cx(
+              'border-none outline-none bg-transparent w-full transition-colors font-heading text-lg font-bold text-foreground px-1.5 py-0.5 rounded-md -mx-1.5',
+              titleFocus ? 'bg-surface border border-border' : titleHover ? 'bg-surface border border-transparent' : 'border border-transparent'
+            )}
           />
           <textarea
             value={draft.description ?? ''}
@@ -150,24 +93,23 @@ function SkillPreviewCard({ draft, onDraftChange, onConfirm, onCancel, confirmin
             onMouseLeave={() => setDescHover(false)}
             onFocus={() => setDescFocus(true)}
             onBlur={() => setDescFocus(false)}
-            style={descStyle}
+            className={cx(
+              'border-none outline-none bg-transparent w-full transition-colors font-sans text-[13px] text-muted-foreground px-1.5 py-0.5 rounded-md -mx-1.5 mt-0.5 min-h-[60px] overflow-y-auto leading-relaxed resize-none',
+              descFocus ? 'bg-surface border border-border' : descHover ? 'bg-surface border border-transparent' : 'border border-transparent'
+            )}
           />
         </div>
       </div>
 
       {/* Meta row: origin badge + source URL */}
-      <div style={{ display: 'flex', flexDirection: 'row', gap: '8px', alignItems: 'center' }}>
+      <div className="flex flex-row gap-2 items-center">
         {getOriginBadge()}
         {draft.source_url && (
           <a
             href={draft.source_url}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              fontSize: '12px', color: 'var(--accent)', fontFamily: 'var(--font-mono)',
-              textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap', maxWidth: '280px',
-            }}
+            className="text-xs text-accent font-mono no-underline overflow-hidden text-ellipsis whitespace-nowrap max-w-[280px]"
           >
             {draft.source_url}
           </a>
@@ -179,31 +121,18 @@ function SkillPreviewCard({ draft, onDraftChange, onConfirm, onCancel, confirmin
         <textarea
           value={draft.content}
           onChange={(e) => onDraftChange({ ...draft, content: e.target.value })}
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '13px',
-            color: '#8B8B8B',
-            backgroundColor: 'var(--surface)',
-            borderRadius: '6px',
-            padding: '8px 10px',
-            margin: 0,
-            minHeight: '160px',
-            overflowY: 'auto',
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
-            border: '1px solid transparent',
-            outline: 'none',
-            width: '100%',
-            transition: 'border-color 150ms',
-          }}
-          onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
-          onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; }}
+          onFocus={() => setContentFocus(true)}
+          onBlur={() => setContentFocus(false)}
+          className={cx(
+            'font-mono text-[13px] text-[#8B8B8B] bg-surface rounded-md px-2.5 py-2 m-0 min-h-[160px] overflow-y-auto whitespace-pre-wrap break-words outline-none w-full transition-colors resize-none',
+            contentFocus ? 'border border-border' : 'border border-transparent'
+          )}
         />
       )}
 
       {/* Action buttons — right-aligned inside card */}
       {onConfirm && (
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+        <div className="flex gap-3 justify-end">
           {onCancel && (
             <Button variant="outline" onPress={onCancel} isDisabled={confirming} className="h-12 px-6">
               Cancelar
