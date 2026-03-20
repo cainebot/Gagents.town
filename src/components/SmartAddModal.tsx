@@ -2,13 +2,12 @@
 
 import { useState, useReducer, useRef, useEffect } from 'react';
 import { Plus, ArrowUp, Upload, Link, Terminal, X } from 'lucide-react';
-import { Modal, ModalBody, Badge, Popover } from '@openclaw/ui';
+import { Modal, ModalBody, Badge, Popover, cx } from '@openclaw/ui';
 
 import { detectInput } from '@/lib/input-detector';
 import { SkillPreviewCard } from '@/components/SkillPreviewCard';
 import type { SkillDraft, DiscoveredSkill } from '@/types/supabase';
 import { DiscoveryPanel } from '@/components/DiscoveryPanel';
-import { motion, AnimatePresence } from 'motion/react';
 
 // --- State machine types ---
 
@@ -343,132 +342,81 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
   return (
     <Modal isOpen onOpenChange={(open) => !open && onClose()} size="xl">
       <ModalBody className="p-0 flex flex-col">
-        <div ref={scrollRef} style={{ overflowY: 'auto', flex: '1 1 auto', minHeight: 0 }}>
+        <div ref={scrollRef} className="overflow-y-auto flex-1 min-h-0">
 
           {/* ========== REVIEW SECTION (visible in preview/submitting) ========== */}
-          <AnimatePresence>
-            {isReviewMode && 'draft' in state && (
-              <motion.div
-                key="review-section"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-              >
-                {/* Review header: chat-style message + source chip */}
-                <div style={{
-                  padding: '40px 24px 0',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '8px',
-                  opacity: 0.6,
-                }}>
-                  {/* Source chip — right-aligned like a user message */}
-                  {sourceChip && (
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <span style={{
-                        fontSize: '12px',
-                        fontFamily: 'var(--font-mono)',
-                        backgroundColor: 'var(--text-primary)',
-                        color: 'var(--surface)',
-                        padding: '6px 12px',
-                        borderRadius: '12px 12px 2px 12px',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        flexShrink: 0,
-                        whiteSpace: 'nowrap' as const,
-                      }}>
-                        {sourceChip.icon} {sourceChip.label}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Assistant message bubble */}
-                  <div style={{
-                    maxWidth: '85%',
-                    padding: '8px 12px',
-                    borderRadius: '12px 12px 12px 2px',
-                    backgroundColor: 'var(--surface-elevated)',
-                    fontSize: '13px',
-                    fontFamily: 'var(--font-body)',
-                    color: 'var(--text-secondary)',
-                    lineHeight: '1.4',
-                  }}>
-                    {getReviewMessage(state.draft)}
-                  </div>
-                </div>
-
-                {/* Skill card */}
-                <motion.div
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.22, ease: 'easeOut', delay: 0.08 }}
-                  style={{ padding: '16px 24px', marginTop: '-12px', position: 'relative', zIndex: 1 }}
-                >
-                  {/* Discovery panel (if discovery_intent without source_url) */}
-                  {state.draft.intent === 'discovery_intent' && !state.draft.source_url ? (
-                    <DiscoveryPanel
-                      initialQuery={state.draft.raw_input?.replace('discovery:', '') ?? ''}
-                      onSelect={handleDiscoverySelect}
-                    />
-                  ) : (
-                    <SkillPreviewCard
-                      draft={state.draft}
-                      onDraftChange={handleDraftChange}
-                      onConfirm={handleConfirm}
-                      onCancel={handleCancel}
-                      confirming={state.phase === 'submitting'}
-                    />
-                  )}
-                </motion.div>
-
-                {/* Inline error (inside review section) */}
-                {inlineError && (
-                  <div style={{ padding: '0 24px 8px' }}>
-                    <p style={{
-                      fontSize: '13px',
-                      color: 'var(--negative)',
-                      margin: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                    }}>
-                      {inlineError}
-                      <button
-                        type="button"
-                        onClick={() => setInlineError(null)}
-                        style={{
-                          background: 'none', border: 'none', cursor: 'pointer',
-                          color: 'var(--negative)', padding: 0, display: 'flex', alignItems: 'center',
-                        }}
-                      >
-                        <X size={12} />
-                      </button>
-                    </p>
+          {isReviewMode && 'draft' in state && (
+            <div className="animate-in fade-in duration-300">
+              {/* Review header: chat-style message + source chip */}
+              <div className="pt-10 px-6 flex flex-col gap-2 opacity-60">
+                {/* Source chip — right-aligned like a user message */}
+                {sourceChip && (
+                  <div className="flex justify-end">
+                    <span className="text-xs font-mono bg-foreground text-background px-3 py-1.5 rounded-[12px_12px_2px_12px] inline-flex items-center gap-1 shrink-0 whitespace-nowrap">
+                      {sourceChip.icon} {sourceChip.label}
+                    </span>
                   </div>
                 )}
 
-                {/* Action buttons are inside SkillPreviewCard */}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                {/* Assistant message bubble */}
+                <div className="max-w-[85%] px-3 py-2 rounded-[12px_12px_12px_2px] bg-surface-elevated text-[13px] font-sans text-muted-foreground leading-[1.4]">
+                  {getReviewMessage(state.draft)}
+                </div>
+              </div>
+
+              {/* Skill card */}
+              <div className="animate-in fade-in slide-in-from-bottom-3 duration-300 delay-75 fill-mode-forwards p-6 -mt-3 relative z-[1]">
+                {/* Discovery panel (if discovery_intent without source_url) */}
+                {state.draft.intent === 'discovery_intent' && !state.draft.source_url ? (
+                  <DiscoveryPanel
+                    initialQuery={state.draft.raw_input?.replace('discovery:', '') ?? ''}
+                    onSelect={handleDiscoverySelect}
+                  />
+                ) : (
+                  <SkillPreviewCard
+                    draft={state.draft}
+                    onDraftChange={handleDraftChange}
+                    onConfirm={handleConfirm}
+                    onCancel={handleCancel}
+                    confirming={state.phase === 'submitting'}
+                  />
+                )}
+              </div>
+
+              {/* Inline error (inside review section) */}
+              {inlineError && (
+                <div className="px-6 pb-2">
+                  <p className="text-[13px] text-destructive m-0 flex items-center gap-1.5">
+                    {inlineError}
+                    <button
+                      type="button"
+                      onClick={() => setInlineError(null)}
+                      className="bg-transparent border-0 cursor-pointer text-destructive p-0 flex items-center"
+                    >
+                      <X size={12} />
+                    </button>
+                  </p>
+                </div>
+              )}
+
+              {/* Action buttons are inside SkillPreviewCard */}
+            </div>
+          )}
 
           {/* ========== COMPOSER SECTION (always visible) ========== */}
           <div
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
-            style={{
-              padding: '16px',
-              margin: isReviewMode ? '0 24px 24px' : '0',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0',
-              border: dragOver ? '2px dashed var(--accent)' : isReviewMode ? '1px solid #393939' : '2px dashed transparent',
-              borderRadius: '12px',
-              transition: 'border-color 150ms ease, opacity 200ms ease',
-            }}
+            className={cx(
+              'p-4 flex flex-col gap-0 rounded-xl transition-[border-color,opacity] duration-150',
+              isReviewMode ? 'mx-6 mb-6' : 'm-0',
+              dragOver
+                ? 'border-2 border-dashed border-accent'
+                : isReviewMode
+                  ? 'border border-[#393939]'
+                  : 'border-2 border-dashed border-transparent',
+            )}
           >
             {/* Textarea */}
             <textarea
@@ -480,54 +428,22 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
               disabled={isInputDisabled}
               placeholder="Paste a GitHub URL, command, or describe the skill you need..."
               rows={1}
-              style={{
-                width: '100%',
-                resize: 'none',
-                border: 'none',
-                outline: 'none',
-                backgroundColor: 'transparent',
-                color: 'var(--text-primary)',
-                fontFamily: 'var(--font-body)',
-                fontSize: '14px',
-                lineHeight: '1.5',
-                padding: '8px 4px',
-                minHeight: '44px',
-                maxHeight: '200px',
-                opacity: isInputDisabled ? 0.5 : 1,
-              }}
+              className={cx(
+                'w-full resize-none border-0 outline-none bg-transparent text-foreground font-sans text-sm leading-[1.5] px-1 py-2 min-h-[44px] max-h-[200px]',
+                isInputDisabled && 'opacity-50',
+              )}
+              style={{ height: 'auto' }}
             />
 
             {/* Bottom toolbar: + button left, send button right */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingTop: '4px',
-            }}>
+            <div className="flex items-center justify-between pt-1">
               {/* Left side: + button */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div className="flex items-center gap-1">
                 <Popover
                   trigger={
                     <button
                       type="button"
-                      style={{
-                        width: '32px', height: '32px',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        borderRadius: '50%',
-                        border: '1px solid var(--border)',
-                        backgroundColor: 'transparent',
-                        color: 'var(--text-secondary)',
-                        cursor: 'pointer', padding: 0,
-                        transition: 'background-color 150ms, color 150ms',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'var(--surface-elevated)';
-                        e.currentTarget.style.color = 'var(--text-primary)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                        e.currentTarget.style.color = 'var(--text-secondary)';
-                      }}
+                      className="w-8 h-8 flex items-center justify-center rounded-full border border-border bg-transparent text-muted-foreground cursor-pointer p-0 transition-[background-color,color] duration-150 hover:bg-surface-elevated hover:text-foreground"
                     >
                       <Plus size={18} />
                     </button>
@@ -538,46 +454,25 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
                   <button
                     type="button"
                     onClick={() => { fileInputRef.current?.click(); }}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
-                      padding: '8px 10px', borderRadius: '6px', border: 'none',
-                      backgroundColor: 'transparent', color: 'var(--text-primary)',
-                      fontFamily: 'var(--font-body)', fontSize: '13px', cursor: 'pointer', textAlign: 'left' as const,
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--surface-hover)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-md border-0 bg-transparent text-foreground font-sans text-[13px] cursor-pointer text-left hover:bg-muted"
                   >
-                    <Upload size={14} style={{ color: 'var(--text-muted)' }} />
+                    <Upload size={14} className="text-muted-foreground" />
                     Upload file
                   </button>
                   <button
                     type="button"
                     onClick={() => { setInputValue('https://github.com/'); setTimeout(() => textareaRef.current?.focus(), 0); }}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
-                      padding: '8px 10px', borderRadius: '6px', border: 'none',
-                      backgroundColor: 'transparent', color: 'var(--text-primary)',
-                      fontFamily: 'var(--font-body)', fontSize: '13px', cursor: 'pointer', textAlign: 'left' as const,
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--surface-hover)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-md border-0 bg-transparent text-foreground font-sans text-[13px] cursor-pointer text-left hover:bg-muted"
                   >
-                    <Link size={14} style={{ color: 'var(--text-muted)' }} />
+                    <Link size={14} className="text-muted-foreground" />
                     Paste URL
                   </button>
                   <button
                     type="button"
                     onClick={() => { setInputValue('npx skills add '); setTimeout(() => textareaRef.current?.focus(), 0); }}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
-                      padding: '8px 10px', borderRadius: '6px', border: 'none',
-                      backgroundColor: 'transparent', color: 'var(--text-primary)',
-                      fontFamily: 'var(--font-body)', fontSize: '13px', cursor: 'pointer', textAlign: 'left' as const,
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--surface-hover)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-md border-0 bg-transparent text-foreground font-sans text-[13px] cursor-pointer text-left hover:bg-muted"
                   >
-                    <Terminal size={14} style={{ color: 'var(--text-muted)' }} />
+                    <Terminal size={14} className="text-muted-foreground" />
                     Paste command
                   </button>
                 </Popover>
@@ -588,15 +483,12 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
                 type="button"
                 onClick={handleSubmit}
                 disabled={!hasInput || isInputDisabled}
-                style={{
-                  width: '32px', height: '32px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  borderRadius: '50%', border: 'none',
-                  backgroundColor: hasInput && !isInputDisabled ? 'var(--text-primary)' : 'var(--surface-elevated)',
-                  color: hasInput && !isInputDisabled ? 'var(--surface)' : 'var(--text-muted)',
-                  cursor: hasInput && !isInputDisabled ? 'pointer' : 'default',
-                  padding: 0, transition: 'background-color 150ms, color 150ms',
-                }}
+                className={cx(
+                  'w-8 h-8 flex items-center justify-center rounded-full border-0 p-0 transition-[background-color,color] duration-150',
+                  hasInput && !isInputDisabled
+                    ? 'bg-foreground text-background cursor-pointer'
+                    : 'bg-surface-elevated text-muted-foreground cursor-default',
+                )}
               >
                 <ArrowUp size={18} />
               </button>
@@ -604,65 +496,35 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
 
             {/* ========== DETECTION INFO (inside composer box) ========== */}
             {(isDetecting || detectionBadge || (inlineError && !isReviewMode)) && (
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                paddingTop: '8px',
-              }}>
+              <div className="flex flex-col gap-2 pt-2">
                 {/* Detection badge + loading dots + interpretation */}
                 {(isDetecting || detectionBadge) && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <AnimatePresence>
-                      {detectionBadge && (
-                        <motion.div
-                          key={detectionBadge.label}
-                          initial={{ scale: 0.7, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          exit={{ scale: 0.7, opacity: 0 }}
-                          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                          style={{ display: 'inline-flex' }}
-                        >
-                          <Badge variant={detectionBadge.variant}>
-                            Detected: {detectionBadge.label}
-                          </Badge>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {detectionBadge && (
+                      <div className="animate-in zoom-in-75 fade-in duration-200 inline-flex">
+                        <Badge variant={detectionBadge.variant}>
+                          Detected: {detectionBadge.label}
+                        </Badge>
+                      </div>
+                    )}
                     {isDetecting && (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', marginRight: '6px' }}>
+                      <span className="inline-flex items-center gap-[3px] mr-1.5">
                         {[0, 1, 2].map((i) => (
-                          <motion.span
+                          <span
                             key={i}
-                            style={{
-                              width: '4px', height: '4px', borderRadius: '50%',
-                              backgroundColor: 'var(--text-muted)', display: 'inline-block',
-                            }}
-                            animate={{ scale: [1, 1.5, 1], opacity: [0.4, 1, 0.4] }}
-                            transition={{ repeat: Infinity, duration: 0.7, delay: i * 0.15, ease: 'easeInOut' }}
+                            className="inline-block w-1 h-1 rounded-full bg-muted-foreground animate-pulse"
+                            style={{ animationDelay: `${i * 150}ms` }}
                           />
                         ))}
                       </span>
                     )}
                     {isDetecting && 'draft' in state && (
-                      <p style={{
-                        fontSize: '13px',
-                        fontFamily: 'var(--font-body)',
-                        color: 'var(--text-secondary)',
-                        margin: 0,
-                        lineHeight: '1.5',
-                      }}>
+                      <p className="text-[13px] font-sans text-muted-foreground m-0 leading-[1.5]">
                         {getDetectingText(state.draft)}
                       </p>
                     )}
                     {isReviewMode && 'draft' in state && (
-                      <p style={{
-                        fontSize: '13px',
-                        fontFamily: 'var(--font-body)',
-                        color: 'var(--text-secondary)',
-                        margin: 0,
-                        lineHeight: '1.5',
-                      }}>
+                      <p className="text-[13px] font-sans text-muted-foreground m-0 leading-[1.5]">
                         {getReviewMessage(state.draft)}
                       </p>
                     )}
@@ -671,24 +533,13 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
 
                 {/* Inline error (idle mode only) */}
                 {inlineError && !isReviewMode && (
-                  <p style={{
-                    fontSize: '13px',
-                    color: 'var(--negative)',
-                    margin: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                  }}>
+                  <p className="text-[13px] text-destructive m-0 flex items-center gap-1.5">
                     {inlineError}
                     {inlineError.includes('Reintentar') ? (
                       <button
                         type="button"
                         onClick={() => { setInlineError(null); if (lastInput) handleDetect(lastInput); }}
-                        style={{
-                          background: 'none', border: 'none', cursor: 'pointer',
-                          color: 'var(--accent)', padding: 0, fontSize: '13px',
-                          fontFamily: 'var(--font-body)', textDecoration: 'underline',
-                        }}
+                        className="bg-transparent border-0 cursor-pointer text-accent p-0 text-[13px] font-sans underline"
                       >
                         Reintentar
                       </button>
@@ -696,10 +547,7 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
                       <button
                         type="button"
                         onClick={() => setInlineError(null)}
-                        style={{
-                          background: 'none', border: 'none', cursor: 'pointer',
-                          color: 'var(--negative)', padding: 0, display: 'flex', alignItems: 'center',
-                        }}
+                        className="bg-transparent border-0 cursor-pointer text-destructive p-0 flex items-center"
                       >
                         <X size={12} />
                       </button>
@@ -715,7 +563,7 @@ function SmartAddModal({ onClose, onCreated, onToast, onManual }: SmartAddModalP
             ref={fileInputRef}
             type="file"
             accept=".md,.skill,.txt"
-            style={{ display: 'none' }}
+            className="hidden"
             onChange={handleFileChange}
           />
 
