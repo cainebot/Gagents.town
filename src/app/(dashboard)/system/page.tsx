@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Cpu, HardDrive, MemoryStick, Activity, Network, Server, ShieldCheck, RotateCw, Wifi, Monitor, Play, Square, X, Loader2, Terminal, ArrowDown, ArrowUp } from "lucide-react";
+import { cx } from "@openclaw/ui";
 
 interface SystemdService {
   name: string;
@@ -142,8 +143,8 @@ export default function SystemMonitorPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: "var(--accent)" }}></div>
-          <p style={{ color: "var(--text-secondary)" }}>Loading system data...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+          <p className="text-secondary">Loading system data...</p>
         </div>
       </div>
     );
@@ -153,17 +154,20 @@ export default function SystemMonitorPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Server className="w-16 h-16 mx-auto mb-4" style={{ color: "var(--text-muted)" }} />
-          <p style={{ color: "var(--text-secondary)" }}>Failed to load system data</p>
+          <Server className="w-16 h-16 mx-auto mb-4 text-muted" />
+          <p className="text-secondary">Failed to load system data</p>
         </div>
       </div>
     );
   }
 
-  const cpuColor = systemData.cpu.usage < 60 ? "var(--success)" : systemData.cpu.usage < 85 ? "var(--warning)" : "var(--error)";
+  const cpuTextClass = systemData.cpu.usage < 60 ? "text-success" : systemData.cpu.usage < 85 ? "text-warning" : "text-error";
+  const cpuBgClass = systemData.cpu.usage < 60 ? "bg-success" : systemData.cpu.usage < 85 ? "bg-warning" : "bg-error";
   const ramPercent = (systemData.ram.used / systemData.ram.total) * 100;
-  const ramColor = ramPercent < 60 ? "var(--success)" : ramPercent < 85 ? "var(--warning)" : "var(--error)";
-  const diskColor = systemData.disk.percent < 60 ? "var(--success)" : systemData.disk.percent < 85 ? "var(--warning)" : "var(--error)";
+  const ramTextClass = ramPercent < 60 ? "text-success" : ramPercent < 85 ? "text-warning" : "text-error";
+  const ramBgClass = ramPercent < 60 ? "bg-success" : ramPercent < 85 ? "bg-warning" : "bg-error";
+  const diskTextClass = systemData.disk.percent < 60 ? "text-success" : systemData.disk.percent < 85 ? "text-warning" : "text-error";
+  const diskBgClass = systemData.disk.percent < 60 ? "bg-success" : systemData.disk.percent < 85 ? "bg-warning" : "bg-error";
 
   const activeServices = systemData.systemd.filter((s) => s.status === "active").length;
 
@@ -171,15 +175,15 @@ export default function SystemMonitorPage() {
     <div className="space-y-6">
       {/* Toast */}
       {toast && (
-        <div style={{
-          position: "fixed", top: "1rem", right: "1rem", zIndex: 1000,
-          padding: "0.75rem 1.25rem", borderRadius: "0.75rem",
-          backgroundColor: toast.type === "success" ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)",
-          border: `1px solid ${toast.type === "success" ? "var(--success)" : "var(--error)"}`,
-          color: toast.type === "success" ? "var(--success)" : "var(--error)",
-          fontSize: "0.9rem", fontWeight: 500,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-        }}>
+        <div
+          className={cx(
+            "fixed top-4 right-4 z-[1000] px-5 py-3 rounded-xl text-sm font-medium",
+            "shadow-[0_8px_32px_rgba(0,0,0,0.4)]",
+            toast.type === "success"
+              ? "bg-success/15 border border-success text-success"
+              : "bg-error/15 border border-error text-error"
+          )}
+        >
           {toast.msg}
         </div>
       )}
@@ -187,24 +191,24 @@ export default function SystemMonitorPage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: "var(--font-heading)", color: "var(--text-primary)" }}>
+          <h1 className="text-3xl font-bold mb-2 font-heading text-primary">
             System Monitor
           </h1>
-          <p style={{ color: "var(--text-secondary)" }}>Real-time monitoring of server resources and services</p>
+          <p className="text-secondary">Real-time monitoring of server resources and services</p>
         </div>
         <div className="flex items-center gap-2 mt-1">
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: "rgba(34,197,94,0.12)", color: "var(--success)" }}>
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: "var(--success)" }} />
+          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-success/[0.12] text-success">
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-success" />
             Live
           </span>
           {lastUpdated && (
-            <span className="text-xs" style={{ color: "var(--text-muted)" }}>{lastUpdated.toLocaleTimeString()}</span>
+            <span className="text-xs text-muted">{lastUpdated.toLocaleTimeString()}</span>
           )}
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b" style={{ borderColor: "var(--border)" }}>
+      <div className="flex gap-2 border-b border-border">
         {[{ id: "hardware", label: "Hardware", icon: Cpu }, { id: "services", label: "Services", icon: Server }].map((tab) => {
           const Icon = tab.icon;
           const isActive = selectedTab === tab.id;
@@ -212,8 +216,12 @@ export default function SystemMonitorPage() {
             <button
               key={tab.id}
               onClick={() => setSelectedTab(tab.id as "hardware" | "services")}
-              className="flex items-center gap-2 px-4 py-2 font-medium transition-all"
-              style={{ color: isActive ? "var(--accent)" : "var(--text-secondary)", borderBottom: isActive ? "2px solid var(--accent)" : "2px solid transparent" }}
+              className={cx(
+                "flex items-center gap-2 px-4 py-2 font-medium transition-all",
+                isActive
+                  ? "text-accent border-b-2 border-accent"
+                  : "text-secondary border-b-2 border-transparent"
+              )}
             >
               <Icon className="w-4 h-4" />
               {tab.label}
@@ -226,104 +234,104 @@ export default function SystemMonitorPage() {
       {selectedTab === "hardware" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* CPU */}
-          <div className="p-6 rounded-xl" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="p-6 rounded-xl bg-card border border-border">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg" style={{ backgroundColor: "var(--card-elevated)" }}>
-                  <Cpu className="w-5 h-5" style={{ color: cpuColor }} />
+                <div className="p-2 rounded-lg bg-card-elevated">
+                  <Cpu className={cx("w-5 h-5", cpuTextClass)} />
                 </div>
                 <div>
-                  <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>CPU</h3>
-                  <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{systemData.cpu.cores.length} cores</p>
+                  <h3 className="font-semibold text-primary">CPU</h3>
+                  <p className="text-sm text-secondary">{systemData.cpu.cores.length} cores</p>
                 </div>
               </div>
-              <span className="text-2xl font-bold" style={{ color: cpuColor }}>{systemData.cpu.usage}%</span>
+              <span className={cx("text-2xl font-bold", cpuTextClass)}>{systemData.cpu.usage}%</span>
             </div>
-            <div className="h-2 rounded-full overflow-hidden mb-3" style={{ backgroundColor: "var(--card-elevated)" }}>
-              <div className="h-full transition-all duration-500" style={{ width: `${systemData.cpu.usage}%`, backgroundColor: cpuColor }} />
+            <div className="h-2 rounded-full overflow-hidden mb-3 bg-card-elevated">
+              <div className={cx("h-full transition-all duration-500", cpuBgClass)} style={{ width: `${systemData.cpu.usage}%` }} />
             </div>
-            <div className="flex justify-between text-sm" style={{ color: "var(--text-secondary)" }}>
+            <div className="flex justify-between text-sm text-secondary">
               <span>Load Average</span>
               <span>{systemData.cpu.loadAvg[0].toFixed(2)} / {systemData.cpu.loadAvg[1].toFixed(2)} / {systemData.cpu.loadAvg[2].toFixed(2)}</span>
             </div>
           </div>
 
           {/* RAM */}
-          <div className="p-6 rounded-xl" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="p-6 rounded-xl bg-card border border-border">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg" style={{ backgroundColor: "var(--card-elevated)" }}>
-                  <MemoryStick className="w-5 h-5" style={{ color: ramColor }} />
+                <div className="p-2 rounded-lg bg-card-elevated">
+                  <MemoryStick className={cx("w-5 h-5", ramTextClass)} />
                 </div>
                 <div>
-                  <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>RAM</h3>
-                  <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{systemData.ram.used.toFixed(1)}GB / {systemData.ram.total.toFixed(1)}GB</p>
+                  <h3 className="font-semibold text-primary">RAM</h3>
+                  <p className="text-sm text-secondary">{systemData.ram.used.toFixed(1)}GB / {systemData.ram.total.toFixed(1)}GB</p>
                 </div>
               </div>
-              <span className="text-2xl font-bold" style={{ color: ramColor }}>{ramPercent.toFixed(0)}%</span>
+              <span className={cx("text-2xl font-bold", ramTextClass)}>{ramPercent.toFixed(0)}%</span>
             </div>
-            <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: "var(--card-elevated)" }}>
-              <div className="h-full transition-all duration-500" style={{ width: `${ramPercent}%`, backgroundColor: ramColor }} />
+            <div className="h-2 rounded-full overflow-hidden bg-card-elevated">
+              <div className={cx("h-full transition-all duration-500", ramBgClass)} style={{ width: `${ramPercent}%` }} />
             </div>
           </div>
 
           {/* Disk */}
-          <div className="p-6 rounded-xl" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="p-6 rounded-xl bg-card border border-border">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg" style={{ backgroundColor: "var(--card-elevated)" }}>
-                  <HardDrive className="w-5 h-5" style={{ color: diskColor }} />
+                <div className="p-2 rounded-lg bg-card-elevated">
+                  <HardDrive className={cx("w-5 h-5", diskTextClass)} />
                 </div>
                 <div>
-                  <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>Disk</h3>
-                  <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{systemData.disk.used.toFixed(1)}GB / {systemData.disk.total.toFixed(1)}GB</p>
+                  <h3 className="font-semibold text-primary">Disk</h3>
+                  <p className="text-sm text-secondary">{systemData.disk.used.toFixed(1)}GB / {systemData.disk.total.toFixed(1)}GB</p>
                 </div>
               </div>
-              <span className="text-2xl font-bold" style={{ color: diskColor }}>{systemData.disk.percent.toFixed(0)}%</span>
+              <span className={cx("text-2xl font-bold", diskTextClass)}>{systemData.disk.percent.toFixed(0)}%</span>
             </div>
-            <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: "var(--card-elevated)" }}>
-              <div className="h-full transition-all duration-500" style={{ width: `${systemData.disk.percent}%`, backgroundColor: diskColor }} />
+            <div className="h-2 rounded-full overflow-hidden bg-card-elevated">
+              <div className={cx("h-full transition-all duration-500", diskBgClass)} style={{ width: `${systemData.disk.percent}%` }} />
             </div>
           </div>
 
           {/* Network */}
-          <div className="p-6 rounded-xl" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="p-6 rounded-xl bg-card border border-border">
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg" style={{ backgroundColor: "var(--card-elevated)" }}>
-                <Network className="w-5 h-5" style={{ color: "var(--info, #3b82f6)" }} />
+              <div className="p-2 rounded-lg bg-card-elevated">
+                <Network className="w-5 h-5 text-info" />
               </div>
               <div>
-                <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>Network</h3>
-                <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Live I/O</p>
+                <h3 className="font-semibold text-primary">Network</h3>
+                <p className="text-sm text-secondary">Live I/O</p>
               </div>
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm" style={{ color: "var(--text-secondary)" }}>
-                  <ArrowDown className="w-4 h-4" style={{ color: "var(--success)" }} />
+                <div className="flex items-center gap-2 text-sm text-secondary">
+                  <ArrowDown className="w-4 h-4 text-success" />
                   <span>RX (in)</span>
                 </div>
-                <span className="font-mono text-sm" style={{ color: "var(--text-primary)" }}>{systemData.network.rx.toFixed(2)} MB/s</span>
+                <span className="font-mono text-sm text-primary">{systemData.network.rx.toFixed(2)} MB/s</span>
               </div>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm" style={{ color: "var(--text-secondary)" }}>
-                  <ArrowUp className="w-4 h-4" style={{ color: "var(--accent)" }} />
+                <div className="flex items-center gap-2 text-sm text-secondary">
+                  <ArrowUp className="w-4 h-4 text-accent" />
                   <span>TX (out)</span>
                 </div>
-                <span className="font-mono text-sm" style={{ color: "var(--text-primary)" }}>{systemData.network.tx.toFixed(2)} MB/s</span>
+                <span className="font-mono text-sm text-primary">{systemData.network.tx.toFixed(2)} MB/s</span>
               </div>
               {/* Mini bar viz */}
-              <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.75rem" }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>RX</div>
-                  <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: "var(--card-elevated)" }}>
-                    <div className="h-full" style={{ width: `${Math.min(systemData.network.rx * 10, 100)}%`, backgroundColor: "var(--success)" }} />
+              <div className="flex gap-2 mt-3">
+                <div className="flex-1">
+                  <div className="text-[0.7rem] text-muted mb-1">RX</div>
+                  <div className="h-1 rounded-full overflow-hidden bg-card-elevated">
+                    <div className="h-full bg-success" style={{ width: `${Math.min(systemData.network.rx * 10, 100)}%` }} />
                   </div>
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>TX</div>
-                  <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: "var(--card-elevated)" }}>
-                    <div className="h-full" style={{ width: `${Math.min(systemData.network.tx * 10, 100)}%`, backgroundColor: "var(--accent)" }} />
+                <div className="flex-1">
+                  <div className="text-[0.7rem] text-muted mb-1">TX</div>
+                  <div className="h-1 rounded-full overflow-hidden bg-card-elevated">
+                    <div className="h-full bg-accent" style={{ width: `${Math.min(systemData.network.tx * 10, 100)}%` }} />
                   </div>
                 </div>
               </div>
@@ -336,19 +344,19 @@ export default function SystemMonitorPage() {
       {selectedTab === "services" && (
         <div className="space-y-6">
           {/* Systemd + PM2 Services */}
-          <div className="p-6 rounded-xl" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
-              <Server className="w-5 h-5" style={{ color: "var(--accent)" }} />
+          <div className="p-6 rounded-xl bg-card border border-border">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-primary">
+              <Server className="w-5 h-5 text-accent" />
               Services ({activeServices}/{systemData.systemd.length} active)
             </h3>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                    <th className="text-left py-2 px-3 text-sm font-medium" style={{ color: "var(--text-secondary)" }}>Service</th>
-                    <th className="text-left py-2 px-3 text-sm font-medium" style={{ color: "var(--text-secondary)" }}>Description</th>
-                    <th className="text-left py-2 px-3 text-sm font-medium" style={{ color: "var(--text-secondary)" }}>Status</th>
-                    <th className="text-right py-2 px-3 text-sm font-medium" style={{ color: "var(--text-secondary)" }}>Actions</th>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-2 px-3 text-sm font-medium text-secondary">Service</th>
+                    <th className="text-left py-2 px-3 text-sm font-medium text-secondary">Description</th>
+                    <th className="text-left py-2 px-3 text-sm font-medium text-secondary">Status</th>
+                    <th className="text-right py-2 px-3 text-sm font-medium text-secondary">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -359,15 +367,15 @@ export default function SystemMonitorPage() {
                     const logsKey = `${svc.name}-logs`;
 
                     return (
-                      <tr key={svc.name} style={{ borderBottom: "1px solid var(--border)" }}>
+                      <tr key={svc.name} className="border-b border-border">
                         <td className="py-3 px-3">
-                          <span className="font-mono font-medium" style={{ color: "var(--text-primary)" }}>{svc.name}</span>
+                          <span className="font-mono font-medium text-primary">{svc.name}</span>
                         </td>
                         <td className="py-3 px-3">
                           <div className="flex flex-col gap-0.5">
-                            <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{svc.description || "—"}</span>
+                            <span className="text-sm text-secondary">{svc.description || "—"}</span>
                             {svc.uptime != null && svc.status === "active" && (
-                              <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                              <span className="text-xs text-muted">
                                 up {formatUptime(svc.uptime)}
                                 {svc.restarts != null && svc.restarts > 0 && ` · ${svc.restarts} restarts`}
                                 {svc.mem != null && ` · ${formatBytes(svc.mem)}`}
@@ -379,33 +387,26 @@ export default function SystemMonitorPage() {
                         <td className="py-3 px-3">
                           <div className="flex items-center gap-2 flex-wrap">
                             <div
-                              className="w-2 h-2 rounded-full flex-shrink-0"
-                              style={{
-                                backgroundColor:
-                                  svc.status === "active" ? "var(--success)" :
-                                  svc.status === "not_deployed" ? "var(--info, #3b82f6)" :
-                                  svc.status === "failed" ? "var(--error)" : "var(--text-muted)",
-                              }}
+                              className={cx(
+                                "w-2 h-2 rounded-full flex-shrink-0",
+                                svc.status === "active" ? "bg-success" :
+                                svc.status === "not_deployed" ? "bg-info" :
+                                svc.status === "failed" ? "bg-error" : "bg-muted"
+                              )}
                             />
                             <span
-                              className="px-2 py-1 rounded text-xs font-medium"
-                              style={{
-                                backgroundColor:
-                                  svc.status === "active" ? "var(--success-bg)" :
-                                  svc.status === "not_deployed" ? "rgba(59,130,246,0.12)" :
-                                  svc.status === "failed" ? "var(--error-bg)" : "var(--card-elevated)",
-                                color:
-                                  svc.status === "active" ? "var(--success)" :
-                                  svc.status === "not_deployed" ? "#60a5fa" :
-                                  svc.status === "failed" ? "var(--error)" : "var(--text-muted)",
-                              }}
+                              className={cx(
+                                "px-2 py-1 rounded text-xs font-medium",
+                                svc.status === "active" ? "bg-success/10 text-success" :
+                                svc.status === "not_deployed" ? "bg-info/[0.12] text-info" :
+                                svc.status === "failed" ? "bg-error/10 text-error" : "bg-card-elevated text-muted"
+                              )}
                             >
                               {svc.status === "not_deployed" ? "not deployed" : svc.status}
                             </span>
                             {svc.backend && svc.backend !== "none" && (
                               <span
-                                className="px-1.5 py-0.5 rounded text-xs"
-                                style={{ backgroundColor: "var(--card-elevated)", color: "var(--text-muted)", fontSize: "10px" }}
+                                className="px-1.5 py-0.5 rounded text-[10px] bg-card-elevated text-muted"
                               >
                                 {svc.backend}
                               </span>
@@ -420,9 +421,8 @@ export default function SystemMonitorPage() {
                                 <button
                                   onClick={() => handleServiceAction(svc, "restart")}
                                   disabled={actionLoading[restartKey]}
-                                  className="p-1.5 rounded transition-colors"
+                                  className="p-1.5 rounded transition-colors text-muted bg-transparent border-0 cursor-pointer"
                                   title="Restart"
-                                  style={{ color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}
                                 >
                                   {actionLoading[restartKey] ? (
                                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -435,9 +435,11 @@ export default function SystemMonitorPage() {
                                 <button
                                   onClick={() => handleServiceAction(svc, svc.status === "active" ? "stop" : "start")}
                                   disabled={actionLoading[stopKey] || svc.status === "not_deployed"}
-                                  className="p-1.5 rounded transition-colors"
+                                  className={cx(
+                                    "p-1.5 rounded transition-colors bg-transparent border-0 cursor-pointer",
+                                    svc.status === "active" ? "text-error" : "text-success"
+                                  )}
                                   title={svc.status === "active" ? "Stop" : "Start"}
-                                  style={{ color: svc.status === "active" ? "var(--error)" : "var(--success)", background: "none", border: "none", cursor: "pointer" }}
                                 >
                                   {svc.status === "active" ? <Square className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                                 </button>
@@ -446,9 +448,8 @@ export default function SystemMonitorPage() {
                                 <button
                                   onClick={() => handleServiceAction(svc, "logs")}
                                   disabled={actionLoading[logsKey]}
-                                  className="p-1.5 rounded transition-colors"
+                                  className="p-1.5 rounded transition-colors text-muted bg-transparent border-0 cursor-pointer"
                                   title="View Logs"
-                                  style={{ color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}
                                 >
                                   {actionLoading[logsKey] ? (
                                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -471,40 +472,40 @@ export default function SystemMonitorPage() {
           {/* VPN & Firewall */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Tailscale VPN */}
-            <div className="p-6 rounded-xl" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
+            <div className="p-6 rounded-xl bg-card border border-border">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded-lg" style={{ backgroundColor: "var(--card-elevated)" }}>
-                  <Wifi className="w-5 h-5" style={{ color: systemData.tailscale.active ? "var(--success)" : "var(--error)" }} />
+                <div className="p-2 rounded-lg bg-card-elevated">
+                  <Wifi className={cx("w-5 h-5", systemData.tailscale.active ? "text-success" : "text-error")} />
                 </div>
                 <div>
-                  <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>Tailscale VPN</h3>
-                  <p className="text-sm" style={{ color: systemData.tailscale.active ? "var(--success)" : "var(--error)" }}>
+                  <h3 className="font-semibold text-primary">Tailscale VPN</h3>
+                  <p className={cx("text-sm", systemData.tailscale.active ? "text-success" : "text-error")}>
                     {systemData.tailscale.active ? "Active" : "Inactive"}
                   </p>
                 </div>
               </div>
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between text-sm">
-                  <span style={{ color: "var(--text-secondary)" }}>This server</span>
-                  <span className="font-mono" style={{ color: "var(--text-primary)" }}>{systemData.tailscale.ip}</span>
+                  <span className="text-secondary">This server</span>
+                  <span className="font-mono text-primary">{systemData.tailscale.ip}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span style={{ color: "var(--text-secondary)" }}>Devices connected</span>
-                  <span style={{ color: "var(--text-primary)" }}>{systemData.tailscale.devices.length}</span>
+                  <span className="text-secondary">Devices connected</span>
+                  <span className="text-primary">{systemData.tailscale.devices.length}</span>
                 </div>
               </div>
               {systemData.tailscale.devices.length > 0 && (
-                <div className="space-y-2 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
+                <div className="space-y-2 pt-3 border-t border-border">
                   {systemData.tailscale.devices.map((dev, i) => (
                     <div key={i} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
-                        <Monitor className="w-3 h-3" style={{ color: "var(--text-muted)" }} />
-                        <span className="font-mono" style={{ color: "var(--text-secondary)" }}>{dev.hostname}</span>
-                        <span style={{ color: "var(--text-muted)" }}>({dev.os})</span>
+                        <Monitor className="w-3 h-3 text-muted" />
+                        <span className="font-mono text-secondary">{dev.hostname}</span>
+                        <span className="text-muted">({dev.os})</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono" style={{ color: "var(--text-muted)" }}>{dev.ip}</span>
-                        <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: dev.online ? "var(--success)" : "var(--text-muted)" }} />
+                        <span className="font-mono text-muted">{dev.ip}</span>
+                        <div className={cx("w-1.5 h-1.5 rounded-full", dev.online ? "bg-success" : "bg-muted")} />
                       </div>
                     </div>
                   ))}
@@ -513,14 +514,14 @@ export default function SystemMonitorPage() {
             </div>
 
             {/* Firewall */}
-            <div className="p-6 rounded-xl" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
+            <div className="p-6 rounded-xl bg-card border border-border">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded-lg" style={{ backgroundColor: "var(--card-elevated)" }}>
-                  <ShieldCheck className="w-5 h-5" style={{ color: systemData.firewall.active ? "var(--success)" : "var(--error)" }} />
+                <div className="p-2 rounded-lg bg-card-elevated">
+                  <ShieldCheck className={cx("w-5 h-5", systemData.firewall.active ? "text-success" : "text-error")} />
                 </div>
                 <div>
-                  <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>Firewall (UFW)</h3>
-                  <p className="text-sm" style={{ color: systemData.firewall.active ? "var(--success)" : "var(--error)" }}>
+                  <h3 className="font-semibold text-primary">Firewall (UFW)</h3>
+                  <p className={cx("text-sm", systemData.firewall.active ? "text-success" : "text-error")}>
                     {systemData.firewall.active ? "Active" : "Inactive"}
                   </p>
                 </div>
@@ -529,19 +530,21 @@ export default function SystemMonitorPage() {
                 {systemData.firewall.rules.map((rule, i) => (
                   <div
                     key={i}
-                    className="flex items-start justify-between text-xs py-1.5"
-                    style={{ borderBottom: i < systemData.firewall.rules.length - 1 ? "1px solid var(--border)" : "none" }}
+                    className={cx(
+                      "flex items-start justify-between text-xs py-1.5",
+                      i < systemData.firewall.rules.length - 1 ? "border-b border-border" : ""
+                    )}
                   >
                     <div className="flex flex-col gap-0.5">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-semibold" style={{ color: "var(--text-primary)" }}>{rule.port}</span>
-                        <span className="px-1.5 py-0.5 rounded text-xs" style={{ backgroundColor: "var(--success-bg)", color: "var(--success)", fontSize: "9px" }}>
+                        <span className="font-mono font-semibold text-primary">{rule.port}</span>
+                        <span className="px-1.5 py-0.5 rounded text-[9px] bg-success/10 text-success">
                           {rule.action}
                         </span>
                       </div>
-                      {rule.comment && <span style={{ color: "var(--text-muted)", fontSize: "10px" }}>{rule.comment}</span>}
+                      {rule.comment && <span className="text-[10px] text-muted">{rule.comment}</span>}
                     </div>
-                    <span className="font-mono text-right" style={{ color: "var(--text-secondary)", maxWidth: "120px", wordBreak: "break-all" }}>
+                    <span className="font-mono text-right text-secondary" style={{ maxWidth: "120px", wordBreak: "break-all" }}>
                       {rule.from}
                     </span>
                   </div>
@@ -554,27 +557,16 @@ export default function SystemMonitorPage() {
 
       {/* Logs Modal */}
       {logsModal && (
-        <div style={{
-          position: "fixed", inset: 0, zIndex: 1000,
-          backgroundColor: "rgba(0,0,0,0.85)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          padding: "1rem",
-        }}>
-          <div style={{
-            width: "95vw", maxWidth: "900px", height: "80vh",
-            backgroundColor: "#0d1117",
-            borderRadius: "1rem", border: "1px solid var(--border)",
-            display: "flex", flexDirection: "column",
-            overflow: "hidden",
-          }}>
+        <div className="fixed inset-0 z-[1000] bg-black/85 flex items-center justify-center p-4">
+          <div
+            className="w-[95vw] max-w-[900px] h-[80vh] rounded-2xl border border-border flex flex-col overflow-hidden"
+            style={{ backgroundColor: "#0d1117" }}
+          >
             {/* Log header */}
-            <div style={{
-              display: "flex", alignItems: "center", gap: "0.75rem",
-              padding: "0.875rem 1rem",
-              borderBottom: "1px solid var(--border)",
-              flexShrink: 0,
-            }}>
-              <Terminal className="w-4 h-4" style={{ color: "var(--accent)" }} />
+            <div
+              className="flex items-center gap-3 px-4 py-3.5 border-b border-border shrink-0"
+            >
+              <Terminal className="w-4 h-4 text-accent" />
               <span style={{ color: "#c9d1d9", fontFamily: "monospace", fontSize: "0.9rem" }}>
                 {logsModal.name} logs
               </span>
@@ -583,17 +575,18 @@ export default function SystemMonitorPage() {
               </span>
               <button
                 onClick={() => setLogsModal(null)}
-                style={{ marginLeft: "auto", padding: "0.375rem", borderRadius: "0.375rem", background: "none", border: "none", cursor: "pointer", color: "#8b949e" }}
+                className="ml-auto p-1.5 rounded-md bg-transparent border-0 cursor-pointer"
+                style={{ color: "#8b949e" }}
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Log content */}
-            <div style={{ flex: 1, overflow: "auto", padding: "1rem" }}>
+            <div className="flex-1 overflow-auto p-4">
               {logsModal.loading ? (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-                  <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--accent)" }} />
+                <div className="flex items-center justify-center h-full">
+                  <Loader2 className="w-8 h-8 animate-spin text-accent" />
                 </div>
               ) : (
                 <pre style={{
