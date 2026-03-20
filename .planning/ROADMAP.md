@@ -63,7 +63,12 @@ Plans:
   3. All four board-groups pages (listing, detail, edit, new) use only UUI tokens and @openclaw/ui components
   4. The office page React chrome (layout, controls, sidebar) uses only UUI tokens — Phaser canvas internals remain allowlisted
   5. AgentSidePanel and AgentFormPanel imports for ConfirmActionDialog come from @openclaw/ui
-**Plans**: TBD
+**Plans:** 4 plans
+Plans:
+- [ ] 03-01-PLAN.md — Migrate agents listing page and AgentOrganigrama to UUI tokens
+- [ ] 03-02-PLAN.md — Migrate agent detail page, AgentFormPanel, and AgentSidePanel to UUI tokens
+- [ ] 03-03-PLAN.md — Migrate all four board-groups pages to UUI tokens
+- [ ] 03-04-PLAN.md — Migrate office page React chrome to UUI tokens
 
 ### Phase 4: Animation Migration + Final Verification
 **Goal**: SmartAddModal uses tailwindcss-animate with zero motion imports, and a full grep sweep confirms zero legacy tokens across all Wave B+C files with a clean build
@@ -86,5 +91,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Wave B Pages | 2/2 | Complete    | 2026-03-20 |
 | 2. Wave C Boards | 4/4 | Complete    | 2026-03-20 |
-| 3. Wave C Agents + Office | 0/TBD | Not started | - |
+| 3. Wave C Agents + Office | 0/4 | Not started | - |
 | 4. Animation Migration + Final Verification | 0/TBD | Not started | - |
