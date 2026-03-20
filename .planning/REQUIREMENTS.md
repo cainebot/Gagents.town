@@ -1,93 +1,78 @@
-# Requirements: OpenClaw UUI Migration — M6
+# Requirements: UUI Migration — Waves B+C (Terminal D)
 
 **Defined:** 2026-03-20
-**Core Value:** Every surface uses @openclaw/ui with zero legacy tokens
+**Core Value:** Every Wave B+C page uses exclusively UUI tokens and components with zero legacy artifacts
 
-## v6 Requirements
+## v1 Requirements
 
-Requirements for M6: App Shell + Wave A migration.
+Requirements for M7 milestone. Each maps to roadmap phases.
 
-### App Shell
+### Wave B — Medium Pages
 
-- [x] **SHELL-01**: Root layout provides ThemeProvider + RouterProvider from @openclaw/ui
-- [x] **SHELL-02**: Dashboard layout uses UUI tokens exclusively (zero legacy var(--*))
-- [x] **SHELL-03**: Login page uses UUI components and tokens exclusively
-- [x] **SHELL-04**: DashboardSidebar consumes UUI AppNavigation pattern
-- [x] **SHELL-05**: Headers and global navigation use UUI tokens and components
+- [ ] **WAVB-01**: Skills page uses only UUI tokens and @openclaw/ui components — zero var(--*) inline styles
+- [ ] **WAVB-02**: Costs page uses only UUI tokens — chart containers migrated, Recharts internals allowlisted
+- [ ] **WAVB-03**: System page uses only UUI tokens and @openclaw/ui components — zero var(--*) inline styles
+- [ ] **WAVB-04**: Analytics page uses only UUI tokens — chart wrapper containers migrated, chart component internals allowlisted
 
-### Wave A Pages
+### Wave C — Complex Pages
 
-- [x] **WAVE-01**: about page uses UUI components and tokens exclusively
-- [x] **WAVE-02**: actions page uses UUI components and tokens exclusively
-- [x] **WAVE-03**: activity page uses UUI components and tokens exclusively
-- [x] **WAVE-04**: calendar page uses UUI components and tokens exclusively
-- [x] **WAVE-05**: files page uses UUI components and tokens exclusively (Monaco editor internals allowlisted)
-- [x] **WAVE-06**: git page uses UUI components and tokens exclusively
-- [x] **WAVE-07**: logs page uses UUI components and tokens exclusively
-- [x] **WAVE-08**: memory page uses UUI components and tokens exclusively
-- [x] **WAVE-09**: organization page uses UUI components and tokens exclusively
-- [x] **WAVE-10**: reports page uses UUI components and tokens exclusively
-- [x] **WAVE-11**: search page uses UUI components and tokens exclusively
-- [x] **WAVE-12**: sessions page uses UUI components and tokens exclusively
-- [x] **WAVE-13**: settings page uses UUI components and tokens exclusively
-- [x] **WAVE-14**: terminal page uses UUI components and tokens exclusively
-- [x] **WAVE-15**: workflows page uses UUI components and tokens exclusively
-- [x] **WAVE-16**: workspaces page uses UUI components and tokens exclusively
+- [ ] **WAVC-01**: Boards listing page uses only UUI tokens and components — zero var(--*) inline styles
+- [ ] **WAVC-02**: Board detail page (boards/[id]) and all sub-components (BoardKanban, BoardFilterBar, CardDetailPanel, ColumnManager) use only UUI tokens
+- [ ] **WAVC-03**: Agents listing page and AgentOrganigrama use only UUI tokens and components
+- [ ] **WAVC-04**: Agent detail page (agents/[id]) and AgentFormPanel use only UUI tokens and components
+- [ ] **WAVC-05**: Board-groups pages (listing, detail, edit, new) all use only UUI tokens and components
+- [ ] **WAVC-06**: Office page React chrome uses only UUI tokens — Phaser canvas internals allowlisted
+
+### Animation Migration
+
+- [ ] **ANIM-01**: SmartAddModal uses tailwindcss-animate instead of motion.div/motion.span/AnimatePresence — zero motion imports
 
 ### Verification
 
-- [x] **VRFY-01**: grep legacy tokens (var(--) in all migrated files returns 0 matches
-- [x] **VRFY-02**: next build succeeds with zero errors
-- [x] **VRFY-03**: No imports from src/components/ui/ legacy path in migrated files
+- [ ] **VERF-01**: `grep -r "var(--" ` across all Wave B+C files returns zero matches (excluding allowlisted internals)
+- [ ] **VERF-02**: `next build` succeeds with zero errors
+- [ ] **VERF-03**: Boards kanban drag-and-drop and card detail panel function correctly
+- [ ] **VERF-04**: Agent CRUD operations (create, edit, delete) work correctly
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Complex pages (boards, agents, skills, analytics, costs, system) | M7 Wave B+C — Terminal D |
-| Cron vertical | M5 — Terminal B |
-| globals.css legacy token cleanup | M8 — final purge |
-| Radix/CVA dependency removal | M8 — after all surfaces migrated |
-| Monaco Editor internals | Third-party allowlisted exception |
-| Phaser canvas internals | Third-party allowlisted exception |
-| office page | Complex — M7 |
+| App shell / layout migration | Terminal C (M6) handles this |
+| Wave A simple pages (16 pages) | Terminal C (M6) handles this |
+| Cron Jobs pilot | Terminal B (M5) handles this |
+| Legacy purge / enforcement checks | Terminal A (M8) handles this |
+| Office2D Phaser canvas internals | Allowlisted — non-React rendering |
+| Recharts chart fill/stroke internals | Allowlisted — chart library internals |
+| Chart component color constants | Phase 8 handles hex→token in chart internals |
+| globals.css cleanup | Phase 8 handles legacy CSS removal |
+| Dependency removal (motion, etc.) | Phase 8 handles package.json cleanup |
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHELL-01 | Phase 1 | Complete |
-| SHELL-02 | Phase 1 | Complete |
-| SHELL-03 | Phase 1 | Complete |
-| SHELL-04 | Phase 1 | Complete |
-| SHELL-05 | Phase 1 | Complete |
-| WAVE-01 | Phase 2 | Complete |
-| WAVE-02 | Phase 2 | Complete |
-| WAVE-03 | Phase 2 | Complete |
-| WAVE-04 | Phase 2 | Complete |
-| WAVE-05 | Phase 2 | Complete |
-| WAVE-06 | Phase 2 | Complete |
-| WAVE-07 | Phase 2 | Complete |
-| WAVE-08 | Phase 2 | Complete |
-| WAVE-09 | Phase 3 | Complete |
-| WAVE-10 | Phase 3 | Complete |
-| WAVE-11 | Phase 3 | Complete |
-| WAVE-12 | Phase 3 | Complete |
-| WAVE-13 | Phase 3 | Complete |
-| WAVE-14 | Phase 3 | Complete |
-| WAVE-15 | Phase 3 | Complete |
-| WAVE-16 | Phase 3 | Complete |
-| VRFY-01 | Phase 3 | Complete |
-| VRFY-02 | Phase 3 | Complete |
-| VRFY-03 | Phase 3 | Complete |
+| WAVB-01 | Phase 1 | Pending |
+| WAVB-02 | Phase 1 | Pending |
+| WAVB-03 | Phase 1 | Pending |
+| WAVB-04 | Phase 1 | Pending |
+| WAVC-01 | Phase 2 | Pending |
+| WAVC-02 | Phase 2 | Pending |
+| WAVC-03 | Phase 3 | Pending |
+| WAVC-04 | Phase 3 | Pending |
+| WAVC-05 | Phase 3 | Pending |
+| WAVC-06 | Phase 3 | Pending |
+| ANIM-01 | Phase 4 | Pending |
+| VERF-01 | Phase 4 | Pending |
+| VERF-02 | Phase 4 | Pending |
+| VERF-03 | Phase 4 | Pending |
+| VERF-04 | Phase 4 | Pending |
 
 **Coverage:**
-- v6 requirements: 24 total
-- Mapped to phases: 24
+- v1 requirements: 15 total
+- Mapped to phases: 15
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-20*
-*Last updated: 2026-03-20 after roadmap creation*
+*Last updated: 2026-03-20 after initial definition*
