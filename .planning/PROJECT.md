@@ -21,7 +21,8 @@ Every surface uses a single, consistent design system (@openclaw/ui) with zero l
 ### Active
 
 - [x] App shell migrated (layouts, login, sidebar, headers) → UUI — Phase 1
-- [ ] 16 simple dashboard pages migrated → 100% UUI tokens + components
+- [x] 8 simple pages (batch 1: about→memory) migrated → 100% UUI — Phase 2
+- [ ] 8 simple pages (batch 2: org→workspaces) migrated → 100% UUI
 - [ ] Zero legacy tokens in all migrated files
 
 ### Out of Scope
@@ -66,4 +67,4 @@ Every surface uses a single, consistent design system (@openclaw/ui) with zero l
 - 16 simple pages (about, actions, activity, calendar, files, git, logs, memory, organization, reports, search, sessions, settings, terminal, workflows, workspaces) at 100% UUI
 
 ---
-*Last updated: 2026-03-20 after Phase 1 (App Shell) completion*
+*Last updated: 2026-03-20 after Phase 2 (Wave A Batch 1) completion*
