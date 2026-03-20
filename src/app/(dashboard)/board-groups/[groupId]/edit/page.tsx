@@ -88,18 +88,18 @@ export default function EditBoardGroupPage() {
   return (
     <div className="-m-6">
       {/* Sticky header */}
-      <div className="sticky top-0 z-30" style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
+      <div className="sticky top-0 z-30 border-b border-border bg-surface">
         <div className="px-4 pt-2 pb-4 md:px-8 md:pt-3 md:pb-5">
           <div className="flex items-center gap-3 mb-1">
-            <Link href={`/board-groups/${groupId ?? ''}`} className="flex items-center gap-1.5 text-sm hover:opacity-70 transition-opacity" style={{ color: 'var(--text-muted)' }}>
+            <Link href={`/board-groups/${groupId ?? ''}`} className="flex items-center gap-1.5 text-sm hover:opacity-70 transition-opacity text-muted">
               <ArrowLeft className="w-4 h-4" />
               {group?.name ?? 'Board group'}
             </Link>
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-heading)' }}>
+          <h1 className="text-2xl font-semibold tracking-tight text-primary font-heading">
             {loading ? '…' : group?.name ?? 'Edit group'}
           </h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--text-muted)' }}>
+          <p className="mt-1 text-sm text-muted">
             Update the shared context that connects boards in this group.
           </p>
         </div>
@@ -107,20 +107,17 @@ export default function EditBoardGroupPage() {
 
       <div className="px-4 py-6 md:px-8 max-w-2xl">
         {loading ? (
-          <div className="flex items-center gap-2 py-12" style={{ color: 'var(--text-muted)' }}>
+          <div className="flex items-center gap-2 py-12 text-muted">
             <Loader2 className="w-5 h-5 animate-spin" />
             <span className="text-sm">Loading…</span>
           </div>
         ) : (
           <form onSubmit={e => void handleSubmit(e)} className="space-y-6">
-            <div
-              className="rounded-2xl p-6 space-y-6"
-              style={{ border: '1px solid var(--border)', backgroundColor: 'var(--card)' }}
-            >
+            <div className="rounded-2xl p-6 space-y-6 border border-border bg-card">
               {/* Name */}
               <div className="space-y-1.5">
-                <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                  Group name <span style={{ color: 'var(--accent)' }}>*</span>
+                <label className="text-sm font-medium text-primary">
+                  Group name <span className="text-accent">*</span>
                 </label>
                 <input
                   type="text"
@@ -128,35 +125,33 @@ export default function EditBoardGroupPage() {
                   onChange={e => setName(e.target.value)}
                   placeholder="Group name"
                   disabled={saving}
-                  className="w-full px-3 py-2 rounded-lg text-sm"
-                  style={{ backgroundColor: 'var(--background)', border: '1px solid var(--border)', color: 'var(--text-primary)', outline: 'none' }}
+                  className="w-full px-3 py-2 rounded-lg text-sm bg-background border border-border text-primary outline-none"
                 />
               </div>
 
               {/* Description */}
               <div className="space-y-1.5">
-                <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Description</label>
+                <label className="text-sm font-medium text-primary">Description</label>
                 <textarea
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   placeholder="What ties these boards together?"
                   disabled={saving}
                   rows={4}
-                  className="w-full px-3 py-2 rounded-lg text-sm resize-none"
-                  style={{ backgroundColor: 'var(--background)', border: '1px solid var(--border)', color: 'var(--text-primary)', outline: 'none' }}
+                  className="w-full px-3 py-2 rounded-lg text-sm resize-none bg-background border border-border text-primary outline-none"
                 />
               </div>
 
               {/* Board assignment */}
-              <div className="space-y-2 pt-2" style={{ borderTop: '1px solid var(--border)' }}>
+              <div className="space-y-2 pt-2 border-t border-border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Boards</p>
-                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                    <p className="text-sm font-medium text-primary">Boards</p>
+                    <p className="text-xs mt-0.5 text-muted">
                       Assign boards to this group to share context across related work.
                     </p>
                   </div>
-                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{selectedBoardIds.size} selected</span>
+                  <span className="text-xs text-muted">{selectedBoardIds.size} selected</span>
                 </div>
                 <input
                   type="text"
@@ -164,17 +159,13 @@ export default function EditBoardGroupPage() {
                   onChange={e => setBoardSearch(e.target.value)}
                   placeholder="Search boards…"
                   disabled={saving}
-                  className="w-full px-3 py-2 rounded-lg text-sm"
-                  style={{ backgroundColor: 'var(--background)', border: '1px solid var(--border)', color: 'var(--text-primary)', outline: 'none' }}
+                  className="w-full px-3 py-2 rounded-lg text-sm bg-background border border-border text-primary outline-none"
                 />
-                <div
-                  className="max-h-56 overflow-auto rounded-xl"
-                  style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}
-                >
+                <div className="max-h-56 overflow-auto rounded-xl border border-border bg-surface">
                   {filteredBoards.length === 0 ? (
-                    <div className="px-4 py-4 text-sm" style={{ color: 'var(--text-muted)' }}>No boards found.</div>
+                    <div className="px-4 py-4 text-sm text-muted">No boards found.</div>
                   ) : (
-                    <ul className="divide-y" style={{ borderColor: 'var(--border)' }}>
+                    <ul className="divide-y divide-border">
                       {filteredBoards.map(board => {
                         const checked = selectedBoardIds.has(board.board_id)
                         const inOtherGroup = board.workflow_id !== groupId && !checked
@@ -189,11 +180,11 @@ export default function EditBoardGroupPage() {
                                 disabled={saving}
                               />
                               <div className="min-w-0">
-                                <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{board.name}</p>
-                                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs" style={{ color: 'var(--text-muted)' }}>
+                                <p className="text-sm font-medium truncate text-primary">{board.name}</p>
+                                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted">
                                   <span className="font-mono text-[11px]">{board.board_id.slice(0, 8)}…</span>
                                   {inOtherGroup && (
-                                    <span className="px-1.5 py-0.5 rounded-full text-[11px]" style={{ backgroundColor: '#f9731620', color: '#f97316', border: '1px solid #f9731640' }}>
+                                    <span className="px-1.5 py-0.5 rounded-full text-[11px] bg-warning/10 text-warning border border-warning/25">
                                       in another group
                                     </span>
                                   )}
@@ -208,7 +199,7 @@ export default function EditBoardGroupPage() {
                 </div>
               </div>
 
-              {error && <p className="text-sm" style={{ color: 'var(--accent)' }}>{error}</p>}
+              {error && <p className="text-sm text-accent">{error}</p>}
 
               {/* Actions */}
               <div className="flex justify-end gap-3 pt-2">
@@ -216,16 +207,14 @@ export default function EditBoardGroupPage() {
                   type="button"
                   onClick={() => router.push(`/board-groups/${groupId ?? ''}`)}
                   disabled={saving}
-                  className="px-4 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-70"
-                  style={{ color: 'var(--text-muted)', backgroundColor: 'transparent', border: '1px solid var(--border)' }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-70 text-muted bg-transparent border border-border"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving || !name.trim()}
-                  className="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-opacity hover:opacity-80 disabled:opacity-50"
-                  style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-opacity hover:opacity-80 disabled:opacity-50 bg-accent text-white"
                 >
                   {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                   {saving ? 'Saving…' : 'Save changes'}
