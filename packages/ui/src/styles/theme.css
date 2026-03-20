@@ -22,21 +22,21 @@
     --gray-950: #FAFAFA;
 
     /* -----------------------------------------------------------------------
-       Color Scale — Brand (Red)
-       Centered on brand-600 = #FF3B30
+       Color Scale — Brand (Indigo)
+       UUI official indigo palette · brand-600 = #444CE7
        ----------------------------------------------------------------------- */
-    --brand-25: #1A0605;
-    --brand-50: #2D0B09;
-    --brand-100: #4A120F;
-    --brand-200: #6E1B16;
-    --brand-300: #92241D;
-    --brand-400: #C72F25;
-    --brand-500: #E8352B;
-    --brand-600: #FF3B30;
-    --brand-700: #FF6259;
-    --brand-800: #FF8A83;
-    --brand-900: #FFB3AE;
-    --brand-950: #FFE5E3;
+    --brand-25: #F5F8FF;
+    --brand-50: #EEF4FF;
+    --brand-100: #E0EAFF;
+    --brand-200: #C7D7FE;
+    --brand-300: #A4BCFD;
+    --brand-400: #8098F9;
+    --brand-500: #6172F3;
+    --brand-600: #444CE7;
+    --brand-700: #3538CD;
+    --brand-800: #2D31A6;
+    --brand-900: #2D3282;
+    --brand-950: #1F235B;
 
     /* -----------------------------------------------------------------------
        Color Scale — Success (Green)
@@ -71,7 +71,7 @@
     --warning-950: #FFF8E3;
 
     /* -----------------------------------------------------------------------
-       Color Scale — Error (Red — shares brand red)
+       Color Scale — Error (Red — independent from brand)
        ----------------------------------------------------------------------- */
     --error-25: #1A0605;
     --error-50: #2D0B09;
@@ -126,6 +126,9 @@
     --border-secondary: var(--gray-200);
     --border-tertiary: var(--gray-100);
     --border-disabled: var(--gray-400);
+
+    /* Transitional — will be removed when all accent refs migrated to brand-600 */
+    --accent: var(--brand-600);
 
     /* -----------------------------------------------------------------------
        Shadows
@@ -210,19 +213,19 @@
     --gray-900: #18181B;
     --gray-950: #111114;
 
-    /* Brand — adjusted for light backgrounds */
-    --brand-25: #FFF5F5;
-    --brand-50: #FFE5E3;
-    --brand-100: #FFB3AE;
-    --brand-200: #FF8A83;
-    --brand-300: #FF6259;
-    --brand-400: #FF3B30;
-    --brand-500: #E8352B;
-    --brand-600: #FF3B30;
-    --brand-700: #C72F25;
-    --brand-800: #92241D;
-    --brand-900: #6E1B16;
-    --brand-950: #2D0B09;
+    /* Brand (Indigo) — same scale both modes */
+    --brand-25: #F5F8FF;
+    --brand-50: #EEF4FF;
+    --brand-100: #E0EAFF;
+    --brand-200: #C7D7FE;
+    --brand-300: #A4BCFD;
+    --brand-400: #8098F9;
+    --brand-500: #6172F3;
+    --brand-600: #444CE7;
+    --brand-700: #3538CD;
+    --brand-800: #2D31A6;
+    --brand-900: #2D3282;
+    --brand-950: #1F235B;
 
     /* Success — adjusted for light backgrounds */
     --success-25: #EDFCF0;
@@ -308,4 +311,152 @@
     --shadow-2xl: 0px 25px 50px -12px rgba(0, 0, 0, 0.25);
     --shadow-3xl: 0px 35px 60px -15px rgba(0, 0, 0, 0.30);
   }
+}
+
+/* ==========================================================================
+   Primitive Color Registration — Tailwind CSS v4 @theme
+   Makes bg-brand-600, text-gray-950, border-error-600 etc. work as native
+   Tailwind classes. Each --color-X generates bg-X, text-X, border-X.
+   ========================================================================== */
+
+@theme {
+  /* Gray scale */
+  --color-gray-25: var(--gray-25);
+  --color-gray-50: var(--gray-50);
+  --color-gray-100: var(--gray-100);
+  --color-gray-200: var(--gray-200);
+  --color-gray-300: var(--gray-300);
+  --color-gray-400: var(--gray-400);
+  --color-gray-500: var(--gray-500);
+  --color-gray-600: var(--gray-600);
+  --color-gray-700: var(--gray-700);
+  --color-gray-800: var(--gray-800);
+  --color-gray-900: var(--gray-900);
+  --color-gray-950: var(--gray-950);
+
+  /* Brand (Indigo) scale */
+  --color-brand-25: var(--brand-25);
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+  --color-brand-950: var(--brand-950);
+
+  /* Success scale */
+  --color-success-25: var(--success-25);
+  --color-success-50: var(--success-50);
+  --color-success-100: var(--success-100);
+  --color-success-200: var(--success-200);
+  --color-success-300: var(--success-300);
+  --color-success-400: var(--success-400);
+  --color-success-500: var(--success-500);
+  --color-success-600: var(--success-600);
+  --color-success-700: var(--success-700);
+  --color-success-800: var(--success-800);
+  --color-success-900: var(--success-900);
+  --color-success-950: var(--success-950);
+
+  /* Warning scale */
+  --color-warning-25: var(--warning-25);
+  --color-warning-50: var(--warning-50);
+  --color-warning-100: var(--warning-100);
+  --color-warning-200: var(--warning-200);
+  --color-warning-300: var(--warning-300);
+  --color-warning-400: var(--warning-400);
+  --color-warning-500: var(--warning-500);
+  --color-warning-600: var(--warning-600);
+  --color-warning-700: var(--warning-700);
+  --color-warning-800: var(--warning-800);
+  --color-warning-900: var(--warning-900);
+  --color-warning-950: var(--warning-950);
+
+  /* Error scale */
+  --color-error-25: var(--error-25);
+  --color-error-50: var(--error-50);
+  --color-error-100: var(--error-100);
+  --color-error-200: var(--error-200);
+  --color-error-300: var(--error-300);
+  --color-error-400: var(--error-400);
+  --color-error-500: var(--error-500);
+  --color-error-600: var(--error-600);
+  --color-error-700: var(--error-700);
+  --color-error-800: var(--error-800);
+  --color-error-900: var(--error-900);
+  --color-error-950: var(--error-950);
+
+  /* Blue / Info scale */
+  --color-blue-25: var(--blue-25);
+  --color-blue-50: var(--blue-50);
+  --color-blue-100: var(--blue-100);
+  --color-blue-200: var(--blue-200);
+  --color-blue-300: var(--blue-300);
+  --color-blue-400: var(--blue-400);
+  --color-blue-500: var(--blue-500);
+  --color-blue-600: var(--blue-600);
+  --color-blue-700: var(--blue-700);
+  --color-blue-800: var(--blue-800);
+  --color-blue-900: var(--blue-900);
+  --color-blue-950: var(--blue-950);
+}
+
+/* ==========================================================================
+   Semantic Utility Classes — UUI Official Names
+   Components consume THESE classes — never var(--bg-*) directly.
+   bg-primary ≠ text-primary (different underlying values), so we need
+   explicit utility classes rather than @theme --color-* registration.
+   ========================================================================== */
+
+@layer utilities {
+  /* === Background (UUI official) === */
+  .bg-primary        { background-color: var(--bg-primary); }
+  .bg-primary_hover  { background-color: var(--bg-secondary); }
+  .bg-secondary      { background-color: var(--bg-secondary); }
+  .bg-secondary_hover { background-color: var(--bg-tertiary); }
+  .bg-tertiary       { background-color: var(--bg-tertiary); }
+  .bg-quaternary     { background-color: var(--bg-quaternary); }
+  .bg-active         { background-color: var(--brand-50); }
+  .bg-disabled       { background-color: var(--gray-100); }
+  .bg-overlay        { background-color: rgba(0, 0, 0, 0.70); }
+  .bg-brand-solid    { background-color: var(--brand-600); }
+  .bg-brand-solid_hover { background-color: var(--brand-700); }
+  .bg-error-solid    { background-color: var(--error-600); }
+  .bg-success-solid  { background-color: var(--success-600); }
+
+  /* === Text (UUI official) === */
+  .text-primary       { color: var(--text-primary-900); }
+  .text-secondary     { color: var(--text-secondary-700); }
+  .text-tertiary      { color: var(--text-tertiary-600); }
+  .text-quaternary    { color: var(--text-quaternary-500); }
+  .text-disabled      { color: var(--text-disabled); }
+  .text-placeholder   { color: var(--gray-400); }
+  .text-brand-primary { color: var(--brand-600); }
+  .text-brand-secondary { color: var(--brand-500); }
+  .text-error-primary { color: var(--error-600); }
+  .text-warning-primary { color: var(--warning-600); }
+  .text-success-primary { color: var(--success-600); }
+
+  /* === Border (UUI official) === */
+  .border-primary    { border-color: var(--border-primary); }
+  .border-secondary  { border-color: var(--border-secondary); }
+  .border-tertiary   { border-color: var(--border-tertiary); }
+  .border-disabled   { border-color: var(--border-disabled); }
+  .border-brand      { border-color: var(--brand-600); }
+  .border-error      { border-color: var(--error-600); }
+
+  /* === Foreground/Icons (UUI official) === */
+  .fg-primary        { color: var(--text-primary-900); }
+  .fg-secondary      { color: var(--text-secondary-700); }
+  .fg-tertiary       { color: var(--text-tertiary-600); }
+  .fg-quaternary     { color: var(--text-quaternary-500); }
+  .fg-disabled       { color: var(--text-disabled); }
+  .fg-brand-primary  { color: var(--brand-600); }
+  .fg-error-primary  { color: var(--error-600); }
+  .fg-success-secondary { color: var(--success-500); }
+  .fg-white          { color: #FFFFFF; }
 }

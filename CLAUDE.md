@@ -5,7 +5,7 @@
 This project uses **Untitled UI React PRO** as its design system, wrapped in `@openclaw/ui` (packages/ui/).
 
 ### OpenClaw Overrides
-- **Brand color**: `#FF3B30` (brand-600) — NOT the default purple
+- **Brand color**: `#444CE7` (brand-600) — UUI official indigo
 - **Fonts**: Sora (display), Inter (body), JetBrains Mono (code)
 - **Dark theme default** — light via `data-theme="light"`
 - **Import from**: `@openclaw/ui` (NOT from untitled-ui directly)
