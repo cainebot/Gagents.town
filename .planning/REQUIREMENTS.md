@@ -9,8 +9,8 @@ Requirements for M6: App Shell + Wave A migration.
 
 ### App Shell
 
-- [ ] **SHELL-01**: Root layout provides ThemeProvider + RouterProvider from @openclaw/ui
-- [ ] **SHELL-02**: Dashboard layout uses UUI tokens exclusively (zero legacy var(--*))
+- [x] **SHELL-01**: Root layout provides ThemeProvider + RouterProvider from @openclaw/ui
+- [x] **SHELL-02**: Dashboard layout uses UUI tokens exclusively (zero legacy var(--*))
 - [ ] **SHELL-03**: Login page uses UUI components and tokens exclusively
 - [ ] **SHELL-04**: DashboardSidebar consumes UUI AppNavigation pattern
 - [ ] **SHELL-05**: Headers and global navigation use UUI tokens and components
@@ -58,8 +58,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHELL-01 | Phase 1 | Pending |
-| SHELL-02 | Phase 1 | Pending |
+| SHELL-01 | Phase 1 | Complete |
+| SHELL-02 | Phase 1 | Complete |
 | SHELL-03 | Phase 1 | Pending |
 | SHELL-04 | Phase 1 | Pending |
 | SHELL-05 | Phase 1 | Pending |
