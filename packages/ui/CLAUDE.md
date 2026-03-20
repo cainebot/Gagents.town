@@ -44,7 +44,7 @@ cx("base-class", condition && "conditional-class", className)
 - Dark theme by default, light via `data-theme="light"`
 
 ### Brand Color
-Primary/brand color: `#FF3B30` (brand-600)
+Primary/brand color: `#444CE7` (brand-600) — UUI official indigo
 
 ### Typography
 - Headings: Sora (`--font-display`)

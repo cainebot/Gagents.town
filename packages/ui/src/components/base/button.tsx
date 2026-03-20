@@ -59,7 +59,7 @@ export function Button({
       isDisabled={isDisabled || isLoading}
       className={cx(
         "inline-flex items-center justify-center font-medium transition-colors duration-150",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FF3B30]",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         variantStyles[variant],
         sizeStyles[size],
