@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { BoardColumnRow, CardRow, CardType } from '@/types/workflow'
 import { KanbanCard } from './KanbanCard'
 import { InlineCardCreate } from './InlineCardCreate'
+import { Badge, Button, cx } from '@openclaw/ui'
 
 interface KanbanColumnProps {
   column: BoardColumnRow & { state_ids: string[] }
@@ -71,115 +72,45 @@ export function KanbanColumn({
   }
 
   return (
-    <div
-      style={{
-        width: '280px',
-        flexShrink: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        maxHeight: 'calc(100vh - 200px)',
-      }}
-    >
+    <div className="w-[280px] shrink-0 flex flex-col max-h-[calc(100vh-200px)]">
       {/* Column header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '8px 12px',
-          marginBottom: '8px',
-          background: column.only_humans
-            ? 'linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(251, 191, 36, 0.04))'
-            : 'var(--bg-secondary)',
-          border: "1px solid var(--border-primary)",
-          borderLeft: column.only_humans
-            ? '3px solid rgba(251, 191, 36, 0.5)'
-            : '1px solid var(--border-primary)',
-          borderRadius: '6px',
-        }}
+        className={cx(
+          'flex items-center justify-between px-3 py-2 mb-2 border border-primary rounded-[6px]',
+          column.only_humans
+            ? 'bg-gradient-to-br from-amber-400/[0.08] to-amber-400/[0.04] border-l-[3px] border-l-amber-400/50'
+            : 'bg-secondary'
+        )}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span
-            style={{
-              fontFamily: 'var(--font-sora), system-ui, sans-serif',
-              fontSize: '13px',
-              fontWeight: 600,
-              color: "var(--text-primary-900)",
-            }}
-          >
+        <div className="flex items-center gap-2">
+          <span className="font-display text-[13px] font-semibold text-primary">
             {column.name}
           </span>
           {/* Only-humans badge */}
           {column.only_humans && (
-            <span
-              title="Human-only column — agents cannot move cards out of this column"
-              style={{
-                fontSize: '10px',
-                background: 'rgba(251, 191, 36, 0.15)',
-                color: '#fbbf24',
-                padding: '1px 5px',
-                borderRadius: '3px',
-                fontWeight: 500,
-                letterSpacing: '0.02em',
-              }}
-            >
+            <Badge variant="warning" size="sm" className="!text-[10px]">
               HUMAN ONLY
-            </span>
+            </Badge>
           )}
           {/* Card count badge */}
-          <span
-            style={{
-              fontFamily: 'var(--font-inter), system-ui, sans-serif',
-              fontSize: '11px',
-              fontWeight: 600,
-              color: "var(--text-tertiary-600)",
-              background: 'var(--bg-secondary)',
-              border: "1px solid var(--border-primary)",
-              borderRadius: '10px',
-              padding: '1px 6px',
-              minWidth: '20px',
-              textAlign: 'center',
-            }}
-          >
+          <Badge variant="gray" size="sm">
             {cards.length}
-          </span>
+          </Badge>
         </div>
 
         {/* Add card button */}
-        <button
-          onClick={() => setShowInlineCreate((v) => !v)}
-          title="Add card"
-          style={{
-            background: showInlineCreate
-              ? 'var(--bg-secondary)'
-              : 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: showInlineCreate ? 'var(--text-primary-900)' : 'var(--text-tertiary-600)',
-            fontSize: '18px',
-            lineHeight: 1,
-            padding: '0 2px',
-            borderRadius: '3px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          onMouseEnter={(e) => {
-            ;(e.currentTarget as HTMLButtonElement).style.background =
-              'var(--bg-secondary)'
-            ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--text-primary-900)'
-          }}
-          onMouseLeave={(e) => {
-            ;(e.currentTarget as HTMLButtonElement).style.background = showInlineCreate
-              ? 'var(--bg-secondary)'
-              : 'none'
-            ;(e.currentTarget as HTMLButtonElement).style.color = showInlineCreate
-              ? 'var(--text-primary-900)'
-              : 'var(--text-tertiary-600)'
-          }}
+        <Button
+          variant="ghost"
+          size="xs"
+          onPress={() => setShowInlineCreate((v) => !v)}
+          aria-label="Add card"
+          className={cx(
+            'text-lg leading-none px-1 py-0 h-auto min-h-0',
+            showInlineCreate ? 'bg-secondary text-primary' : 'text-tertiary'
+          )}
         >
           +
-        </button>
+        </Button>
       </div>
 
       {/* Cards drop zone */}
@@ -187,19 +118,13 @@ export function KanbanColumn({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        style={{
-          flex: 1,
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-          padding: '4px',
-          borderRadius: '6px',
-          border: isDragOver ? '2px dashed var(--brand-600)' : '2px dashed transparent',
-          background: isDragOver ? 'rgba(99,102,241,0.04)' : 'transparent',
-          transition: 'border-color 0.15s ease, background 0.15s ease',
-          minHeight: '80px',
-        }}
+        className={cx(
+          'flex-1 overflow-y-auto flex flex-col gap-2 p-1 rounded-[6px] min-h-[80px]',
+          'transition-[border-color,background] duration-150 ease-out',
+          isDragOver
+            ? 'border-2 border-dashed border-brand-600 bg-brand-600/[0.04]'
+            : 'border-2 border-dashed border-transparent bg-transparent'
+        )}
       >
         {sortedCards.map((card) => (
           <KanbanCard
@@ -215,19 +140,7 @@ export function KanbanColumn({
           />
         ))}
         {sortedCards.length === 0 && !showInlineCreate && (
-          <div
-            style={{
-              flex: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: "var(--text-tertiary-600)",
-              fontFamily: 'var(--font-inter), system-ui, sans-serif',
-              fontSize: '12px',
-              opacity: 0.5,
-              minHeight: '60px',
-            }}
-          >
+          <div className="flex-1 flex items-center justify-center text-tertiary font-body text-xs opacity-50 min-h-[60px]">
             Drop here
           </div>
         )}

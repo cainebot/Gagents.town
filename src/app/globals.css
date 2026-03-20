@@ -149,5 +149,14 @@ textarea::-webkit-resizer {
   color: var(--blue-500);
 }
 
+/* Kanban card fade-in animation */
+@keyframes kanbanFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-kanban-fade-in {
+  animation: kanbanFadeIn 0.3s ease forwards;
+}
+
 /* Sidebar width */
 .sidebar-width { width: 240px; min-width: 240px; }
