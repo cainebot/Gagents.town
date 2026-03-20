@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-wave-a-batch-2-+-verify-03-04-PLAN.md
-last_updated: "2026-03-20T18:18:25.786Z"
+stopped_at: Completed 03-wave-a-batch-2-+-verify-03-05-PLAN.md
+last_updated: "2026-03-20T18:21:42.700Z"
 progress:
   total_phases: 3
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 12
-  completed_plans: 11
+  completed_plans: 12
 ---
 
 # Project State
@@ -55,6 +55,7 @@ Plan: 1 of 5
 | Phase 03-wave-a-batch-2-+-verify P01 | 132s | 2 tasks | 2 files |
 | Phase 03-wave-a-batch-2-+-verify P03 | 5min | 1 tasks | 1 files |
 | Phase 03-wave-a-batch-2-+-verify P04 | 4min | 2 tasks | 2 files |
+| Phase 03-wave-a-batch-2-+-verify P05 | 2min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,8 @@ Recent decisions affecting current work:
 - [Phase 03-wave-a-batch-2-+-verify]: Sessions page: rgba() modal backdrop overlay retained as allowlisted inline style; conditional bubble borders kept as inline template literal
 - [Phase 03-wave-a-batch-2-+-verify]: Workspaces: getRamBarColor/getCpuBarColor/statusColor updated to return var(--error-600)/var(--warning-600)/var(--success-600) — consistent UUI tokens, dynamic values still need inline style
 - [Phase 03-wave-a-batch-2-+-verify]: Dynamic width % bars and runtime-computed color strings retained as inline style (cannot be Tailwind class); all static/conditional styles moved to className
+- [Phase 03-wave-a-batch-2-+-verify]: text-white on brand/error colored buttons is correct intentional pattern, not a legacy token requiring migration
+- [Phase 03-wave-a-batch-2-+-verify]: Full M6 migration verified: all 23 files clean — zero legacy tokens, clean build, zero legacy imports
 
 ### Pending Todos
 
@@ -95,6 +98,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T18:18:25.784Z
-Stopped at: Completed 03-wave-a-batch-2-+-verify-03-04-PLAN.md
+Last session: 2026-03-20T18:21:42.698Z
+Stopped at: Completed 03-wave-a-batch-2-+-verify-03-05-PLAN.md
 Resume file: None

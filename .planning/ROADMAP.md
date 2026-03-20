@@ -12,7 +12,7 @@ Three-phase migration of the app shell and 16 simple dashboard pages from the Di
 
 - [ ] **Phase 1: App Shell** - Migrate root layout, dashboard layout, login, sidebar, and headers to UUI
 - [x] **Phase 2: Wave A Batch 1** - Migrate first 8 simple pages (about through memory) to 100% UUI (completed 2026-03-20)
-- [ ] **Phase 3: Wave A Batch 2 + Verify** - Migrate remaining 8 simple pages then verify zero legacy tokens across all migrated files
+- [x] **Phase 3: Wave A Batch 2 + Verify** - Migrate remaining 8 simple pages then verify zero legacy tokens across all migrated files (completed 2026-03-20)
 
 ## Phase Details
 
@@ -57,7 +57,7 @@ Plans:
   2. grep for var(--) across all migrated files (shell + 16 pages) returns 0 matches
   3. next build succeeds with zero errors on the complete migrated codebase
   4. No imports from src/components/ui/ legacy path exist in any migrated file
-**Plans:** 3/5 plans executed
+**Plans:** 5/5 plans complete
 Plans:
 - [ ] 03-01-PLAN.md — Migrate organization + reports pages to UUI tokens
 - [ ] 03-02-PLAN.md — Migrate search + settings + terminal pages to UUI tokens
@@ -74,4 +74,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. App Shell | 2/3 | In Progress|  |
 | 2. Wave A Batch 1 | 4/4 | Complete   | 2026-03-20 |
-| 3. Wave A Batch 2 + Verify | 3/5 | In Progress|  |
+| 3. Wave A Batch 2 + Verify | 5/5 | Complete   | 2026-03-20 |

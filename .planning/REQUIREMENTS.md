@@ -36,9 +36,9 @@ Requirements for M6: App Shell + Wave A migration.
 
 ### Verification
 
-- [ ] **VRFY-01**: grep legacy tokens (var(--) in all migrated files returns 0 matches
-- [ ] **VRFY-02**: next build succeeds with zero errors
-- [ ] **VRFY-03**: No imports from src/components/ui/ legacy path in migrated files
+- [x] **VRFY-01**: grep legacy tokens (var(--) in all migrated files returns 0 matches
+- [x] **VRFY-02**: next build succeeds with zero errors
+- [x] **VRFY-03**: No imports from src/components/ui/ legacy path in migrated files
 
 ## Out of Scope
 
@@ -79,9 +79,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WAVE-14 | Phase 3 | Complete |
 | WAVE-15 | Phase 3 | Complete |
 | WAVE-16 | Phase 3 | Complete |
-| VRFY-01 | Phase 3 | Pending |
-| VRFY-02 | Phase 3 | Pending |
-| VRFY-03 | Phase 3 | Pending |
+| VRFY-01 | Phase 3 | Complete |
+| VRFY-02 | Phase 3 | Complete |
+| VRFY-03 | Phase 3 | Complete |
 
 **Coverage:**
 - v6 requirements: 24 total
