@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import type { BoardRow } from '@/types/workflow'
+import { cx } from '@openclaw/ui'
 
 export default function BoardsPage() {
   const [boards, setBoards] = useState<BoardRow[]>([])
@@ -21,37 +22,15 @@ export default function BoardsPage() {
   }, [])
 
   return (
-    <div style={{ maxWidth: '1200px' }}>
+    <div className="max-w-[1200px]">
       {/* Page Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '24px',
-        }}
-      >
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontSize: '24px',
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              margin: 0,
-            }}
-          >
+          <h1 className="font-heading text-2xl font-bold text-primary m-0">
             Boards
           </h1>
           {!loading && !error && (
-            <p
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '14px',
-                color: 'var(--text-secondary)',
-                margin: '4px 0 0 0',
-              }}
-            >
+            <p className="font-body text-sm text-secondary mt-1 mb-0">
               {boards.length} board{boards.length !== 1 ? 's' : ''}
             </p>
           )}
@@ -60,25 +39,11 @@ export default function BoardsPage() {
 
       {/* Loading state */}
       {loading && (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '16px',
-          }}
-        >
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              style={{
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                borderRadius: '8px',
-                padding: '20px',
-                height: '120px',
-                opacity: 0.5,
-                animation: 'pulse 1.5s ease-in-out infinite',
-              }}
+              className="bg-surface border border-border rounded-lg p-5 h-[120px] opacity-50 animate-pulse"
             />
           ))}
         </div>
@@ -86,135 +51,54 @@ export default function BoardsPage() {
 
       {/* Error state */}
       {error && (
-        <div
-          style={{
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: '8px',
-            padding: '24px',
-            color: 'var(--text-secondary)',
-            fontFamily: 'var(--font-body)',
-          }}
-        >
+        <div className="bg-surface border border-border rounded-lg p-6 text-secondary font-body">
           Error loading boards: {error}
         </div>
       )}
 
-      {/* Boards grid */}
+      {/* Empty state */}
       {!loading && !error && boards.length === 0 && (
-        <div
-          style={{
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: '8px',
-            padding: '48px 24px',
-            textAlign: 'center',
-            color: 'var(--text-secondary)',
-            fontFamily: 'var(--font-body)',
-          }}
-        >
+        <div className="bg-surface border border-border rounded-lg px-6 py-12 text-center text-secondary font-body">
           No boards found. Create a board to get started.
         </div>
       )}
 
+      {/* Boards grid */}
       {!loading && !error && boards.length > 0 && (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '16px',
-          }}
-        >
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
           {boards.map((board) => (
             <Link
               key={board.board_id}
               href={`/boards/${board.board_id}`}
-              style={{ textDecoration: 'none' }}
+              className="no-underline"
             >
               <div
-                style={{
-                  background: 'var(--surface)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '8px',
-                  padding: '20px',
-                  cursor: 'pointer',
-                  transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
-                }}
-                onMouseEnter={(e) => {
-                  ;(e.currentTarget as HTMLDivElement).style.borderColor =
-                    'var(--accent, #6366f1)'
-                  ;(e.currentTarget as HTMLDivElement).style.boxShadow =
-                    '0 2px 8px rgba(0,0,0,0.15)'
-                }}
-                onMouseLeave={(e) => {
-                  ;(e.currentTarget as HTMLDivElement).style.borderColor = 'var(--border)'
-                  ;(e.currentTarget as HTMLDivElement).style.boxShadow = 'none'
-                }}
+                className={cx(
+                  'bg-surface border border-border rounded-lg p-5 cursor-pointer',
+                  'transition-[border-color,box-shadow] duration-150 ease-[ease]',
+                  'hover:border-accent hover:shadow-[0_2px_8px_rgba(0,0,0,0.15)]',
+                )}
               >
                 {/* Board name */}
-                <h2
-                  style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontSize: '16px',
-                    fontWeight: 600,
-                    color: 'var(--text-primary)',
-                    margin: '0 0 8px 0',
-                  }}
-                >
+                <h2 className="font-heading text-base font-semibold text-primary mb-2 mt-0">
                   {board.name}
                 </h2>
 
                 {/* Description */}
                 {board.description && (
-                  <p
-                    style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '13px',
-                      color: 'var(--text-secondary)',
-                      margin: '0 0 12px 0',
-                      overflow: 'hidden',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                    }}
-                  >
+                  <p className="font-body text-xs text-secondary mb-3 mt-0 line-clamp-2">
                     {board.description}
                   </p>
                 )}
 
                 {/* Meta row */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    marginTop: 'auto',
-                  }}
-                >
+                <div className="flex items-center gap-2 mt-auto">
                   {board.card_type_filter && (
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '11px',
-                        color: 'var(--text-secondary)',
-                        background: 'var(--surface-alt, rgba(255,255,255,0.05))',
-                        border: '1px solid var(--border)',
-                        borderRadius: '4px',
-                        padding: '2px 6px',
-                        textTransform: 'capitalize',
-                      }}
-                    >
+                    <span className="font-body text-[11px] text-secondary bg-surface-elevated border border-border rounded px-1.5 py-0.5 capitalize">
                       {board.card_type_filter}
                     </span>
                   )}
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '11px',
-                      color: 'var(--text-secondary)',
-                      marginLeft: 'auto',
-                    }}
-                  >
+                  <span className="font-body text-[11px] text-secondary ml-auto">
                     View board &rarr;
                   </span>
                 </div>
