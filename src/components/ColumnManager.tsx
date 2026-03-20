@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import type { BoardColumnRow, WorkflowStateRow } from '@/types/workflow'
+import { cx } from '@openclaw/ui'
 
 interface ColumnManagerProps {
   boardId: string
@@ -79,31 +80,17 @@ function ColumnItem({
       onDragStart={(e) => onDragStart(e, column.column_id)}
       onDragOver={(e) => onDragOver(e, column.column_id)}
       onDrop={(e) => onDrop(e, column.column_id)}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        padding: '10px 12px',
-        background: isDragOver ? 'var(--surface-alt, rgba(99,102,241,0.08))' : 'var(--surface)',
-        border: `1px solid ${isDragOver ? 'var(--accent, #6366f1)' : 'var(--border)'}`,
-        borderRadius: '6px',
-        marginBottom: '6px',
-        transition: 'background 0.1s ease, border-color 0.1s ease',
-        cursor: 'default',
-      }}
+      className={cx(
+        'flex items-center gap-2 px-3 py-[10px] rounded-md mb-[6px] transition-[background,border-color] duration-100 cursor-default border',
+        isDragOver
+          ? 'bg-surface-alt border-accent'
+          : 'bg-surface border-border'
+      )}
     >
       {/* Drag handle */}
       <div
         title="Drag to reorder"
-        style={{
-          cursor: 'grab',
-          color: 'var(--text-secondary)',
-          display: 'flex',
-          alignItems: 'center',
-          flexShrink: 0,
-          opacity: 0.5,
-          userSelect: 'none',
-        }}
+        className="cursor-grab text-secondary flex items-center shrink-0 opacity-50 select-none"
       >
         {/* GripVertical icon (3 rows of 2 dots) */}
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -117,7 +104,7 @@ function ColumnItem({
       </div>
 
       {/* Column name — inline editable */}
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div className="flex-1 min-w-0">
         {editing ? (
           <input
             ref={inputRef}
@@ -125,89 +112,42 @@ function ColumnItem({
             onChange={(e) => setNameValue(e.target.value)}
             onBlur={() => void handleNameSave()}
             onKeyDown={handleNameKeyDown}
-            style={{
-              width: '100%',
-              fontFamily: 'var(--font-body)',
-              fontSize: '13px',
-              fontWeight: 500,
-              color: 'var(--text-primary)',
-              background: 'var(--surface-elevated, var(--surface))',
-              border: '1px solid var(--accent, #6366f1)',
-              borderRadius: '4px',
-              padding: '2px 6px',
-              outline: 'none',
-            }}
+            className="w-full font-body text-[13px] font-medium text-primary bg-surface-elevated border border-accent rounded px-[6px] py-[2px] outline-none"
           />
         ) : (
           <span
             onClick={handleNameClick}
             title="Click to rename"
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '13px',
-              fontWeight: 500,
-              color: 'var(--text-primary)',
-              cursor: 'text',
-              display: 'block',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
+            className="font-body text-[13px] font-medium text-primary cursor-text block overflow-hidden text-ellipsis whitespace-nowrap"
           >
             {column.name}
           </span>
         )}
         {/* Error for this column */}
         {error && (
-          <span
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '11px',
-              color: '#f87171',
-              display: 'block',
-              marginTop: '2px',
-            }}
-          >
+          <span className="font-body text-[11px] text-[#f87171] block mt-[2px]">
             {error}
           </span>
         )}
       </div>
 
       {/* State color dots */}
-      <div style={{ display: 'flex', gap: '3px', flexShrink: 0 }}>
+      <div className="flex gap-[3px] shrink-0">
         {mappedStates.slice(0, 5).map((s) => (
           <div
             key={s.state_id}
             title={s.name}
-            style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: s.color || '#6b7280',
-              flexShrink: 0,
-            }}
+            style={{ background: s.color || '#6b7280' }}
+            className="w-2 h-2 rounded-full shrink-0"
           />
         ))}
         {mappedStates.length > 5 && (
-          <span
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '10px',
-              color: 'var(--text-secondary)',
-            }}
-          >
+          <span className="font-body text-[10px] text-secondary">
             +{mappedStates.length - 5}
           </span>
         )}
         {mappedStates.length === 0 && (
-          <span
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '11px',
-              color: 'var(--text-secondary)',
-              opacity: 0.6,
-            }}
-          >
+          <span className="font-body text-[11px] text-secondary opacity-60">
             no states
           </span>
         )}
@@ -216,72 +156,35 @@ function ColumnItem({
       {/* Only humans toggle */}
       <label
         title="Only humans can move cards out of this column"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          cursor: 'pointer',
-          flexShrink: 0,
-        }}
+        className="flex items-center gap-1 cursor-pointer shrink-0"
       >
         <input
           type="checkbox"
           checked={column.only_humans}
           onChange={(e) => void onToggleHumans(column.column_id, e.target.checked)}
-          style={{ accentColor: 'var(--accent, #6366f1)', cursor: 'pointer' }}
+          className="accent-accent cursor-pointer"
         />
-        <span
-          style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: '11px',
-            color: 'var(--text-secondary)',
-            whiteSpace: 'nowrap',
-          }}
-        >
+        <span className="font-body text-[11px] text-secondary whitespace-nowrap">
           humans only
         </span>
       </label>
 
       {/* Delete button */}
-      <div style={{ flexShrink: 0 }}>
+      <div className="shrink-0">
         {confirmDelete ? (
-          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '11px',
-                color: '#f87171',
-              }}
-            >
+          <div className="flex gap-1 items-center">
+            <span className="font-body text-[11px] text-[#f87171]">
               Delete?
             </span>
             <button
               onClick={() => void onDelete(column.column_id)}
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '11px',
-                background: '#f87171',
-                border: 'none',
-                borderRadius: '3px',
-                color: 'white',
-                padding: '2px 6px',
-                cursor: 'pointer',
-              }}
+              className="font-body text-[11px] bg-[#f87171] border-0 rounded-[3px] text-white px-[6px] py-[2px] cursor-pointer"
             >
               Yes
             </button>
             <button
               onClick={() => setConfirmDelete(false)}
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '11px',
-                background: 'none',
-                border: '1px solid var(--border)',
-                borderRadius: '3px',
-                color: 'var(--text-secondary)',
-                padding: '2px 6px',
-                cursor: 'pointer',
-              }}
+              className="font-body text-[11px] bg-transparent border border-border rounded-[3px] text-secondary px-[6px] py-[2px] cursor-pointer"
             >
               No
             </button>
@@ -290,27 +193,7 @@ function ColumnItem({
           <button
             onClick={() => setConfirmDelete(true)}
             title="Delete column"
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--text-secondary)',
-              padding: '2px 4px',
-              opacity: 0.5,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '3px',
-              transition: 'opacity 0.1s ease',
-            }}
-            onMouseEnter={(e) => {
-              ;(e.currentTarget as HTMLButtonElement).style.opacity = '1'
-              ;(e.currentTarget as HTMLButtonElement).style.color = '#f87171'
-            }}
-            onMouseLeave={(e) => {
-              ;(e.currentTarget as HTMLButtonElement).style.opacity = '0.5'
-              ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--text-secondary)'
-            }}
+            className="bg-transparent border-0 cursor-pointer text-secondary px-1 py-[2px] opacity-50 flex items-center justify-center rounded-[3px] transition-opacity duration-100 hover:opacity-100 hover:text-[#f87171]"
           >
             {/* X icon */}
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -570,74 +453,19 @@ export function ColumnManager({
       {/* Backdrop */}
       <div
         onClick={onClose}
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          zIndex: 200,
-        }}
+        className="fixed inset-0 bg-black/50 z-[200]"
       />
 
       {/* Modal */}
-      <div
-        style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 201,
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          borderRadius: '10px',
-          width: '540px',
-          maxWidth: 'calc(100vw - 32px)',
-          maxHeight: 'calc(100vh - 64px)',
-          display: 'flex',
-          flexDirection: 'column',
-          boxShadow: '0 16px 48px rgba(0, 0, 0, 0.4)',
-        }}
-      >
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[201] bg-surface border border-border rounded-[10px] w-[540px] max-w-[calc(100vw-32px)] max-h-[calc(100vh-64px)] flex flex-col shadow-[0_16px_48px_rgba(0,0,0,0.4)]">
         {/* Header */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '16px 20px',
-            borderBottom: '1px solid var(--border)',
-            flexShrink: 0,
-          }}
-        >
-          <h2
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontSize: '16px',
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              margin: 0,
-            }}
-          >
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
+          <h2 className="font-heading text-base font-bold text-primary m-0">
             Manage Columns
           </h2>
           <button
             onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--text-secondary)',
-              padding: '4px',
-              display: 'flex',
-              alignItems: 'center',
-              borderRadius: '4px',
-            }}
-            onMouseEnter={(e) => {
-              ;(e.currentTarget as HTMLButtonElement).style.background =
-                'var(--surface-alt, rgba(255,255,255,0.08))'
-            }}
-            onMouseLeave={(e) => {
-              ;(e.currentTarget as HTMLButtonElement).style.background = 'none'
-            }}
+            className="bg-transparent border-0 cursor-pointer text-secondary p-1 flex items-center rounded hover:bg-surface-alt"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" />
@@ -648,41 +476,18 @@ export function ColumnManager({
 
         {/* Column list */}
         <div
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            padding: '16px 20px',
-          }}
+          className="flex-1 overflow-y-auto px-5 py-4"
           onDragLeave={() => setDragOverId(null)}
         >
           {/* Global error */}
           {globalError && (
-            <div
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '12px',
-                color: '#f87171',
-                background: 'rgba(248, 113, 113, 0.1)',
-                border: '1px solid rgba(248, 113, 113, 0.3)',
-                borderRadius: '4px',
-                padding: '6px 10px',
-                marginBottom: '12px',
-              }}
-            >
+            <div className="font-body text-xs text-[#f87171] bg-[rgba(248,113,113,0.1)] border border-[rgba(248,113,113,0.3)] rounded px-[10px] py-[6px] mb-3">
               {globalError}
             </div>
           )}
 
           {orderedColumns.length === 0 ? (
-            <div
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '13px',
-                color: 'var(--text-secondary)',
-                textAlign: 'center',
-                padding: '24px 0',
-              }}
-            >
+            <div className="font-body text-[13px] text-secondary text-center py-6">
               No columns yet. Add one below.
             </div>
           ) : (
@@ -708,27 +513,11 @@ export function ColumnManager({
         </div>
 
         {/* Add column form */}
-        <div
-          style={{
-            borderTop: '1px solid var(--border)',
-            padding: '16px 20px',
-            flexShrink: 0,
-          }}
-        >
-          <div
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '12px',
-              fontWeight: 600,
-              color: 'var(--text-secondary)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              marginBottom: '10px',
-            }}
-          >
+        <div className="border-t border-border px-5 py-4 shrink-0">
+          <div className="font-body text-xs font-semibold text-secondary uppercase tracking-[0.05em] mb-[10px]">
             Add Column
           </div>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+          <div className="flex gap-2 items-start">
             {/* Name input */}
             <input
               type="text"
@@ -738,107 +527,43 @@ export function ColumnManager({
               onKeyDown={(e) => {
                 if (e.key === 'Enter') void handleAddColumn()
               }}
-              style={{
-                flex: 1,
-                fontFamily: 'var(--font-body)',
-                fontSize: '13px',
-                color: 'var(--text-primary)',
-                background: 'var(--surface-elevated, var(--surface))',
-                border: '1px solid var(--border)',
-                borderRadius: '6px',
-                padding: '6px 10px',
-                outline: 'none',
-              }}
-              onFocus={(e) => {
-                ;(e.target as HTMLInputElement).style.borderColor = 'var(--accent, #6366f1)'
-              }}
-              onBlur={(e) => {
-                ;(e.target as HTMLInputElement).style.borderColor = 'var(--border)'
-              }}
+              className="flex-1 font-body text-[13px] text-primary bg-surface-elevated border border-border rounded-md px-[10px] py-[6px] outline-none focus:border-accent"
             />
 
             {/* State multi-select */}
-            <div ref={stateDropdownRef} style={{ position: 'relative', flexShrink: 0 }}>
+            <div ref={stateDropdownRef} className="relative shrink-0">
               <button
                 onClick={() => setShowStateDropdown((v) => !v)}
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '12px',
-                  color: newStateIds.length > 0 ? 'white' : 'var(--text-secondary)',
-                  background: newStateIds.length > 0 ? 'var(--accent, #6366f1)' : 'var(--surface)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '6px',
-                  padding: '6px 10px',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                }}
+                className={cx(
+                  'font-body text-xs border border-border rounded-md px-[10px] py-[6px] cursor-pointer whitespace-nowrap',
+                  newStateIds.length > 0
+                    ? 'text-white bg-accent'
+                    : 'text-secondary bg-surface'
+                )}
               >
                 States {newStateIds.length > 0 ? `(${newStateIds.length})` : ''}
               </button>
               {showStateDropdown && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: 'calc(100% + 4px)',
-                    right: 0,
-                    zIndex: 50,
-                    background: 'var(--surface)',
-                    border: '1px solid var(--border)',
-                    borderRadius: '6px',
-                    minWidth: '200px',
-                    maxHeight: '200px',
-                    overflowY: 'auto',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                  }}
-                >
+                <div className="absolute bottom-[calc(100%+4px)] right-0 z-50 bg-surface border border-border rounded-md min-w-[200px] max-h-[200px] overflow-y-auto shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
                   {workflowStates.length === 0 ? (
-                    <div
-                      style={{
-                        padding: '10px 12px',
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '12px',
-                        color: 'var(--text-secondary)',
-                      }}
-                    >
+                    <div className="px-3 py-[10px] font-body text-xs text-secondary">
                       No workflow states available
                     </div>
                   ) : (
                     workflowStates.map((s) => (
                       <label
                         key={s.state_id}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          padding: '7px 12px',
-                          cursor: 'pointer',
-                          fontFamily: 'var(--font-body)',
-                          fontSize: '13px',
-                          color: 'var(--text-primary)',
-                          borderBottom: '1px solid var(--border)',
-                        }}
-                        onMouseEnter={(e) => {
-                          ;(e.currentTarget as HTMLLabelElement).style.background =
-                            'var(--surface-alt, rgba(255,255,255,0.05))'
-                        }}
-                        onMouseLeave={(e) => {
-                          ;(e.currentTarget as HTMLLabelElement).style.background = 'transparent'
-                        }}
+                        className="flex items-center gap-2 px-3 py-[7px] cursor-pointer font-body text-[13px] text-primary border-b border-border hover:bg-surface-alt"
                       >
                         <input
                           type="checkbox"
                           checked={newStateIds.includes(s.state_id)}
                           onChange={() => toggleNewStateId(s.state_id)}
-                          style={{ accentColor: 'var(--accent, #6366f1)' }}
+                          className="accent-accent"
                         />
                         <span
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            borderRadius: '50%',
-                            background: s.color || '#6b7280',
-                            flexShrink: 0,
-                          }}
+                          style={{ background: s.color || '#6b7280' }}
+                          className="w-2 h-2 rounded-full shrink-0"
                         />
                         {s.name}
                       </label>
@@ -852,19 +577,12 @@ export function ColumnManager({
             <button
               onClick={() => void handleAddColumn()}
               disabled={adding}
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '13px',
-                fontWeight: 600,
-                background: adding ? 'var(--surface)' : 'var(--accent, #6366f1)',
-                border: 'none',
-                borderRadius: '6px',
-                color: adding ? 'var(--text-secondary)' : 'white',
-                padding: '6px 16px',
-                cursor: adding ? 'not-allowed' : 'pointer',
-                flexShrink: 0,
-                transition: 'background 0.1s ease',
-              }}
+              className={cx(
+                'font-body text-[13px] font-semibold border-0 rounded-md px-4 py-[6px] shrink-0 transition-[background] duration-100',
+                adding
+                  ? 'bg-surface text-secondary cursor-not-allowed'
+                  : 'bg-accent text-white cursor-pointer'
+              )}
             >
               {adding ? 'Adding...' : 'Add'}
             </button>
@@ -872,14 +590,7 @@ export function ColumnManager({
 
           {/* Add error */}
           {addError && (
-            <div
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '12px',
-                color: '#f87171',
-                marginTop: '6px',
-              }}
-            >
+            <div className="font-body text-xs text-[#f87171] mt-[6px]">
               {addError}
             </div>
           )}
