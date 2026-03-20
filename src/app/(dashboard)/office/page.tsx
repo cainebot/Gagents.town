@@ -11,15 +11,15 @@ import dynamic from 'next/dynamic'
 // Dynamic import to avoid SSR issues with Phaser (accesses window)
 const PhaserGame = dynamic(
   () => import('@/components/Office2D/PhaserGame').then(mod => ({ default: mod.default })),
-  { ssr: false, loading: () => <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-primary)' }}>Loading office...</div> }
+  { ssr: false, loading: () => <div className="flex items-center justify-center h-full text-primary">Loading office...</div> }
 )
 
 // ---------- Connection indicator ----------
 
 const CONNECTION_COLORS: Record<ConnectionStatus, string> = {
-  connected: '#22c55e',
-  connecting: '#eab308',
-  disconnected: '#ef4444',
+  connected: 'bg-success',
+  connecting: 'bg-warning',
+  disconnected: 'bg-error',
 }
 
 const CONNECTION_LABELS: Record<ConnectionStatus, string> = {
@@ -30,7 +30,7 @@ const CONNECTION_LABELS: Record<ConnectionStatus, string> = {
 
 function ConnectionIndicator() {
   const { connectionStatus } = useRealtimeStatus()
-  const color = CONNECTION_COLORS[connectionStatus]
+  const colorClass = CONNECTION_COLORS[connectionStatus]
   const label = CONNECTION_LABELS[connectionStatus]
 
   return (
@@ -48,19 +48,13 @@ function ConnectionIndicator() {
         zIndex: 900,
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         fontSize: '12px',
-        color: '#e5e7eb',
       }}
+      className="text-secondary"
       title={label}
     >
       <span
-        style={{
-          width: '8px',
-          height: '8px',
-          borderRadius: '50%',
-          background: color,
-          flexShrink: 0,
-          boxShadow: `0 0 4px ${color}`,
-        }}
+        className={`${colorClass} w-2 h-2 rounded-full flex-shrink-0`}
+        style={{ boxShadow: '0 0 4px currentColor' }}
       />
       <span>{label}</span>
     </div>
@@ -78,9 +72,9 @@ interface Toast {
 }
 
 const TOAST_BORDER_COLORS: Record<ToastType, string> = {
-  success: '#22c55e',
-  error: '#ef4444',
-  info: '#3b82f6',
+  success: 'border-l-success',
+  error: 'border-l-error',
+  info: 'border-l-info',
 }
 
 let toastCounter = 0
@@ -103,13 +97,10 @@ function ToastContainer({ toasts }: { toasts: Toast[] }) {
       {toasts.map((toast) => (
         <div
           key={toast.id}
+          className={`bg-surface-elevated text-secondary rounded-lg border-l-4 ${TOAST_BORDER_COLORS[toast.type]}`}
           style={{
-            background: '#1f2937',
-            color: '#e5e7eb',
-            borderRadius: '8px',
             padding: '12px 16px',
             minWidth: '280px',
-            borderLeft: `4px solid ${TOAST_BORDER_COLORS[toast.type]}`,
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             fontSize: '13px',
             boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
