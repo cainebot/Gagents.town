@@ -17,7 +17,7 @@ import { BoardFilterBar } from '@/components/BoardFilterBar'
 import { CardDetailPanel } from '@/components/CardDetailPanel'
 import { ColumnManager } from '@/components/ColumnManager'
 import { ChevronDown, Check } from 'lucide-react'
-import { AgentFilterProvider, useAgentFilter, type AgentListItem } from '@/contexts/AgentFilterContext'
+import { useAgentFilter, type AgentListItem } from '@/contexts/AgentFilterContext'
 import { AgentSidePanel } from '@/components/organisms/AgentSidePanel'
 import { cx, Button, ConfirmActionDialog } from '@openclaw/ui'
 
@@ -146,7 +146,6 @@ function BoardPageInner() {
         // non-critical
       }
     })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cardIdsKey])
 
   // Fetch all boards for the tab bar

@@ -44,7 +44,7 @@ function ColumnItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    setNameValue(column.name)
+    setNameValue(column.name) // eslint-disable-line react-hooks/set-state-in-effect -- prop→state sync for inline editing
   }, [column.name])
 
   const handleNameClick = () => {

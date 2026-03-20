@@ -67,7 +67,7 @@ export function CardDetailPanel({
   const { card, fieldDefs, loading, error, updateField, updateCustomField, moveCard, deleteCard, reorderField, refetch } =
     useCardDetail(cardId)
 
-  const [width, setWidth] = useState<number>(DEFAULT_WIDTH)
+  const [width, setWidth] = useState<number>(() => getStoredWidth())
   const [showOverflow, setShowOverflow] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -86,10 +86,8 @@ export function CardDetailPanel({
   const startX = useRef(0)
   const startWidth = useRef(0)
 
-  // Initialize width from localStorage
+  // Trigger slide-in animation
   useEffect(() => {
-    setWidth(getStoredWidth())
-    // Trigger slide-in animation
     requestAnimationFrame(() => setVisible(true))
   }, [])
 
@@ -522,6 +520,7 @@ export function CardDetailPanel({
           </div>
 
           {/* Child tasks — JIRA-style create/link subtasks */}
+          {/* eslint-disable react/no-children-prop -- children is data (ChildEntry[]), not React children */}
           <CardChildTasks
             children={card.children}
             parentCardId={card.card_id}
@@ -532,6 +531,7 @@ export function CardDetailPanel({
             onNavigateToCard={onNavigateToCard ?? (() => {})}
             onChildCreated={refetch}
           />
+          {/* eslint-enable react/no-children-prop */}
 
           {/* Unified fields section */}
           <div className="mb-4">
