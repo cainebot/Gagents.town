@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 01-app-shell-01-03-PLAN.md
-last_updated: "2026-03-20T17:54:21.735Z"
+stopped_at: Completed 02-wave-a-batch-1/02-03-PLAN.md
+last_updated: "2026-03-20T18:02:52.415Z"
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 7
+  completed_plans: 5
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-20)
 
 **Core value:** Every surface uses @openclaw/ui with zero legacy tokens
-**Current focus:** Phase 01 — App Shell
+**Current focus:** Phase 02 — Wave A Batch 1
 
 ## Current Position
 
-Phase: 01 (App Shell) — EXECUTING
-Plan: 3 of 3
+Phase: 02 (Wave A Batch 1) — EXECUTING
+Plan: 1 of 4
 
 ## Performance Metrics
 
@@ -47,6 +47,8 @@ Plan: 3 of 3
 
 *Updated after each plan completion*
 | Phase 01-app-shell P03 | 120s | 2 tasks | 2 files |
+| Phase 02-wave-a-batch-1 P02 | 2m | 2 tasks | 1 files |
+| Phase 02-wave-a-batch-1 P03 | 122s | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -61,6 +63,9 @@ Recent decisions affecting current work:
 - [Phase 01-app-shell]: ThemeProvider wraps UUIRouterProvider; root layout stays server component with client providers isolated in providers.tsx
 - [Phase 01-app-shell plan 02]: Use Tailwind arbitrary value syntax [var(--token)] throughout — no raw style props; font-display class for headings
 - [Phase 01-app-shell]: RAM bar width kept as inline style (dynamic percentage cannot be a Tailwind class)
+- [Phase 02-wave-a-batch-1]: Activity page: static typeClasses/statusClasses record maps replace dynamic var(${colorVar}) style interpolation — enables pure Tailwind classes per type
+- [Phase 02-wave-a-batch-1]: Terminal modal fixed colors (#0d1117 GitHub dark palette) retained as inline style — intentional fixed UI colors, not legacy UUI tokens
+- [Phase 02-wave-a-batch-1]: Dynamic computed border colors (template literals) kept as inline style per plan allowlist
 
 ### Pending Todos
 
@@ -72,6 +77,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T17:51:04.571Z
-Stopped at: Completed 01-app-shell-01-03-PLAN.md
+Last session: 2026-03-20T18:02:52.413Z
+Stopped at: Completed 02-wave-a-batch-1/02-03-PLAN.md
 Resume file: None

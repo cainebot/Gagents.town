@@ -41,7 +41,7 @@ Plans:
   2. grep for var(--) in any of these 8 page files returns 0 matches
   3. Files page renders correctly with Monaco editor internals excluded via the allowlist
   4. next build passes with zero errors after all 8 pages are migrated
-**Plans:** 4 plans
+**Plans:** 2/4 plans executed
 Plans:
 - [ ] 02-01-PLAN.md — Migrate about + actions pages to UUI tokens
 - [ ] 02-02-PLAN.md — Migrate activity page + verify calendar page
@@ -67,5 +67,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. App Shell | 2/3 | In Progress|  |
-| 2. Wave A Batch 1 | 0/4 | Not started | - |
+| 2. Wave A Batch 1 | 2/4 | In Progress|  |
 | 3. Wave A Batch 2 + Verify | 0/TBD | Not started | - |
