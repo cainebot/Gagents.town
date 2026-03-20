@@ -90,56 +90,19 @@ export function BoardKanban({
   const csvDefaultStateId = firstColumn?.state_ids[0] ?? ''
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+    <div className="flex flex-col gap-0">
       {/* Toolbar: Import CSV button */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-          marginBottom: '8px',
-          padding: '0 24px',
-          gap: '8px',
-        }}
-      >
+      <div className="flex justify-end items-center mb-2 px-6 gap-2">
         <button
           onClick={() => setShowCsvImport(true)}
-          style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: '12px',
-            background: 'none',
-            border: '1px solid var(--border)',
-            borderRadius: '6px',
-            color: 'var(--text-secondary)',
-            padding: '4px 12px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '5px',
-          }}
-          onMouseEnter={(e) => {
-            ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--text-primary)'
-          }}
-          onMouseLeave={(e) => {
-            ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--text-secondary)'
-          }}
+          className="font-body text-xs bg-transparent border border-border rounded-md text-secondary px-3 py-1 cursor-pointer flex items-center gap-[5px] hover:text-primary"
         >
           &#8679; Import CSV
         </button>
       </div>
 
       {/* Kanban columns */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          gap: '12px',
-          overflowX: 'auto',
-          overflowY: 'visible',
-          padding: '4px 24px 12px 24px',
-          alignItems: 'flex-start',
-        }}
-      >
+      <div className="flex flex-row gap-3 overflow-x-auto overflow-y-visible px-6 pb-3 pt-1 items-start">
         {board.columns.map((column) => (
           <KanbanColumn
             key={column.column_id}
