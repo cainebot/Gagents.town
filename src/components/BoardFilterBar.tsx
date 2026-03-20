@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { cx, Button, Checkbox } from '@openclaw/ui'
+import { Button, Checkbox } from '@openclaw/ui'
 import type {
   CardRow,
   CardType,
