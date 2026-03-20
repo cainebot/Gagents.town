@@ -1,70 +1,78 @@
-# OpenClaw Control Panel — UUI Migration
+# OpenClaw Control Panel — UUI Migration (Terminal D)
 
 ## What This Is
 
-OpenClaw control-panel is the frontend dashboard for the CaineBot/TenacitOS platform. It manages agents, boards, workflows, cron jobs, and system monitoring. Currently migrating from "Digital Circus" design system (Tailwind v4 + Radix UI + CVA) to Untitled UI React PRO (@openclaw/ui).
+OpenClaw control-panel is a Next.js dashboard application for managing AI agents, boards, workflows, and system operations. Terminal D handles Phase 7 (Waves B+C) of the migration from the legacy "Digital Circus" design system to Untitled UI React PRO (@openclaw/ui).
 
 ## Core Value
 
-Every surface uses a single, consistent design system (@openclaw/ui) with zero legacy tokens — enabling faster development, design consistency, and Figma-code parity.
+Every page in Waves B+C must use exclusively UUI tokens and components — zero legacy CSS vars, zero legacy component imports, while maintaining full functional correctness of boards, agents, and all interactive features.
+
+## Current Milestone: v1.0 M7 — Waves B+C Page Migration
+
+**Goal:** Migrate all medium-complexity (Wave B) and high-complexity (Wave C) pages to UUI design system.
+
+**Target features:**
+- Wave B: Migrate skills, skills/[id], costs, system, analytics pages
+- Wave C: Migrate boards/[id], agents, agents/[id], board-groups/*, office, SmartAddModal
+- Replace all var(--*) inline styles with Tailwind UUI tokens
+- Replace all style={} with CSS vars with Tailwind utilities
+- Replace all legacy components with @openclaw/ui + patterns
+- Replace motion.div/motion.span in SmartAddModal with tailwindcss-animate
 
 ## Requirements
 
 ### Validated
 
-- ✓ UUI PRO foundation installed with Storybook + Code Connect — M2
-- ✓ 14 legacy primitives replaced with @openclaw/ui equivalents — M3
-- ✓ Domain logic decoupled from heavy components (hooks extracted) — M3
-- ✓ Atoms/molecules migrated to UUI tokens — M3
-- ✓ 10 compound patterns created in packages/ui — M4
+- ✓ UUI PRO foundation installed in packages/ui (Phase 1-2, Terminal A)
+- ✓ 14 legacy primitives swapped to @openclaw/ui (Phase 3, Terminal A)
+- ✓ Domain hooks decoupled (useBoardKanban, useCardDetail, useAgentForm, etc.)
+- ✓ 10 compound patterns created in packages/ui (Phase 4, Terminal B)
+- ✓ Atoms/molecules migrated (PriorityBadge, StatusPill, etc.)
 
 ### Active
 
-- [x] App shell migrated (layouts, login, sidebar, headers) → UUI — Phase 1
-- [x] 8 simple pages (batch 1: about→memory) migrated → 100% UUI — Phase 2
-- [x] 8 simple pages (batch 2: org→workspaces) migrated → 100% UUI — Phase 3
-- [x] Zero legacy tokens in all migrated files — Phase 3 verified
+- [ ] Wave B page migrations (skills, costs, system, analytics)
+- [ ] Wave C page migrations (boards, agents, board-groups, office)
+- [ ] SmartAddModal animation migration (motion → tailwindcss-animate)
+- [ ] Zero legacy tokens in all Wave B+C files
+- [ ] Build success after all migrations
 
 ### Out of Scope
 
-- Complex pages (boards, agents, skills, analytics) — deferred to M7 (Wave B+C)
-- Cron vertical — handled by Terminal B (M5)
-- Legacy purge (globals.css cleanup, dependency removal) — deferred to M8
-- Figma workflow documentation — deferred to M8
+- App shell migration — Terminal C (M6) handles this
+- Simple page migrations (Wave A) — Terminal C (M6) handles this
+- Legacy purge / enforcement (Phase 8) — Terminal A (M8) handles this
+- Cron Jobs pilot — Terminal B (M5) handles this
+- Office2D Phaser canvas internals — allowlisted exception
+- Recharts chart internals — allowlisted exception (only React chrome migrates)
 - Monaco Editor internals — allowlisted exception
-- Phaser canvas internals — allowlisted exception
 
 ## Context
 
-- 4-terminal parallel migration strategy: T1 (foundation), T2 (patterns + pilot), T3 (shell + Wave A), T4 (Wave B+C)
-- This is Terminal 3 (T3), working on M6
-- SYNC-2 complete: M3 + M4 merged to develop
-- @openclaw/ui provides: ThemeProvider, RouterProvider, AppNavigation, all base + application components, 10 patterns
-- Migration process per surface: var(--*) → Tailwind tokens, style={} → Tailwind utilities, legacy components → @openclaw/ui, cleanup dead CSS
+- Branch: uui/phase-6-waves-bc (from develop after SYNC-2)
+- Prior phases M1-M4 already merged to develop
+- @openclaw/ui package lives at packages/ui/ with base, application, foundations, and patterns components
+- Domain hooks already extracted: useBoardKanban, useCardDetail, useAgentForm, useChatPanel, useSidebarNav
+- Tasks T103-T116 from the migration spec define the work
+- Tailwind v4 with UUI tokens in packages/ui/src/styles/theme.css
+- cx() utility from @openclaw/ui replaces cn() from legacy
 
 ## Constraints
 
-- **Zero legacy tokens**: grep -r "var(--" in migrated files must return 0
-- **Build must pass**: next build must succeed after every commit
-- **No new legacy**: No code with old system patterns
-- **Pacto de Sangre**: Branch uui/phase-5-shell-wave-a, merge to develop via push
+- **Design system**: Must use only @openclaw/ui components and UUI semantic tokens
+- **No legacy**: Zero var(--*) inline styles, zero style={} with CSS vars in migrated files
+- **Functional**: Boards kanban, agents CRUD, board-groups must work correctly after migration
+- **Build**: next build must succeed with zero errors
+- **Allowlist**: Office2D canvas, Recharts internals, Monaco internals are exceptions — only React chrome migrates
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| App shell first, then pages | Shell provides ThemeProvider/RouterProvider that pages inherit | — Pending |
-| Wave A = 16 simple pages | Lower complexity validates method before complex pages | — Pending |
-| Monaco/Phaser allowlisted | Third-party internals can't use UUI tokens | ✓ Good |
-
-## Current Milestone: v6.0 M6 — App Shell + Wave A
-
-**Goal:** Migrate app shell and 16 simple dashboard pages to 100% UUI design system
-
-**Target features:**
-- App shell with ThemeProvider + RouterProvider + UUI navigation
-- Login page fully migrated
-- 16 simple pages (about, actions, activity, calendar, files, git, logs, memory, organization, reports, search, sessions, settings, terminal, workflows, workspaces) at 100% UUI
+| Domain hooks pre-extracted | Phase 2 decoupled business logic from visual components | ✓ Good — simplifies visual-only migration |
+| motion → tailwindcss-animate | Reduce bundle size, align with UUI animation approach | — Pending |
+| Allowlist for canvas/chart internals | Not feasible to migrate non-React rendering | ✓ Good |
 
 ---
-*Last updated: 2026-03-20 after Phase 3 (Wave A Batch 2 + Verify) — M6 COMPLETE*
+*Last updated: 2026-03-20 after milestone M7 initialization*
