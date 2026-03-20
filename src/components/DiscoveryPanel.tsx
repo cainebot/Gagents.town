@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { cx } from '@openclaw/ui'
 import type { DiscoveredSkill } from '@/types/supabase'
 
 interface DiscoveryPanelProps {
@@ -55,101 +56,51 @@ export function DiscoveryPanel({ initialQuery = '', onSelect }: DiscoveryPanelPr
   }, [query])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+    <div className="flex flex-col gap-3">
       {/* Search input */}
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Buscar skills en skills.sh..."
-        style={{
-          width: '100%',
-          padding: '8px 12px',
-          borderRadius: '8px',
-          border: '1px solid var(--border)',
-          backgroundColor: 'var(--surface-elevated)',
-          color: 'var(--text-primary)',
-          fontSize: '13px',
-          fontFamily: 'var(--font-body)',
-          outline: 'none',
-          boxSizing: 'border-box',
-        }}
+        className="w-full px-3 py-2 rounded-lg border border-border bg-surface-elevated text-foreground text-sm font-sans outline-none box-border"
       />
 
       {/* Loading state */}
       {loading && (
-        <p style={{
-          fontSize: '12px',
-          color: 'var(--text-secondary)',
-          fontFamily: 'var(--font-body)',
-          margin: 0,
-        }}>
+        <p className="text-xs text-muted-foreground font-sans m-0">
           Buscando...
         </p>
       )}
 
       {/* Empty state */}
       {!loading && query.trim() && results.length === 0 && (
-        <p style={{
-          fontSize: '12px',
-          color: 'var(--text-secondary)',
-          fontFamily: 'var(--font-body)',
-          margin: 0,
-        }}>
+        <p className="text-xs text-muted-foreground font-sans m-0">
           No se encontraron skills para &quot;{query}&quot;.
         </p>
       )}
 
       {/* Results grid */}
       {!loading && results.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div className="flex flex-col gap-2">
           {results.map((skill) => (
             <div
               key={skill.slug}
               onClick={() => onSelect(skill)}
-              style={{
-                padding: '10px 12px',
-                borderRadius: '8px',
-                border: '1px solid var(--border)',
-                backgroundColor: 'var(--surface-elevated)',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '4px',
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--accent)'
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--border)'
-              }}
+              className="px-3 py-2.5 rounded-lg border border-border bg-surface-elevated cursor-pointer flex flex-col gap-1 hover:border-accent transition-colors"
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                <span style={{
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: 'var(--text-primary)',
-                  fontFamily: 'var(--font-body)',
-                }}>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-sm font-semibold text-foreground font-sans">
                   {skill.displayName}
                 </span>
-                <span style={{
-                  fontSize: '10px',
-                  padding: '2px 6px',
-                  borderRadius: '4px',
-                  backgroundColor:
-                    skill.source === 'skills_sh'
-                      ? 'var(--accent)'
-                      : skill.source === 'clawhub'
-                      ? '#6366f1'
-                      : 'var(--border)',
-                  color:
-                    skill.source === 'skills_sh' || skill.source === 'clawhub'
-                      ? '#fff'
-                      : 'var(--text-secondary)',
-                  fontFamily: 'var(--font-body)',
-                  whiteSpace: 'nowrap',
-                }}>
+                <span className={cx(
+                  'text-[10px] px-1.5 py-0.5 rounded font-sans whitespace-nowrap',
+                  skill.source === 'skills_sh'
+                    ? 'bg-accent text-white'
+                    : skill.source === 'clawhub'
+                    ? 'bg-[#6366f1] text-white'
+                    : 'bg-border text-muted-foreground'
+                )}>
                   {skill.source === 'skills_sh'
                     ? 'skills.sh'
                     : skill.source === 'clawhub'
@@ -157,18 +108,10 @@ export function DiscoveryPanel({ initialQuery = '', onSelect }: DiscoveryPanelPr
                     : 'GitHub'}
                 </span>
               </div>
-              <span style={{
-                fontSize: '12px',
-                color: 'var(--text-secondary)',
-                fontFamily: 'var(--font-body)',
-              }}>
+              <span className="text-xs text-muted-foreground font-sans">
                 {skill.summary ?? 'Sin descripcion'}
               </span>
-              <span style={{
-                fontSize: '11px',
-                color: 'var(--text-secondary)',
-                fontFamily: 'var(--font-body)',
-              }}>
+              <span className="text-[11px] text-muted-foreground font-sans">
                 {skill.version ? `v${skill.version}` : 'v1.0.0'} · {skill.slug}
               </span>
             </div>
