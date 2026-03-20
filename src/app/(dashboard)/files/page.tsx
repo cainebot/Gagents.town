@@ -39,56 +39,22 @@ export default function FilesPage() {
   const selectedWorkspaceData = workspaces.find((w) => w.id === selectedWorkspace);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", gap: "0" }}>
+    <div className="flex flex-col h-full gap-0">
       {/* Page header */}
-      <div style={{ padding: "24px 24px 16px 24px" }}>
-        <h1
-          style={{
-            fontFamily: "var(--font-heading)",
-            fontSize: "24px",
-            fontWeight: 700,
-            letterSpacing: "-1px",
-            color: "var(--text-primary)",
-            marginBottom: "4px",
-          }}
-        >
+      <div className="px-6 pt-6 pb-4">
+        <h1 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-[-1px] text-[var(--text-primary-900)] mb-1">
           File Browser
         </h1>
-        <p style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-secondary)" }}>
+        <p className="font-[family-name:var(--font-text)] text-[13px] text-[var(--text-secondary-700)]">
           Navega por los workspaces y archivos de los agentes
         </p>
       </div>
 
       {/* Two-column layout */}
-      <div
-        style={{
-          display: "flex",
-          flex: 1,
-          overflow: "hidden",
-          borderTop: "1px solid var(--border)",
-        }}
-      >
+      <div className="flex flex-1 overflow-hidden border-t border-[var(--border-primary)]">
         {/* ── LEFT SIDEBAR: Workspace list ─────────────────────────────────── */}
-        <aside
-          style={{
-            width: "220px",
-            flexShrink: 0,
-            borderRight: "1px solid var(--border)",
-            overflowY: "auto",
-            padding: "16px 0",
-            backgroundColor: "var(--surface, var(--card))",
-          }}
-        >
-          <p
-            style={{
-              fontSize: "10px",
-              fontWeight: 700,
-              letterSpacing: "0.08em",
-              color: "var(--text-muted)",
-              padding: "0 16px 8px",
-              textTransform: "uppercase",
-            }}
-          >
+        <aside className="w-[220px] shrink-0 border-r border-[var(--border-primary)] overflow-y-auto py-4 bg-[var(--bg-secondary)]">
+          <p className="text-[10px] font-bold tracking-[0.08em] text-[var(--text-quaternary-500)] px-4 pb-2 uppercase">
             Workspaces
           </p>
 
@@ -98,51 +64,26 @@ export default function FilesPage() {
               <button
                 key={workspace.id}
                 onClick={() => handleWorkspaceSelect(workspace.id)}
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  padding: "9px 16px",
-                  background: isSelected ? "var(--accent-soft)" : "transparent",
-                  border: "none",
-                  borderLeft: isSelected ? "3px solid var(--accent)" : "3px solid transparent",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  transition: "all 120ms ease",
-                }}
-                onMouseEnter={(e) => {
-                  if (!isSelected) e.currentTarget.style.background = "var(--surface-hover, rgba(255,255,255,0.05))";
-                }}
-                onMouseLeave={(e) => {
-                  if (!isSelected) e.currentTarget.style.background = "transparent";
-                }}
+                className={[
+                  "w-full flex items-center gap-[10px] px-4 py-[9px]",
+                  "border-none cursor-pointer text-left transition-all duration-[120ms] ease-linear",
+                  isSelected
+                    ? "bg-[var(--brand-600)]/10 border-l-[3px] border-l-[var(--brand-600)]"
+                    : "bg-transparent border-l-[3px] border-l-transparent hover:bg-[var(--bg-quaternary)]",
+                ].join(" ")}
               >
-                <span style={{ fontSize: "18px", lineHeight: 1, flexShrink: 0 }}>{workspace.emoji}</span>
-                <div style={{ minWidth: 0 }}>
+                <span className="text-[18px] leading-none shrink-0">{workspace.emoji}</span>
+                <div className="min-w-0">
                   <div
-                    style={{
-                      fontFamily: "var(--font-heading)",
-                      fontSize: "13px",
-                      fontWeight: isSelected ? 600 : 400,
-                      color: isSelected ? "var(--accent)" : "var(--text-primary)",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
+                    className={[
+                      "font-[family-name:var(--font-display)] text-[13px] whitespace-nowrap overflow-hidden text-ellipsis",
+                      isSelected ? "font-semibold text-[var(--brand-600)]" : "font-normal text-[var(--text-primary-900)]",
+                    ].join(" ")}
                   >
                     {workspace.name}
                   </div>
                   {workspace.agentName && (
-                    <div
-                      style={{
-                        fontSize: "11px",
-                        color: "var(--text-muted)",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
+                    <div className="text-[11px] text-[var(--text-quaternary-500)] whitespace-nowrap overflow-hidden text-ellipsis">
                       {workspace.agentName}
                     </div>
                   )}
@@ -153,23 +94,12 @@ export default function FilesPage() {
         </aside>
 
         {/* ── RIGHT PANEL: File explorer ────────────────────────────────────── */}
-        <main style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+        <main className="flex-1 overflow-y-auto flex flex-col">
           {selectedWorkspace && selectedWorkspaceData ? (
             <>
               {/* Breadcrumb bar + view toggle */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "8px 16px",
-                  borderBottom: "1px solid var(--border)",
-                  backgroundColor: "var(--surface, var(--card))",
-                  flexShrink: 0,
-                  gap: "12px",
-                }}
-              >
-                <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)] shrink-0 gap-3">
+                <div className="flex-1 min-w-0">
                   <Breadcrumbs
                     path={currentPath}
                     onNavigate={setCurrentPath}
@@ -178,40 +108,28 @@ export default function FilesPage() {
                 </div>
 
                 {/* View mode toggle */}
-                <div style={{ display: "flex", gap: "4px", flexShrink: 0 }}>
+                <div className="flex gap-1 shrink-0">
                   <button
                     onClick={() => setViewMode("list")}
                     title="Vista lista"
-                    style={{
-                      padding: "5px 7px",
-                      borderRadius: "6px",
-                      border: "none",
-                      cursor: "pointer",
-                      backgroundColor: viewMode === "list" ? "var(--accent)" : "transparent",
-                      color: viewMode === "list" ? "var(--bg, #111)" : "var(--text-muted)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      transition: "all 120ms ease",
-                    }}
+                    className={[
+                      "p-[5px_7px] rounded-[6px] border-none cursor-pointer flex items-center justify-center transition-all duration-[120ms] ease-linear",
+                      viewMode === "list"
+                        ? "bg-[var(--brand-600)] text-[var(--bg-primary)]"
+                        : "bg-transparent text-[var(--text-quaternary-500)]",
+                    ].join(" ")}
                   >
                     <List size={15} />
                   </button>
                   <button
                     onClick={() => setViewMode("grid")}
                     title="Vista iconos"
-                    style={{
-                      padding: "5px 7px",
-                      borderRadius: "6px",
-                      border: "none",
-                      cursor: "pointer",
-                      backgroundColor: viewMode === "grid" ? "var(--accent)" : "transparent",
-                      color: viewMode === "grid" ? "var(--bg, #111)" : "var(--text-muted)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      transition: "all 120ms ease",
-                    }}
+                    className={[
+                      "p-[5px_7px] rounded-[6px] border-none cursor-pointer flex items-center justify-center transition-all duration-[120ms] ease-linear",
+                      viewMode === "grid"
+                        ? "bg-[var(--brand-600)] text-[var(--bg-primary)]"
+                        : "bg-transparent text-[var(--text-quaternary-500)]",
+                    ].join(" ")}
                   >
                     <Grid3X3 size={15} />
                   </button>
@@ -219,7 +137,7 @@ export default function FilesPage() {
               </div>
 
               {/* File list */}
-              <div style={{ flex: 1, padding: "0" }}>
+              <div className="flex-1 p-0">
                 <FileBrowser
                   workspace={selectedWorkspace}
                   path={currentPath}
@@ -229,16 +147,7 @@ export default function FilesPage() {
               </div>
             </>
           ) : (
-            <div
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "var(--text-muted)",
-                fontSize: "14px",
-              }}
-            >
+            <div className="flex-1 flex items-center justify-center text-[var(--text-quaternary-500)] text-sm">
               Selecciona un workspace para explorar sus archivos
             </div>
           )}
