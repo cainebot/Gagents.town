@@ -74,7 +74,8 @@ export default function CostsPage() {
   }
 
   const budgetPercent = (costData.thisMonth / costData.budget) * 100;
-  const budgetColor = budgetPercent < 60 ? "var(--success)" : budgetPercent < 85 ? "var(--warning)" : "var(--error)";
+  const budgetTextClass = budgetPercent < 60 ? "text-success" : budgetPercent < 85 ? "text-warning" : "text-error";
+  const budgetBgClass = budgetPercent < 60 ? "bg-success" : budgetPercent < 85 ? "bg-warning" : "bg-error";
   const todayChange = ((costData.today - costData.yesterday) / costData.yesterday) * 100;
   const monthChange = ((costData.thisMonth - costData.lastMonth) / costData.lastMonth) * 100;
 
@@ -187,13 +188,13 @@ export default function CostsPage() {
               <AlertTriangle className="w-4 h-4 text-error" />
             )}
           </div>
-          <div className="text-3xl font-bold" style={{ color: budgetColor }}>
+          <div className={cx("text-3xl font-bold", budgetTextClass)}>
             {budgetPercent.toFixed(0)}%
           </div>
           <div className="mt-2 h-2 rounded-full overflow-hidden bg-card-elevated">
             <div
-              className="h-full transition-all duration-500"
-              style={{ width: `${Math.min(budgetPercent, 100)}%`, backgroundColor: budgetColor }}
+              className={cx("h-full transition-all duration-500", budgetBgClass)}
+              style={{ width: `${Math.min(budgetPercent, 100)}%` }}
             />
           </div>
           <p className="text-xs mt-1 text-muted">
