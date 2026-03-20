@@ -9,16 +9,16 @@ import { cx } from "../../utils/cx"
 
 const variantStyles = {
   primary:
-    "bg-[#FF3B30] text-white hover:bg-[#E0342B] pressed:bg-[#CC2F27] border border-transparent",
+    "bg-brand-600 text-white hover:bg-brand-700 pressed:bg-brand-800 border border-transparent",
   secondary:
-    "bg-white/10 text-white hover:bg-white/15 pressed:bg-white/20 border border-white/10",
+    "bg-secondary text-primary hover:bg-tertiary pressed:bg-quaternary border border-secondary",
   outline:
-    "bg-transparent text-white hover:bg-white/5 pressed:bg-white/10 border border-white/20",
+    "bg-transparent text-primary hover:bg-secondary pressed:bg-tertiary border border-secondary",
   ghost:
-    "bg-transparent text-white hover:bg-white/5 pressed:bg-white/10 border border-transparent",
+    "bg-transparent text-primary hover:bg-secondary pressed:bg-tertiary border border-transparent",
   danger:
-    "bg-red-600 text-white hover:bg-red-700 pressed:bg-red-800 border border-transparent",
-  link: "bg-transparent text-[#FF3B30] hover:text-[#E0342B] pressed:text-[#CC2F27] border-none underline-offset-4 hover:underline p-0 h-auto",
+    "bg-error-600 text-white hover:bg-error-700 pressed:bg-error-800 border border-transparent",
+  link: "bg-transparent text-brand-600 hover:text-brand-700 pressed:text-brand-800 border-none underline-offset-4 hover:underline p-0 h-auto",
 } as const
 
 const sizeStyles = {

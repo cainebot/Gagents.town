@@ -20,7 +20,7 @@ const statusConfig: Record<StatusType, { variant: BadgeVariant; dotColor: string
   pending: { variant: "warning", dotColor: "bg-warning-500" },
   warning: { variant: "warning", dotColor: "bg-warning-500" },
   error: { variant: "error", dotColor: "bg-error-500" },
-  info: { variant: "info", dotColor: "bg-info-500" },
+  info: { variant: "info", dotColor: "bg-blue-500" },
 }
 
 export function StatusBadge({

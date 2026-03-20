@@ -28,14 +28,14 @@ export function AppNavigation({
   return (
     <nav
       className={cx(
-        "flex h-full flex-col border-r border-white/10 bg-[#1C1C1E]",
+        "flex h-full flex-col border-r border-secondary bg-secondary",
         collapsed ? "w-16" : "w-60",
         "transition-[width] duration-200",
         className
       )}
     >
       {header && (
-        <div className="border-b border-white/10 p-4">{header}</div>
+        <div className="border-b border-secondary p-4">{header}</div>
       )}
 
       <div className="flex-1 overflow-y-auto p-2">
@@ -46,10 +46,10 @@ export function AppNavigation({
                 href={item.href}
                 className={cx(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FF3B30]",
+                  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600",
                   item.isActive
-                    ? "bg-white/10 text-white"
-                    : "text-white/50 hover:bg-white/5 hover:text-white/80",
+                    ? "bg-tertiary text-primary"
+                    : "text-quaternary hover:bg-secondary hover:text-secondary",
                   collapsed && "justify-center px-0"
                 )}
                 aria-current={item.isActive ? "page" : undefined}
@@ -67,7 +67,7 @@ export function AppNavigation({
       </div>
 
       {footer && (
-        <div className="border-t border-white/10 p-4">{footer}</div>
+        <div className="border-t border-secondary p-4">{footer}</div>
       )}
     </nav>
   )

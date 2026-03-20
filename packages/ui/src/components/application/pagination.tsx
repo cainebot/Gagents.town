@@ -72,9 +72,9 @@ export function Pagination({
         onPress={() => onPageChange(currentPage - 1)}
         className={cx(
           "inline-flex h-8 w-8 items-center justify-center rounded-md text-sm transition-colors",
-          "text-white/50 hover:bg-white/10 hover:text-white",
+          "text-quaternary hover:bg-tertiary hover:text-primary",
           "disabled:opacity-30 disabled:cursor-not-allowed",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FF3B30]"
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
         )}
         aria-label="Previous page"
       >
@@ -97,7 +97,7 @@ export function Pagination({
         page === "ellipsis" ? (
           <span
             key={`ellipsis-${index}`}
-            className="inline-flex h-8 w-8 items-center justify-center text-sm text-white/30"
+            className="inline-flex h-8 w-8 items-center justify-center text-sm text-quaternary"
           >
             ...
           </span>
@@ -107,10 +107,10 @@ export function Pagination({
             onPress={() => onPageChange(page)}
             className={cx(
               "inline-flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm transition-colors",
-              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FF3B30]",
+              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600",
               page === currentPage
-                ? "bg-[#FF3B30] text-white"
-                : "text-white/50 hover:bg-white/10 hover:text-white"
+                ? "bg-brand-600 text-white"
+                : "text-quaternary hover:bg-tertiary hover:text-primary"
             )}
             aria-label={`Page ${page}`}
             aria-current={page === currentPage ? "page" : undefined}
@@ -125,9 +125,9 @@ export function Pagination({
         onPress={() => onPageChange(currentPage + 1)}
         className={cx(
           "inline-flex h-8 w-8 items-center justify-center rounded-md text-sm transition-colors",
-          "text-white/50 hover:bg-white/10 hover:text-white",
+          "text-quaternary hover:bg-tertiary hover:text-primary",
           "disabled:opacity-30 disabled:cursor-not-allowed",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FF3B30]"
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
         )}
         aria-label="Next page"
       >

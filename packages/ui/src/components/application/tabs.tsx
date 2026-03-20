@@ -41,7 +41,7 @@ export function TabList<T extends object>({
   return (
     <AriaTabList
       className={cx(
-        "flex gap-1 border-b border-white/10",
+        "flex gap-1 border-b border-secondary",
         className
       )}
       {...props}
@@ -59,9 +59,9 @@ export function Tab({ className, children, ...props }: TabProps) {
     <AriaTab
       className={cx(
         "cursor-pointer px-3 py-2 text-sm font-medium outline-none transition-colors",
-        "text-white/50 hover:text-white/80",
-        "selected:text-white selected:border-b-2 selected:border-[#FF3B30] selected:-mb-px",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FF3B30] focus-visible:rounded-sm",
+        "text-quaternary hover:text-secondary",
+        "selected:text-primary selected:border-b-2 selected:border-brand-600 selected:-mb-px",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 focus-visible:rounded-sm",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
@@ -80,7 +80,7 @@ export interface TabPanelProps extends Omit<AriaTabPanelProps, "className"> {
 export function TabPanel({ className, children, ...props }: TabPanelProps) {
   return (
     <AriaTabPanel
-      className={cx("pt-4 text-sm text-white/70 outline-none", className)}
+      className={cx("pt-4 text-sm text-tertiary outline-none", className)}
       {...props}
     >
       {children}

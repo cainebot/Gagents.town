@@ -5,7 +5,6 @@ import {
   Modal as AriaModal,
   ModalOverlay,
   Dialog,
-  type DialogProps,
 } from "react-aria-components"
 import { type ReactNode } from "react"
 import { cx } from "../../utils/cx"
@@ -62,8 +61,8 @@ export function Modal({
         >
           <Dialog
             className={cx(
-              "rounded-xl border border-white/10 bg-[#1C1C1E] p-6 shadow-2xl outline-none",
-              "text-white",
+              "rounded-xl border border-secondary bg-secondary p-6 shadow-2xl outline-none",
+              "text-primary",
               className
             )}
           >
@@ -83,7 +82,7 @@ export interface ModalHeaderProps {
 export function ModalHeader({ children, className }: ModalHeaderProps) {
   return (
     <div className={cx("mb-4", className)}>
-      <h2 className="text-lg font-semibold text-white">{children}</h2>
+      <h2 className="text-lg font-semibold text-primary">{children}</h2>
     </div>
   )
 }
@@ -95,7 +94,7 @@ export interface ModalBodyProps {
 
 export function ModalBody({ children, className }: ModalBodyProps) {
   return (
-    <div className={cx("text-sm text-white/70", className)}>{children}</div>
+    <div className={cx("text-sm text-tertiary", className)}>{children}</div>
   )
 }
 

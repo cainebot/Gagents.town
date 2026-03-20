@@ -27,14 +27,14 @@ export function Popover({
       {trigger}
       <AriaPopover
         className={cx(
-          "rounded-xl border border-white/10 bg-[#1C1C1E] shadow-2xl",
+          "rounded-xl border border-secondary bg-secondary shadow-2xl",
           "entering:animate-in entering:fade-in entering:zoom-in-95 entering:duration-200",
           "exiting:animate-out exiting:fade-out exiting:zoom-out-95 exiting:duration-150",
           className
         )}
         {...props}
       >
-        <Dialog className="p-3 text-sm text-white outline-none">
+        <Dialog className="p-3 text-sm text-primary outline-none">
           {children}
         </Dialog>
       </AriaPopover>

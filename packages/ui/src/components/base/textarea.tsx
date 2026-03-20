@@ -45,7 +45,7 @@ export function TextArea({
       {...props}
     >
       {label && (
-        <AriaLabel className="text-sm font-medium text-neutral-300">
+        <AriaLabel className="text-sm font-medium text-secondary">
           {label}
         </AriaLabel>
       )}
@@ -53,22 +53,22 @@ export function TextArea({
         placeholder={placeholder}
         rows={rows}
         className={cx(
-          "w-full rounded-lg border bg-white/5 text-white placeholder:text-neutral-500",
-          "border-white/10 transition-colors duration-150 resize-y",
-          "hover:border-white/20",
-          "focus:border-[#FF3B30] focus:outline-none focus:ring-1 focus:ring-[#FF3B30]",
+          "w-full rounded-lg border bg-secondary text-primary placeholder:text-quaternary",
+          "border-secondary transition-colors duration-150 resize-y",
+          "hover:border-primary",
+          "focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600",
           "disabled:opacity-50 disabled:cursor-not-allowed",
-          "invalid:border-red-500 invalid:focus:ring-red-500",
+          "invalid:border-error-600 invalid:focus:ring-error-600",
           sizeStyles[size],
           textAreaClassName
         )}
       />
       {description && (
-        <AriaText slot="description" className="text-xs text-neutral-500">
+        <AriaText slot="description" className="text-xs text-quaternary">
           {description}
         </AriaText>
       )}
-      <AriaFieldError className="text-xs text-red-400">
+      <AriaFieldError className="text-xs text-error-600">
         {errorMessage}
       </AriaFieldError>
     </AriaTextField>

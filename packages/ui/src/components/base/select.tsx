@@ -47,30 +47,30 @@ export function Select<T extends object>({
       {...props}
     >
       {label && (
-        <AriaLabel className="text-sm font-medium text-neutral-300">
+        <AriaLabel className="text-sm font-medium text-secondary">
           {label}
         </AriaLabel>
       )}
       <AriaButton
         className={cx(
-          "flex items-center justify-between w-full rounded-lg border bg-white/5 text-white",
-          "border-white/10 h-10 px-3.5 text-sm transition-colors duration-150",
-          "hover:border-white/20",
-          "focus:border-[#FF3B30] focus:outline-none focus:ring-1 focus:ring-[#FF3B30]",
+          "flex items-center justify-between w-full rounded-lg border bg-secondary text-primary",
+          "border-secondary h-10 px-3.5 text-sm transition-colors duration-150",
+          "hover:border-primary",
+          "focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600",
           "disabled:opacity-50 disabled:cursor-not-allowed"
         )}
       >
-        <AriaSelectValue className="truncate placeholder-shown:text-neutral-500">
+        <AriaSelectValue className="truncate placeholder-shown:text-quaternary">
           {({ defaultChildren, isPlaceholder }) =>
             isPlaceholder ? (
-              <span className="text-neutral-500">{placeholder}</span>
+              <span className="text-quaternary">{placeholder}</span>
             ) : (
               defaultChildren
             )
           }
         </AriaSelectValue>
         <svg
-          className="w-4 h-4 text-neutral-400 shrink-0 ml-2"
+          className="w-4 h-4 text-quaternary shrink-0 ml-2"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           fill="currentColor"
@@ -84,16 +84,16 @@ export function Select<T extends object>({
         </svg>
       </AriaButton>
       {description && (
-        <AriaText slot="description" className="text-xs text-neutral-500">
+        <AriaText slot="description" className="text-xs text-quaternary">
           {description}
         </AriaText>
       )}
-      <AriaFieldError className="text-xs text-red-400">
+      <AriaFieldError className="text-xs text-error-600">
         {errorMessage}
       </AriaFieldError>
       <AriaPopover
         className={cx(
-          "w-[var(--trigger-width)] rounded-lg border border-white/10 bg-neutral-900 shadow-xl overflow-hidden",
+          "w-[var(--trigger-width)] rounded-lg border border-secondary bg-secondary shadow-xl overflow-hidden",
           "entering:animate-in entering:fade-in entering:zoom-in-95",
           "exiting:animate-out exiting:fade-out exiting:zoom-out-95"
         )}
@@ -117,9 +117,9 @@ export function SelectItem({ className, ...props }: SelectItemProps) {
   return (
     <AriaListBoxItem
       className={cx(
-        "flex items-center rounded-md px-3 py-2 text-sm text-white cursor-pointer outline-none",
-        "hover:bg-white/10 focus:bg-white/10",
-        "selected:bg-[#FF3B30]/15 selected:text-[#FF8A84]",
+        "flex items-center rounded-md px-3 py-2 text-sm text-primary cursor-pointer outline-none",
+        "hover:bg-tertiary focus:bg-tertiary",
+        "selected:bg-brand-600/15 selected:text-brand-300",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
